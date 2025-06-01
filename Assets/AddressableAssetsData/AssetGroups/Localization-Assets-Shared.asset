@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Localization-Assets-Shared
+  m_EditorClassIdentifier: 
+  m_GroupName: Localization-Assets-Shared
+  m_GUID: ba18a8879a836c04e8a64eb237ab9e38
+  m_SerializeEntries:
+  - m_GUID: 19bd0f00f9a27d845aca7ef6fa7ac1cc
+    m_Address: Assets/StoryLines/Stage1_3/Stage1_3 Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: be20d44751ad87e4fa6620211bce1aff
+    m_Address: Assets/StoryLines/Stage1_1/Stage1_1 Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d84ce4a0a0180214aae6a4bb49017722
+    m_Address: Assets/StoryLines/Stage1_2/Stage1_2 Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f91b146c67acc8a4583bed4cc1d20baa
+    m_Address: Assets/StoryLines/Stage1_1/AboveLines/AboveLines Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 1
+  m_Settings: {fileID: 11400000, guid: b84d744906957f64496c497811fdfe1e, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: e14c9a327c252cf4a8126133526d4df0, type: 2}
+    - {fileID: 11400000, guid: 85871ffe6b228f44b94ff10ce868495d, type: 2}

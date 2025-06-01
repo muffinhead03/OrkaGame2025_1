@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 0
+    path: Assets/Scenes/BeforeGame/SampleScene.unity
+    guid: 8c9cfa26abfee488c85f1582747f6a02
+  - enabled: 0
+    path: Assets/Scenes/BeforeGame/ContinueGame.unity
+    guid: 57740ec22fcf4f7449616623cd6c81e2
+  - enabled: 1
+    path: Assets/Scenes/BeforeGame/mainMenuPanel.unity
+    guid: 5ee9e7fed31bf64459535d4b20032429
+  - enabled: 0
+    path: Assets/Scenes/BeforeGame/SettingScene.unity
+    guid: 657f5bf7d25229542aa2e8d0cc9ab968
+  - enabled: 0
+    path: Assets/Scenes/DuringGame/Endings/EtinArcadiaego.unity
+    guid: 051763d0541aff046a88d509ffd1d906
+  - enabled: 0
+    path: Assets/Scenes/DuringGame/Second/CardGameLater.unity
+    guid: f24fc089f57fbc94d955a87763270ff8
+  - enabled: 1
+    path: Assets/Scenes/DuringGame/FirstOne/Stage1_2.unity
+    guid: e19733df83aee8244a0ffb9a18936a18
+  - enabled: 1
+    path: Assets/Scenes/DuringGame/FirstOne/Stage1_2.unity
+    guid: e19733df83aee8244a0ffb9a18936a18
+  - enabled: 1
+    path: Assets/Scenes/DuringGame/FirstOne/SlidingPuzzle.unity
+    guid: 6dca8178a79e8fd4c986c75534e87037
+  - enabled: 1
+    path: Assets/Scenes/DuringGame/FirstOne/Stage1_1.unity
+    guid: 4cfb287b1547d844785a9e043e381bb0
+  m_configObjects:
+    com.unity.addressableassets: {fileID: 11400000, guid: 56caa72cd59bab146bf413f67f6d86cb, type: 2}
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+    com.unity.localization.settings: {fileID: 11400000, guid: 36f839270d6625d4bbee144607d49597, type: 2}
+  m_UseUCBPForAssetBundles: 0

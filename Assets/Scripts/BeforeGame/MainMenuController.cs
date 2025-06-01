@@ -6,7 +6,7 @@ public class MainMenuController : MonoBehaviour
     // 게임 시작 → ContinueGame 씬 로드
     public void StartGame()
     {
-        SceneManager.LoadScene("ContinueGame");
+        SceneManager.LoadScene("Stage1_1");
     }
 
     // 설정 화면 → SettingScene 씬 로드

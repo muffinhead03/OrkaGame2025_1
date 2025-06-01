@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Localization-String-Tables-Kazakh (Kazakhstan) (kk-KZ)
+  m_EditorClassIdentifier: 
+  m_GroupName: Localization-String-Tables-Kazakh (Kazakhstan) (kk-KZ)
+  m_GUID: 4061ee8459263f544853bd5128f35c82
+  m_SerializeEntries:
+  - m_GUID: 10812d27eb063bb4ea13973e017f6126
+    m_Address: Stage1_2_kk-KZ
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-kk-KZ
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6b6b83b092273b549b97ef13e1324b2b
+    m_Address: Stage1_1_kk-KZ
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-kk-KZ
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7b4291632dceff74883265519174d8dc
+    m_Address: Stage1_3_kk-KZ
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-kk-KZ
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bb0d443b247e5c74187aae93647bd48e
+    m_Address: AboveLines_kk-KZ
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-kk-KZ
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 1
+  m_Settings: {fileID: 11400000, guid: b84d744906957f64496c497811fdfe1e, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 2c6382c601106804ca4ee2354227411f, type: 2}
+    - {fileID: 11400000, guid: c57a940fb0d127943a7ed24eb7dc815d, type: 2}
