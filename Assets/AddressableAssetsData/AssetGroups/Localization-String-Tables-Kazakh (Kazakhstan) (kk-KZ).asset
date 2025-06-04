@@ -21,6 +21,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-kk-KZ
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1803add6cb0602249a351dffa447022e
+    m_Address: Stage2_1_kk-KZ
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-kk-KZ
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6b6b83b092273b549b97ef13e1324b2b
     m_Address: Stage1_1_kk-KZ
     m_ReadOnly: 1
