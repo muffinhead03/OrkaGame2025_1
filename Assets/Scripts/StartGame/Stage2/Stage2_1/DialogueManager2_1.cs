@@ -24,7 +24,12 @@ public class DialogueManager2_1 : MonoBehaviour
         "key2_1_1",
         "key2_1_2",
         "key2_1_3",
-        "key2_1_4"
+        "key2_1_4",
+        "key2_1_5",
+        "key2_1_6",
+        "key2_1_7",
+        "key2_1_8",
+        "key2_1_9"
     };
 
     private void Start()

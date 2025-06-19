@@ -173,7 +173,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      hairpin_glow_0: 5355431663202642737
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

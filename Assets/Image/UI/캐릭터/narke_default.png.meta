@@ -173,7 +173,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      narke_default_0: 6329045147323616966
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
