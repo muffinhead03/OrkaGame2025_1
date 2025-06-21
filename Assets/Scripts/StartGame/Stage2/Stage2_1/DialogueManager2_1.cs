@@ -17,6 +17,7 @@ public class DialogueManager2_1 : MonoBehaviour
     [Header("Sound Effects")]
     public AudioSource birdAudio;
     public AudioSource waterAudio;
+    public AudioSource grassAudio; // 추가됨
 
     private int index = 0;
     private string tableName = "Stage2_1";
@@ -75,6 +76,13 @@ public class DialogueManager2_1 : MonoBehaviour
     private IEnumerator StartTypingCoroutine(string fullText)
     {
         yield return StartCoroutine(typeWriter.Type(fullText));
+
+        //Key2_1_4 끝나면 풀숲소리 재생
+        if (index == 3 && grassAudio)
+        {
+            grassAudio.Play();
+        }
+
         nextButton.interactable = true;
     }
 

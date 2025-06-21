@@ -1,2 +1,18 @@
 fileFormatVersion: 2
 guid: bca523611a7dd0940beeefd94987272f
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - localizedStringEvent: {instanceID: 0}
+  - typeWriter: {instanceID: 0}
+  - targetText: {instanceID: 0}
+  - nextButton: {instanceID: 0}
+  - birdAudio: {fileID: 1819542750557900032, guid: 333aa471cbbbbfd4f8a131b1f34b053f, type: 3}
+  - waterAudio: {fileID: 8846218305708179878, guid: 7f3a71c98cef90d45940c9d99dc61285, type: 3}
+  - grassAudio: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
