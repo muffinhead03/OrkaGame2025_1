@@ -20,8 +20,43 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2fb2d06e08d1bb140a9bf35c7363ed97
+    m_Address: Assets/StoryLines/Stage3_4/Stage3_4StoryLine Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3c17dfa0ba850134b8ef02de01be80b6
+    m_Address: Assets/StoryLines/Stage3_1/Stage3_1StoryLIne Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3ebdac79ae192714e8722fd9a903dae8
+    m_Address: Assets/StoryLines/Stage3_6/Stage3_6 Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4db3f4d9aedf6aa42b371763e3b8388e
+    m_Address: Assets/StoryLines/Stage3_1/Stage3_1AboveLine Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5b0b59e0f94855f47aafa0104f6ec17f
+    m_Address: Assets/StoryLines/Stage3_4/Stage3_4AboveLIne Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5e6e300885589a8408b68d66167fc0f9
     m_Address: Assets/StoryLines/Stage2_4/Stage2_4 Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 65ea7f4ea4b7b6248b719c587620dbd5
+    m_Address: Assets/StoryLines/Stage3_5/Stage3_5StoryLIne Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6cc97bd7dc68eac4fbcc5c025d31b5c9
+    m_Address: Assets/StoryLines/Stage3_2/Stage3_2AboveLIne Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -30,8 +65,18 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 99ee0d82886eef84dbec508bb161bedd
+    m_Address: Assets/StoryLines/Stage3_5/Stage3_5AboveLine Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a207d52fe1b4edd4187f2262f5c95a94
     m_Address: Assets/StoryLines/Stage2_3/Stage2_2Above_Line Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cdffbfcd59495874cb55eb104a734e91
+    m_Address: Assets/StoryLines/Stage3_6/Stage3_6AboveLIne Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -40,13 +85,38 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dbff34e16551f6c4a87945f5334ebdc4
+    m_Address: Assets/StoryLines/Stage3_7/Stage3_7StoryLIne Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f26f8a90594f9104bb758a6c7555be3c
     m_Address: Assets/StoryLines/Stage2_2/Stage2_2 Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f27c5eaffbab9dc47b8d443e45e7ec90
+    m_Address: Assets/StoryLines/Stage3_7/Stage3_7AboveLine Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f28f0a64e1b9ae84997037cd6a47b760
+    m_Address: Assets/StoryLines/Stage3_3/Stage3_3AboveLIne Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f768bbb2ef7b305458ba0c79e9a8d559
+    m_Address: Assets/StoryLines/Stage3_3/Stage3_3StoryLine Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: fae2b5a6a096b174d9e1ed306bd3cd2d
     m_Address: Assets/StoryLines/Stage2_4/Stage2_4AboveLine Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fe6e50a522866754596ebed9374fef72
+    m_Address: Assets/StoryLines/Stage3_2/Stage3_2AboveLIne Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
