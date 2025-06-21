@@ -21,7 +21,7 @@ EditorBuildSettings:
     path: Assets/Scenes/DuringGame/Endings/EtinArcadiaego.unity
     guid: 051763d0541aff046a88d509ffd1d906
   - enabled: 0
-    path: Assets/Scenes/DuringGame/Second/CardGameLater.unity
+    path: Assets/Scenes/DuringGame/Second/MiniGame_Card/CardGameLater.unity
     guid: f24fc089f57fbc94d955a87763270ff8
   - enabled: 1
     path: Assets/Scenes/DuringGame/Second/Stage1_2.unity
@@ -30,7 +30,7 @@ EditorBuildSettings:
     path: Assets/Scenes/DuringGame/Second/Stage1_2.unity
     guid: e19733df83aee8244a0ffb9a18936a18
   - enabled: 1
-    path: Assets/Scenes/DuringGame/FirstOne/SlidingPuzzle.unity
+    path: Assets/Scenes/DuringGame/FirstOne/MinGame_Sliding/SlidingPuzzle.unity
     guid: 6dca8178a79e8fd4c986c75534e87037
   - enabled: 1
     path: Assets/Scenes/DuringGame/FirstOne/Stage1_1.unity

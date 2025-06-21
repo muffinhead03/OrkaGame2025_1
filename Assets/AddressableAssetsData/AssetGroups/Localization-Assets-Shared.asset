@@ -15,6 +15,11 @@ MonoBehaviour:
   m_GroupName: Localization-Assets-Shared
   m_GUID: 275120924c7a6004aace230a470086b3
   m_SerializeEntries:
+  - m_GUID: 19bd0f00f9a27d845aca7ef6fa7ac1cc
+    m_Address: Assets/StoryLines/Stage1_3/Stage1_3 Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 25702c76b76a5384d8cb1cfa5d7729d9
     m_Address: Assets/StoryLines/Stage2_3/Stage2_3 Shared Data.asset
     m_ReadOnly: 1
@@ -35,13 +40,28 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: be20d44751ad87e4fa6620211bce1aff
+    m_Address: Assets/StoryLines/Stage1_1/Stage1_1 Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d1dbfbe9c1d38aa4b9c24fc9f7a40a6f
     m_Address: Assets/Scripts/StartGame/Stage2/Stage2_2/Stage2_2Above Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d84ce4a0a0180214aae6a4bb49017722
+    m_Address: Assets/StoryLines/Stage1_2/Stage1_2 Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f26f8a90594f9104bb758a6c7555be3c
     m_Address: Assets/StoryLines/Stage2_2/Stage2_2 Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f91b146c67acc8a4583bed4cc1d20baa
+    m_Address: Assets/StoryLines/Stage1_1/AboveLines/AboveLines Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
