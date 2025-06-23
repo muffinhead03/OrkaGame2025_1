@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class SlidingPuzzle1Script : MonoBehaviour, IPointerClickHandler
+public class SlidingPuzzle1ScriptAfterDeath : MonoBehaviour, IPointerClickHandler
 {
     public int puzzleNumber;  // 1 ~ 12 (EmptyPuzzle은 0)
     public int currentPositionIndex; // 1 ~ 13
@@ -9,7 +9,7 @@ public class SlidingPuzzle1Script : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        SlidingGameManager1Script.Instance.TryMovePuzzle(this);
+        SlidingGameManager1ScriptAfterDeath.Instance.TryMovePuzzle(this);
     }
 
     public void SetPosition(int index, Vector2 position)

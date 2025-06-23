@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: d84561024605e214fac6c1c87cce0a5e
+guid: 5fcb9d0fb37f10d4fb33da2a338908c4
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 4424994754247305860
-    second: thick_lock_0
+      213: 3633085410990069699
+    second: thick lock_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,13 +139,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: thick_lock_0
+      name: thick lock_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 74
-        width: 554
-        height: 438
+        y: 0
+        width: 256
+        height: 255
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 48aa0ebc84db86d30800000000000000
-      internalID: 4424994754247305860
+      spriteID: 3c797b0beef4b6230800000000000000
+      internalID: 3633085410990069699
       vertices: []
       indices: 
       edges: []
@@ -173,8 +173,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      thick_lock_0: 4424994754247305860
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

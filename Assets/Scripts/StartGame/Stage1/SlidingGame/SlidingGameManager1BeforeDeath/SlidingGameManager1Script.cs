@@ -3,9 +3,9 @@ using TMPro;
 using System.Collections.Generic;
 using System.Linq;
 
-public class SlidingGameManager1Script : MonoBehaviour
+public class SlidingGameManager1BeforeDeathScript : MonoBehaviour
 {
-    public static SlidingGameManager1Script Instance;
+    public static SlidingGameManager1BeforeDeathScript Instance;
 
     public SlidingPuzzle1Script[] puzzleScripts; // Puzzle1 ~ Puzzle12 + EmptyPuzzle
     public Vector2[] boardPositions; // 13개 좌표
@@ -35,8 +35,16 @@ public class SlidingGameManager1Script : MonoBehaviour
     void Awake()
     {
         Instance = this;
+
+        // 초기 alpha를 1로 설정 (완전 불투명)
+        SetAlpha(hairpinCanvas, 1f);
+        SetAlpha(firstLockCanvas, 1f);
+        SetAlpha(doorLockCanvas, 1f);
+        SetAlpha(secondLockCanvas, 1f);
+
         InitializeBoard();
     }
+
 
     void InitializeBoard()
     {
@@ -100,32 +108,33 @@ public class SlidingGameManager1Script : MonoBehaviour
     void CheckClearConditions()
     {
         if (!hairpinCleared && MatchCondition(new List<int> {3,5,8,9}, new List<List<int>> {
-            new() {2,3,5,6}, new() {3,4,6,7}, new() {5,6,8,9},
-            new() {6,7,9,10}, new() {8,9,11,12}, new() {9,10,12,13}
-        }))
+                new() {2,3,5,6}, new() {3,4,6,7}, new() {5,6,8,9},
+                new() {6,7,9,10}, new() {8,9,11,12}, new() {9,10,12,13}
+            }))
         {
-            SetAlpha(hairpinCanvas, 1f);
+            SetAlpha(hairpinCanvas, 0.1f);  // ← 수정
             hairpinCleared = true;
         }
 
         if (!firstLockCleared && MatchCondition(new List<int> {5,2,6,1,7,12}, new List<List<int>> {
-            new() {2,3,4,5,6,7}, new() {5,6,7,8,9,10}, new() {8,9,10,11,12,13}
-        }))
+                new() {2,3,4,5,6,7}, new() {5,6,7,8,9,10}, new() {8,9,10,11,12,13}
+            }))
         {
-            SetAlpha(firstLockCanvas, 1f);
+            SetAlpha(firstLockCanvas, 0.1f);  // ← 수정
             firstLockCleared = true;
         }
 
         if (hairpinCleared && firstLockCleared && !finalCleared &&
             MatchCondition(new List<int> {8,6,7,11,12,3,10}, new List<List<int>> {
                 new() {2,3,4,5,6,7,10}, new() {5,6,7,8,9,10,13}
-        }))
+            }))
         {
-            SetAlpha(doorLockCanvas, 1f);
-            SetAlpha(secondLockCanvas, 1f);
+            SetAlpha(doorLockCanvas, 0.1f);    // ← 수정
+            SetAlpha(secondLockCanvas, 0.1f);  // ← 수정
             finalCleared = true;
         }
     }
+
 
     bool MatchCondition(List<int> puzzleNums, List<List<int>> validPosSets)
     {
