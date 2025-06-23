@@ -22,7 +22,14 @@ MonoBehaviour:
     - Locale-ja
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0a9ebcf3aabf9b745b8b59fe9da9367b
-    m_Address: Stage2_5StroyLine_ja
+    m_Address: Stage2_5StoryLine_ja
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ja
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0c021895324a22140b2a772ee8dac5d6
+    m_Address: Stage2_6SelectBox_ja
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ja

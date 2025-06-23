@@ -173,7 +173,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      goat_jumpscare_0: -936314470437506
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
