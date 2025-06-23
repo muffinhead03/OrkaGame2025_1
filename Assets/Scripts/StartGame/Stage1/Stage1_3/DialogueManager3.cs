@@ -11,7 +11,6 @@ public class DialogueManager3 : MonoBehaviour
     public GameObject nextButton;
     private Typewriter typewriter;
 
-
     public LocalizedString[] dialogueLines;
 
     [Header("Audio")]
@@ -26,6 +25,7 @@ public class DialogueManager3 : MonoBehaviour
 
     private int dialogueIndex = 0;
     private float originalBGMVolume;
+    private bool isTyping = false;
 
     void Start()
     {
@@ -46,6 +46,14 @@ public class DialogueManager3 : MonoBehaviour
         StartCoroutine(StartDialogue());
     }
 
+    void Awake()
+    {
+        if (typewriter == null)
+        {
+            typewriter = GetComponent<Typewriter>(); // 자동 연결 시도
+        }
+    }
+
     IEnumerator StartDialogue()
     {
         if (dialogueLines.Length > 0)
@@ -61,10 +69,19 @@ public class DialogueManager3 : MonoBehaviour
         }
     }
 
-
     public void OnNextClicked()
     {
+        Debug.Log("버튼 클릭됨");  // 콘솔 확인용 로그
+
+        if (isTyping && typewriter != null)
+        {
+            Debug.Log("타이핑 중 → 스킵 시도");
+            typewriter.Skip(); // 전체 텍스트 바로 출력
+            return;
+        }
+
         nextButton.SetActive(false);
+        Debug.Log("다음 단계로 진행, dialogueIndex: " + dialogueIndex);
 
         switch (dialogueIndex)
         {
@@ -116,16 +133,9 @@ public class DialogueManager3 : MonoBehaviour
         if (glitchEffect != null)
             AudioSource.PlayClipAtPoint(glitchEffect, Camera.main.transform.position);
 
-        // 마지막 연출이라면 필요 시 씬 전환, 추가 연출 등 가능
+        // 여기에 씬 전환 등 연출 추가 가능
     }
 
-    void Awake()
-    {
-        if (typewriter == null)
-        {
-            typewriter = GetComponent<Typewriter>(); // 자동 연결 시도
-        }
-    }
     IEnumerator TypeLocalized(LocalizedString loc)
     {
         var op = loc.GetLocalizedStringAsync();
@@ -142,14 +152,15 @@ public class DialogueManager3 : MonoBehaviour
 
         if (typewriter != null)
         {
+            isTyping = true;
             yield return StartCoroutine(typewriter.Type(localizedText));
+            isTyping = false;
         }
         else
         {
             storyText.text = localizedText;
         }
     }
-
 
     IEnumerator FadeInWhiteScreen()
     {
@@ -201,3 +212,4 @@ public class DialogueManager3 : MonoBehaviour
         source.volume = targetVolume;
     }
 }
+

@@ -39,6 +39,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-ko
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 18113e555eb8bd844b75ae078f8a5191
+    m_Address: Stage2_5AboveLine_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 25fe899b7efc6994289a3eae37e1e04b
     m_Address: Stage2_2Above_ko
     m_ReadOnly: 1
@@ -87,8 +93,20 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-ko
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6379b747a5b356d45ba8e937f448a4e5
+    m_Address: Stage2_8AboveLine_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 66c28b0cc4b877644b9ad079ff52da4c
     m_Address: AboveLines_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6af2dce3bdaff474db7133cd5effa269
+    m_Address: Stage2_5StroyLine_ko
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ko
@@ -113,6 +131,18 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 789ec3a0ae89d5f40998cfaecfbd59e5
     m_Address: Stage2_2Above_Line_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8e6e4cf824e4b6148a0c36620e78caf4
+    m_Address: Stage2_6AboveLine_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 95923833a466d1c40848504bb95e53f6
+    m_Address: Stage2_6StoryLine_ko
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ko
@@ -147,8 +177,26 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-ko
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: edca00b3744ca6a459889f287ade11ce
+    m_Address: Stage2_7StoryLine_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f53612d058b263e419598d88a5bc32eb
+    m_Address: Stage2_7AboveLine_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f75a22d5fd8181f459afd3e662b45f3a
     m_Address: Stage3_2AboveLIne_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f897f12e917ea2244a08cfc8ebbab02a
+    m_Address: Stage2_8StoryLine_ko
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ko

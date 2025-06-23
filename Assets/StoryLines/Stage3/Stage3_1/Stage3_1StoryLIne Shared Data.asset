@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: Stage3_1StoryLIne Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: Stage3_1StoryLIne
+  m_TableCollectionNameGuidString: 3c17dfa0ba850134b8ef02de01be80b6
+  m_Entries:
+  - m_Id: 4117889024
+    m_Key: key3_1_1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6324092928
+    m_Key: 'key3_1_2
+
+'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8312193024
+    m_Key: key3_1_3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12774932480
+    m_Key: key3_1_4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16893739008
+    m_Key: key3_1_5
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19255132160
+    m_Key: key3_1_6
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21360672768
+    m_Key: key3_1_7
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23583653888
+    m_Key: key3_1_8
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26146373632
+    m_Key: key3_1_9
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30550392832
+    m_Key: key3_1_10
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 7366113759780143179
+  references:
+    version: 2
+    RefIds:
+    - rid: 7366113759780143179
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1750488849166
