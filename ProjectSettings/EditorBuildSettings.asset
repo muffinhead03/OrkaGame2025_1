@@ -44,8 +44,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/DuringGame/Endings/et_in_arcadua_egoAfterfirstSlidingDeath.unity
     guid: d2633fe2141c53649b0083de2b8e0459
-  - enabled: 0
-    path: Assets/Scenes/DuringGame/FirstOne/Stage1_3.unity
+  - enabled: 1
+    path: Assets/Scenes/DuringGame/FirstOne/Stage1_33.unity
     guid: 609e36db67201b24cbf5b0cc0b545aa4
   - enabled: 1
     path: Assets/Scenes/DuringGame/Second/Stage2_1.unity
@@ -71,15 +71,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/DuringGame/Second/Stage2_8.unity
     guid: c6a733a7cb0222145ab2e508fe0945d7
-  - enabled: 1
-    path: Assets/Scenes/DuringGame/Second/MiniGame_Card/CardGameFirstStage.unity
-    guid: e92f960b695308a4585f6a111bb73635
-  - enabled: 1
-    path: Assets/Scenes/DuringGame/Second/MiniGame_Card/CardgameSecondStage.unity
-    guid: a799b866362e24d40aaa96adad99b2f0
-  - enabled: 1
-    path: Assets/Scenes/DuringGame/Second/MiniGame_Card/CardGameThirdStage.unity
-    guid: f0ec29ce08857054ebb1424cf6e1d7e4
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 56caa72cd59bab146bf413f67f6d86cb, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
