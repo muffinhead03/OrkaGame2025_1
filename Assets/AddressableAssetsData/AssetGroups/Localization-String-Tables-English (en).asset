@@ -46,10 +46,11 @@ MonoBehaviour:
     - Locale-en
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 209823c7277693841a169991154c4e84
-    m_Address: Stage2_5StroyLine_en
+    m_Address: Stage2_5StoryLine_en
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-en
+    - Preload
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 30816975e13cd764fb864f5b3f1f14b7
     m_Address: Stage3_7StoryLIne_en

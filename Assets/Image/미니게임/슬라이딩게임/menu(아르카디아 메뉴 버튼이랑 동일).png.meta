@@ -175,7 +175,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      "menu(\uC544\uB974\uCE74\uB514\uC544 \uBA54\uB274 \uBC84\uD2BC\uC774\uB791 \uB3D9\uC77C)_0": 8605507865441705895
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
