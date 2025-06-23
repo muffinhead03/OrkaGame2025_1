@@ -95,6 +95,11 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8bee1ae8633849542b87c49825e04400
+    m_Address: Assets/StoryLines/Stage2/Stage2_6/Stage2_6SelectBox Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8f798805c15dd654db86196beb950527
     m_Address: Assets/StoryLines/Stage2/Stage2_1/Stage2_1 Shared Data.asset
     m_ReadOnly: 1

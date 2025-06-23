@@ -202,6 +202,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-en
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e4e128e6f1f343c43a7bf9a88efc9ca1
+    m_Address: Stage2_6SelectBox_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e8063581ded99734198ab03e564d4f58
     m_Address: Stage2_2_en
     m_ReadOnly: 1

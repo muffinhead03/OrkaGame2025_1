@@ -173,7 +173,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      warm_overlay_0: 1056998742740353341
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
