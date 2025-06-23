@@ -27,7 +27,7 @@ public class DialogueManager2_4 : MonoBehaviour
         "Key2_4_6", "Key2_4_7", "Key2_4_8", "Key2_4_9", "Key2_4_10", "Key2_4_11"
     };
 
-    // Cat ´ë»ç ÀÎµ¦½º
+    // Cat ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½
     private int[] catIndexes = { 0, 3, 7, 9 };
 
     private void Start()
@@ -41,7 +41,7 @@ public class DialogueManager2_4 : MonoBehaviour
     {
         if (i >= storyKeys.Length)
         {
-            SceneManager.LoadScene("Card Game First Stage");
+            SceneManager.LoadScene("CardGameFirstStage");
             return;
         }
 

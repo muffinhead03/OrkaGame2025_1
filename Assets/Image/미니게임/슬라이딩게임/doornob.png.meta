@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: c950710bc14a0c84d800a8dc94986eee
+guid: f939606da8488864a836a3d45cbe89f4
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8168050044796514622
-    second: "\uC5D0\uCF541_0"
+      213: 6201657545072068379
+    second: doornob_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,13 +139,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "\uC5D0\uCF541_0"
+      name: doornob_0
       rect:
         serializedVersion: 2
-        x: 4
+        x: 0
         y: 0
-        width: 270
-        height: 467
+        width: 255
+        height: 255
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2ce4a4ca2c145ae80800000000000000
-      internalID: -8168050044796514622
+      spriteID: b1744a0fda6b01650800000000000000
+      internalID: 6201657545072068379
       vertices: []
       indices: 
       edges: []
@@ -173,8 +173,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      "\uC5D0\uCF541_0": -8168050044796514622
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
