@@ -57,6 +57,13 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-kk-KZ
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1abb4beac99a8e6479046f0a434a9b61
+    m_Address: Stage1_3AboveLine_kk-KZ
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-kk-KZ
+    - Preload
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1d401867698ecb4469264c0fee50547a
     m_Address: Stage3_2AboveLIne_kk-KZ
     m_ReadOnly: 1
@@ -124,12 +131,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-kk-KZ
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 7b4291632dceff74883265519174d8dc
-    m_Address: Stage1_3_kk-KZ
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale-kk-KZ
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8890db83aff347c43bcd0c0087009fde
     m_Address: Stage3_5AboveLine_kk-KZ
     m_ReadOnly: 1
@@ -147,6 +148,13 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-kk-KZ
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 99d59d6a0266cd6408b3d1421dfe40e2
+    m_Address: Stage1_3StoryLine_kk-KZ
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-kk-KZ
+    - Preload
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a3628a3e60d18d540a978552efe8bf48
     m_Address: Stage3_7StoryLIne_kk-KZ

@@ -13,11 +13,7 @@ MonoBehaviour:
   m_Name: Localization-Assets-Shared
   m_EditorClassIdentifier: 
   m_GroupName: Localization-Assets-Shared
-<<<<<<< HEAD
   m_GUID: 46d58b79e598484499bc22790b95c459
-=======
-  m_GUID: af6a97f272cf03e4fb077b50783a4ab6
->>>>>>> 42343148bf830fc0022da4b47b956c6c32189ad8
   m_SerializeEntries:
   - m_GUID: 09325dffdb69069469812663e14a52e1
     m_Address: Assets/StoryLines/Stage2/Stage2_8/Stage2_8StoryLine Shared Data.asset
@@ -25,14 +21,19 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   - m_GUID: 19bd0f00f9a27d845aca7ef6fa7ac1cc
     m_Address: Assets/StoryLines/Stage1/Stage1_3/Stage1_3 Shared Data.asset
+=======
+  - m_GUID: 25702c76b76a5384d8cb1cfa5d7729d9
+    m_Address: Assets/StoryLines/Stage2/Stage2_3/Stage2_3 Shared Data.asset
+>>>>>>> 0ef5a7e (작업 내용 저장)
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 25702c76b76a5384d8cb1cfa5d7729d9
-    m_Address: Assets/StoryLines/Stage2/Stage2_3/Stage2_3 Shared Data.asset
+  - m_GUID: 2a1561f8aa898d94389b7621ae23d05b
+    m_Address: Assets/StoryLines/Stage1/Stage1_3/Stage1_3StoryLIne Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -97,6 +98,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 78e80a197b648b24281442b2c58fc5aa
     m_Address: Assets/StoryLines/Stage2/Stage2_8/Stage2_8AboveLine Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7941f3239ac192941b873788f2e2f0ee
+    m_Address: Assets/StoryLines/Stage1/Stage1_3/Stage1_3AboveLine Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
