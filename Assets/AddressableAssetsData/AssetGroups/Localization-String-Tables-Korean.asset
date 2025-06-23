@@ -13,8 +13,14 @@ MonoBehaviour:
   m_Name: Localization-String-Tables-Korean
   m_EditorClassIdentifier: 
   m_GroupName: Localization-String-Tables-Korean
-  m_GUID: 6e78e09890df1f14293bdec514a40dc6
-  m_SerializeEntries: []
+  m_GUID: 74345611a96656d4591e797f3bde1081
+  m_SerializeEntries:
+  - m_GUID: 9c52e7c852a12dc43ada787862534bac
+    m_Address: Stage2_6SelectBox_ko
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ko
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: b84d744906957f64496c497811fdfe1e, type: 2}
   m_SchemaSet:
