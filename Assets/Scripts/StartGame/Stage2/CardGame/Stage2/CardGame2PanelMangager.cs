@@ -3,16 +3,16 @@ using UnityEngine;
 public class CardGame2PanelManager : MonoBehaviour
 {
     private RectTransform slotTransform;
-    private CardGame2Manager currentCard;
+    private CardGame2Card currentCard;
 
     private void Awake()
     {
         slotTransform = GetComponent<RectTransform>();
     }
 
-    public bool TryPlaceCard(CardGame2Manager card)
+    public bool TryPlaceCard(CardGame2Card card)
     {
-        if (currentCard == null || currentCard == card) // 같은 카드면 재배치 허용
+        if (currentCard == null || currentCard == card)
         {
             PlaceCard(card);
             return true;
@@ -21,7 +21,7 @@ public class CardGame2PanelManager : MonoBehaviour
         return false;
     }
 
-    private void PlaceCard(CardGame2Manager card)
+    private void PlaceCard(CardGame2Card card)
     {
         RectTransform cardRect = card.GetComponent<RectTransform>();
         cardRect.SetParent(transform);
@@ -29,11 +29,11 @@ public class CardGame2PanelManager : MonoBehaviour
 
         if (currentCard != null && currentCard != card)
         {
-            currentCard.DetachFromSlot(); // 기존 카드가 있으면 분리
+            currentCard.DetachFromSlot();
         }
 
         currentCard = card;
-        card.SetCurrentSlot(this); // 카드에게 슬롯 전달
+        card.SetCurrentSlot(this);
     }
 
     public void RemoveCard()
@@ -41,7 +41,7 @@ public class CardGame2PanelManager : MonoBehaviour
         currentCard = null;
     }
 
-    public CardGame2Manager GetCurrentCard()
+    public CardGame2Card GetCurrentCard()
     {
         return currentCard;
     }
