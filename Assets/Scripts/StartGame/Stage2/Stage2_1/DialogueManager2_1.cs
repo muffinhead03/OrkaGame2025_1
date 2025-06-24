@@ -7,97 +7,81 @@ using System.Collections;
 
 public class DialogueManager2_1 : MonoBehaviour
 {
-    [Header("Components")]
-    public LocalizeStringEvent localizedStringEvent;
-    public Typewriter typeWriter;
-    public TMP_Text targetText;
+    [Header("UI Components")]
+    public LocalizeStringEvent aboveLineStringEvent;
+    public LocalizeStringEvent storyLineStringEvent;
+    public TMP_Text aboveLineText;
+    public TMP_Text storyLineText;
     public Button nextButton;
 
-    [Header("Sound Effects")]
-    public AudioSource birdAudio;
-    public AudioSource waterAudio;
-    public AudioSource grassAudio;
+    [Header("Character Image")]
+    public GameObject ecoImage;
 
-    private bool isTyping = false;
     private int index = 0;
-    private string tableName = "Stage2_1";
+    private string storyTableName = "Stage2_1";
+    private string aboveTableName = "Stage2_1AboveLine";
 
-    private string[] keySuffixes = {
-        "key2_1_1", "key2_1_2", "key2_1_3", "key2_1_4",
-        "key2_1_5", "key2_1_6", "key2_1_7", "key2_1_8", "key2_1_9"
+    private string[] storyKeys = {
+        "key2_1_1", "key2_1_2", "key2_1_3", "key2_1_4", "key2_1_5",
+        "key2_1_6", "key2_1_7", "key2_1_8", "key2_1_9"
     };
 
     private void Start()
     {
         nextButton.gameObject.SetActive(false);
         nextButton.onClick.AddListener(NextDialogue);
-        
-        
-        localizedStringEvent.OnUpdateString.RemoveAllListeners();
-        localizedStringEvent.OnUpdateString.AddListener(OnLocalizedStringReady);
-        StartCoroutine(HandleDialogue(index));
-    }
-
-    private IEnumerator HandleDialogue(int i)
-    {
-        nextButton.gameObject.SetActive(false);
-        targetText.text = "";
-
-        if (i >= keySuffixes.Length)
-        {
-            SceneManager.LoadScene("Stage2_2");
-            yield break;
-        }
-
-        // 특별한 사운드 시퀀스 처리
-        if (i == 0)
-        {
-            if (birdAudio) birdAudio.Play();
-            yield return new WaitForSeconds(0.5f);
-            if (waterAudio) waterAudio.Play();
-            yield return new WaitForSeconds(0.5f);
-        }
-        else if (i == 3) // 4번째 대사(key2_1_4) 전에 풀숲 소리
-        {
-            if (grassAudio) grassAudio.Play();
-            yield return new WaitForSeconds(0.5f);
-        }
-
-        ShowDialogue(i);
+        ShowDialogue(index);
     }
 
     private void ShowDialogue(int i)
     {
-        string key = keySuffixes[i];
-        Debug.Log($"[SetReference] Trying to use key: {key}"); // 추가
-        localizedStringEvent.StringReference.SetReference(tableName, key);
-        localizedStringEvent.RefreshString();
+        if (i >= storyKeys.Length)
+        {
+            SceneManager.LoadScene("Stage2_2");
+            return;
+        }
+
+        nextButton.gameObject.SetActive(false);
+
+        // 항상 ecoImage만 표시
+        ecoImage.SetActive(true);
+
+        // 위 대사 설정 (즉시)
+        aboveLineStringEvent.StringReference.SetReference(aboveTableName, "key1");
+        aboveLineStringEvent.OnUpdateString.RemoveAllListeners();
+        aboveLineStringEvent.OnUpdateString.AddListener(text => aboveLineText.text = text);
+        aboveLineStringEvent.RefreshString();
+
+        // 스토리 대사 설정 (타이핑)
+        storyLineStringEvent.StringReference.SetReference(storyTableName, storyKeys[i]);
+        storyLineStringEvent.OnUpdateString.RemoveAllListeners();
+        storyLineStringEvent.OnUpdateString.AddListener(OnStoryLineReady);
+        storyLineStringEvent.RefreshString();
     }
 
-
-
-    private void OnLocalizedStringReady(string localizedText)
+    private void OnStoryLineReady(string localizedText)
     {
-        if (isTyping) return; // 중복 방지
-        Debug.Log("[Localized] " + localizedText);
-        StartCoroutine(StartTypingCoroutine(localizedText));
+        StopAllCoroutines();
+        StartCoroutine(TypeText(localizedText));
     }
 
-
-
-    private IEnumerator StartTypingCoroutine(string fullText)
+    private IEnumerator TypeText(string fullText)
     {
-        isTyping = true;
-        yield return StartCoroutine(typeWriter.Type(fullText));
+        storyLineText.text = "";
+        foreach (char c in fullText)
+        {
+            storyLineText.text += c;
+            yield return new WaitForSeconds(0.03f);
+        }
+
         yield return new WaitForSeconds(0.5f);
         nextButton.gameObject.SetActive(true);
-        isTyping = false;
     }
 
-    private void NextDialogue()
+    public void NextDialogue()
     {
         index++;
-        StartCoroutine(HandleDialogue(index));
+        ShowDialogue(index);
     }
-
 }
+

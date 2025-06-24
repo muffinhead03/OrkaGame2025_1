@@ -177,10 +177,12 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 
+  m_text: 'Eco
+
+'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8c5483a5bf63b9a4596a79561be26660, type: 2}
-  m_sharedMaterial: {fileID: -7848638416910276446, guid: 8c5483a5bf63b9a4596a79561be26660, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: a426dd84f86b8f24b8422ced8f0bf81c, type: 2}
+  m_sharedMaterial: {fileID: -7868457451862123687, guid: a426dd84f86b8f24b8422ced8f0bf81c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -270,9 +272,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_StringReference:
     m_TableReference:
-      m_TableCollectionName: GUID:d1dbfbe9c1d38aa4b9c24fc9f7a40a6f
+      m_TableCollectionName: GUID:387d7c0130077304aa3c59f55ad273d5
     m_TableEntryReference:
-      m_KeyId: 7821459456
+      m_KeyId: 0
       m_Key: 
     m_FallbackState: 0
     m_WaitForCompletion: 0
@@ -566,7 +568,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 
+  m_text: next
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a426dd84f86b8f24b8422ced8f0bf81c, type: 2}
   m_sharedMaterial: {fileID: -7868457451862123687, guid: a426dd84f86b8f24b8422ced8f0bf81c, type: 2}
@@ -593,8 +595,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 48
-  m_fontSizeBase: 48
+  m_fontSize: 36
+  m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -714,13 +716,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bca523611a7dd0940beeefd94987272f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  localizedStringEvent: {fileID: 831172428}
-  typeWriter: {fileID: 985193071}
-  targetText: {fileID: 831172426}
+  aboveLineStringEvent: {fileID: 970949}
+  storyLineStringEvent: {fileID: 831172428}
+  aboveLineText: {fileID: 970947}
+  storyLineText: {fileID: 831172426}
   nextButton: {fileID: 301458503}
-  birdAudio: {fileID: 1819542750557900032, guid: 333aa471cbbbbfd4f8a131b1f34b053f, type: 3}
-  waterAudio: {fileID: 8846218305708179878, guid: 7f3a71c98cef90d45940c9d99dc61285, type: 3}
-  grassAudio: {fileID: 8846218305708179878, guid: 10ad8f877e0d91c4b9dda86299874bb1, type: 3}
+  ecoImage: {fileID: 1459875246}
 --- !u!4 &923661842
 Transform:
   m_ObjectHideFlags: 0
