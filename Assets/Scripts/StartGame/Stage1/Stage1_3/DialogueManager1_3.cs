@@ -20,7 +20,7 @@ public class DialogueManager1_3 : MonoBehaviour
     public AudioSource fluteAudioSource;
 
     [Header("Fade")]
-    public FadeController fadeController;  // Animator ¥ÎΩ≈ FadeController ªÁøÎ
+    public CanvasGroup blackFadeImage; // ‚úÖ Í≤ÄÏùÄ Î∞∞Í≤Ω Ìå®ÎÑê (CanvasGroup ÌïÑÏöî)
 
     private string storyTableName = "Stage1_3StoryLine";
     private string aboveTableName = "Stage1_3AboveLine";
@@ -32,11 +32,16 @@ public class DialogueManager1_3 : MonoBehaviour
         nextButton.gameObject.SetActive(false);
         nextButton.onClick.AddListener(OnNextClicked);
 
-        // Ω√¿€ Ω√ BGM ¿Áª˝
         if (bgmAudioSource != null && !bgmAudioSource.isPlaying)
             bgmAudioSource.Play();
 
-        // √ ±‚ ¥ÎªÁ √‚∑¬
+        if (blackFadeImage != null)
+        {
+            blackFadeImage.alpha = 0f;
+            blackFadeImage.blocksRaycasts = false;
+            blackFadeImage.interactable = false;
+        }
+
         aboveLineStringEvent.StringReference.SetReference(aboveTableName, "key1");
         storyLineStringEvent.StringReference.SetReference(storyTableName, "key1_3_1");
 
@@ -106,12 +111,31 @@ public class DialogueManager1_3 : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
 
+        yield return StartCoroutine(FadeOut());
+
         if (fluteAudioSource != null)
             fluteAudioSource.Play();
 
-        // ∆‰¿ÃµÂæ∆øÙ Ω√¿€ »ƒ ¿⁄µø æ¿ ¿Ãµø
-        if (fadeController != null)
-            fadeController.StartFadeOut("Stage2_1");
+        yield return new WaitForSeconds(0.5f);
+
+        SceneManager.LoadScene("Stage2_1");
+    }
+
+    private IEnumerator FadeOut()
+    {
+        float duration = 0.5f;
+        float time = 0f;
+
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            if (blackFadeImage != null)
+                blackFadeImage.alpha = Mathf.Lerp(0f, 1f, time / duration);
+
+            yield return null;
+        }
+
+        if (blackFadeImage != null)
+            blackFadeImage.alpha = 1f;
     }
 }
-

@@ -1,8 +1,7 @@
 using UnityEngine;
 using UnityEngine.Localization.Components;
-using UnityEngine.Localization;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 
@@ -17,78 +16,88 @@ public class DialogueManager2_1 : MonoBehaviour
     [Header("Sound Effects")]
     public AudioSource birdAudio;
     public AudioSource waterAudio;
-    public AudioSource grassAudio; // 추가됨
+    public AudioSource grassAudio;
 
+    private bool isTyping = false;
     private int index = 0;
     private string tableName = "Stage2_1";
+
     private string[] keySuffixes = {
-        "key2_1_1",
-        "key2_1_2",
-        "key2_1_3",
-        "key2_1_4",
-        "key2_1_5",
-        "key2_1_6",
-        "key2_1_7",
-        "key2_1_8",
-        "key2_1_9"
+        "key2_1_1", "key2_1_2", "key2_1_3", "key2_1_4",
+        "key2_1_5", "key2_1_6", "key2_1_7", "key2_1_8", "key2_1_9"
     };
 
     private void Start()
     {
-        nextButton.interactable = false;
+        nextButton.gameObject.SetActive(false);
         nextButton.onClick.AddListener(NextDialogue);
-        StartCoroutine(PlayIntroSequence());
+        
+        
+        localizedStringEvent.OnUpdateString.RemoveAllListeners();
+        localizedStringEvent.OnUpdateString.AddListener(OnLocalizedStringReady);
+        StartCoroutine(HandleDialogue(index));
     }
 
-    private IEnumerator PlayIntroSequence()
+    private IEnumerator HandleDialogue(int i)
     {
-        if (birdAudio) birdAudio.Play();
-        yield return new WaitForSeconds(0.5f);
+        nextButton.gameObject.SetActive(false);
+        targetText.text = "";
 
-        if (waterAudio) waterAudio.Play();
-        yield return new WaitForSeconds(0.5f);
+        if (i >= keySuffixes.Length)
+        {
+            SceneManager.LoadScene("Stage2_2");
+            yield break;
+        }
 
-        ShowDialogue(index);
+        // 특별한 사운드 시퀀스 처리
+        if (i == 0)
+        {
+            if (birdAudio) birdAudio.Play();
+            yield return new WaitForSeconds(0.5f);
+            if (waterAudio) waterAudio.Play();
+            yield return new WaitForSeconds(0.5f);
+        }
+        else if (i == 3) // 4번째 대사(key2_1_4) 전에 풀숲 소리
+        {
+            if (grassAudio) grassAudio.Play();
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        ShowDialogue(i);
     }
 
     private void ShowDialogue(int i)
     {
-        if (i >= keySuffixes.Length)
-        {
-            SceneManager.LoadScene("Stage2_1");
-            return;
-        }
-
-        nextButton.interactable = false;
-
         string key = keySuffixes[i];
+        Debug.Log($"[SetReference] Trying to use key: {key}"); // 추가
         localizedStringEvent.StringReference.SetReference(tableName, key);
-        localizedStringEvent.OnUpdateString.RemoveAllListeners();
-        localizedStringEvent.OnUpdateString.AddListener(OnLocalizedStringReady);
-        localizedStringEvent.RefreshString(); // 강제로 갱신
+        localizedStringEvent.RefreshString();
     }
+
+
 
     private void OnLocalizedStringReady(string localizedText)
     {
+        if (isTyping) return; // 중복 방지
+        Debug.Log("[Localized] " + localizedText);
         StartCoroutine(StartTypingCoroutine(localizedText));
     }
 
+
+
     private IEnumerator StartTypingCoroutine(string fullText)
     {
+        isTyping = true;
         yield return StartCoroutine(typeWriter.Type(fullText));
-
-        //Key2_1_4 끝나면 풀숲소리 재생
-        if (index == 3 && grassAudio)
-        {
-            grassAudio.Play();
-        }
-
-        nextButton.interactable = true;
+        yield return new WaitForSeconds(0.5f);
+        nextButton.gameObject.SetActive(true);
+        isTyping = false;
     }
 
     private void NextDialogue()
     {
         index++;
-        ShowDialogue(index);
+        StartCoroutine(HandleDialogue(index));
     }
+
 }

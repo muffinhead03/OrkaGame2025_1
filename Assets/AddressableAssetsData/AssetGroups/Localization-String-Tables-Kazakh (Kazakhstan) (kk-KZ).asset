@@ -216,12 +216,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-kk-KZ
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: f7fb0ce6b54eb13409cc77c3aaef9c19
-    m_Address: Stage2_6SelectBox_kk-KZ
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale-kk-KZ
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: fa952b5f76e013e4aade02b4a261b750
     m_Address: Stage2_8AboveLine_kk-KZ
     m_ReadOnly: 1

@@ -30,7 +30,7 @@ public class Typewriter : MonoBehaviour
         typingCoroutine = null;
     }
 
-    // ¹öÆ° ´©¸£¸é Áï½Ã ÀüÃ¼ ÅØ½ºÆ® Ãâ·Â
+    // ï¿½ï¿½Æ° ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½Ø½ï¿½Æ® ï¿½ï¿½ï¿½
     public void Skip()
     {
         if (typingCoroutine != null)
@@ -40,4 +40,6 @@ public class Typewriter : MonoBehaviour
             targetText.text = fullText;
         }
     }
+    
+    
 }

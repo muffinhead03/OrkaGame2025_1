@@ -23,7 +23,7 @@ public class DialogueManager : MonoBehaviour
 
     
     [Header("Dialogue")]
-    public LocalizedString[] dialogueLines;
+    public LocalizedString[] dialogueLines = new LocalizedString[4];
     public Typewriter typewriter;
 
     private int dialogueIndex = 0;
@@ -47,6 +47,14 @@ public class DialogueManager : MonoBehaviour
 
         StartCoroutine(StartupSequence());
     }
+    
+    void Awake()
+    {
+        dialogueLines[0] = new LocalizedString { TableReference = "Stage1_1", TableEntryReference = "1" };
+        dialogueLines[1] = new LocalizedString { TableReference = "Stage1_1", TableEntryReference = "2" };
+        dialogueLines[2] = new LocalizedString { TableReference = "Stage1_1", TableEntryReference = "3" };
+        dialogueLines[3] = new LocalizedString { TableReference = "Stage1_1", TableEntryReference = "4" };
+    }
 
     void SetBlackScreenFullyOpaque()
     {
@@ -69,21 +77,25 @@ public class DialogueManager : MonoBehaviour
         if (dialogueIndex == 0)
         {
             Debug.Log("➡ Step1 진입");
+            LogLocalizedStrings();
             StartCoroutine(HandleAfterStep1());
         }
         else if (dialogueIndex == 1)
         {
             Debug.Log("➡ Step2 진입");
+            LogLocalizedStrings();
             StartCoroutine(HandleAfterStep2());
         }
         else if (dialogueIndex == 2)
         {
             Debug.Log("➡ Step3 진입");
+            LogLocalizedStrings();
             StartCoroutine(HandleAfterStep3());
         }
         else if (dialogueIndex == 3)
         {
             Debug.Log("➡ Step4 진입: 마지막 처리");
+            LogLocalizedStrings();
             StartCoroutine(HandleFinalStep());
         }
 
@@ -193,5 +205,18 @@ public class DialogueManager : MonoBehaviour
 
 
     }
+    
+    void LogLocalizedStrings()
+    {
+        foreach (var line in dialogueLines)
+        {
+            var op = line.GetLocalizedStringAsync();
+            op.Completed += handle =>
+            {
+                Debug.Log($"🔤 Key: {line.TableEntryReference}, Text: {handle.Result}");
+            };
+        }
+    }
+
 
 }

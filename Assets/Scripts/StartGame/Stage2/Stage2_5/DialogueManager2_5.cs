@@ -37,13 +37,9 @@ public class DialogueManager2_5 : MonoBehaviour
     void ShowDialogue(int i)
     {
         if (i >= storyKeys.Length)
-        {
-            SceneManager.LoadScene("Stage2_6");
-            return;
-        }
+            return; // ë” ì´ìƒ ëŒ€ì‚¬ê°€ ì—†ìœ¼ë©´ ì•„ë¬´ ê²ƒë„ ì•ˆ í•¨
 
-        // È­ÀÚ ÁöÁ¤
-        bool isEco = (i == 0 || i == 1 || i == 4); // 0,1,4¹ø ´ë»ç´Â Eco
+        bool isEco = (i == 0 || i == 1 || i == 4);
         string aboveKey = isEco ? "key1" : "key2";
 
         AboveLine.StringReference.SetReference("Stage2_5AboveLine", aboveKey);
@@ -64,6 +60,7 @@ public class DialogueManager2_5 : MonoBehaviour
         Button.gameObject.SetActive(false);
     }
 
+
     void OnStoryReady(string text)
     {
         StopAllCoroutines();
@@ -79,7 +76,7 @@ public class DialogueManager2_5 : MonoBehaviour
             yield return new WaitForSeconds(0.03f);
         }
 
-        if (index == 0) // key2_5_1 ÀÌÈÄ
+        if (index == 0) // key2_5_1 ï¿½ï¿½ï¿½ï¿½
         {
             yield return new WaitForSeconds(1f);
             YellingSound.Play();
@@ -98,6 +95,15 @@ public class DialogueManager2_5 : MonoBehaviour
     void OnClickNext()
     {
         index++;
-        ShowDialogue(index);
+
+        if (index >= storyKeys.Length)
+        {
+            SceneManager.LoadScene("CardgameSecondStage"); // ì›í•˜ëŠ” ì”¬ìœ¼ë¡œ ì „í™˜
+        }
+        else
+        {
+            ShowDialogue(index);
+        }
     }
+
 }
