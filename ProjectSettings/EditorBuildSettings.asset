@@ -33,7 +33,7 @@ EditorBuildSettings:
     path: Assets/Scenes/DuringGame/FirstOne/MinGame_Sliding/SlidingPuzzle.unity
     guid: 6dca8178a79e8fd4c986c75534e87037
   - enabled: 1
-    path: Assets/Scenes/DuringGame/FirstOne/Stage1_1.unity
+    path: Assets/Scenes/DuringGame/FirstOne/Stage1_1/Stage1_1_Practice.unity
     guid: 4cfb287b1547d844785a9e043e381bb0
   - enabled: 1
     path: Assets/Scenes/DuringGame/FirstOne/MinGame_Sliding/SlidingPuzzleIfDead.unity
@@ -86,6 +86,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/DuringGame/Second/MiniGame_Card/CardGameThirdStage.unity
     guid: f0ec29ce08857054ebb1424cf6e1d7e4
+  - enabled: 1
+    path: Assets/Scenes/DuringGame/FirstOne/Stage1_1/Stage1_1_Korean.unity
+    guid: 452c9941fcd3e394bae4172616856f9b
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 56caa72cd59bab146bf413f67f6d86cb, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}

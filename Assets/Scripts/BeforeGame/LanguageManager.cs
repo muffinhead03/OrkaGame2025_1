@@ -1,37 +1,50 @@
 using UnityEngine;
-using UnityEngine.Localization;
-using UnityEngine.Localization.Settings;
-using System.Collections;
+using System;
 
-public class LanguageManager : MonoBehaviour
+public static class LanguageManager
 {
-    public static string[] SupportedLanguages = { "en", "ja", "kk-KZ", "ko" };
+    private static string currentLanguage;
 
-    public static void SetLanguage(string localeCode)
+    // ✅ 언어 변경 이벤트
+    public static event Action<string> OnLanguageChanged;
+
+    public static void Initialize()
     {
-        Locale locale = LocalizationSettings.AvailableLocales.GetLocale(localeCode);
-        if (locale != null)
+        if (string.IsNullOrEmpty(currentLanguage))
         {
-            LocalizationSettings.SelectedLocale = locale;
-            PlayerPrefs.SetString("language", localeCode);
-            PlayerPrefs.Save();
-        }
-        else
-        {
-            Debug.LogWarning($"Locale '{localeCode}' not found.");
+            switch (Application.systemLanguage)
+            {
+                case SystemLanguage.Korean:
+                    currentLanguage = "korean";
+                    break;
+                case SystemLanguage.Japanese:
+                    currentLanguage = "japanese";
+                    break;
+                case SystemLanguage.Chinese:
+                case SystemLanguage.ChineseSimplified:
+                case SystemLanguage.ChineseTraditional:
+                    currentLanguage = "chinese";
+                    break;
+                default:
+                    currentLanguage = "english";
+                    break;
+            }
         }
     }
 
-    public static IEnumerator ApplySavedLanguage()
+    public static void SetLanguage(string lang)
     {
-        yield return LocalizationSettings.InitializationOperation;
+        lang = lang.Trim().ToLower();
 
-        string savedCode = PlayerPrefs.GetString("language", "en"); // 기본 영어
-        Locale locale = LocalizationSettings.AvailableLocales.GetLocale(savedCode);
-
-        if (locale != null)
+        if (currentLanguage != lang)
         {
-            LocalizationSettings.SelectedLocale = locale;
+            currentLanguage = lang;
+            OnLanguageChanged?.Invoke(currentLanguage); // ✅ 변경 통보
         }
+    }
+
+    public static string GetLanguage()
+    {
+        return currentLanguage;
     }
 }
