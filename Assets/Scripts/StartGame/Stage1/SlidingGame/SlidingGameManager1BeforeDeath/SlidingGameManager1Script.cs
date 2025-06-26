@@ -17,7 +17,7 @@ public class SlidingGameManager1BeforeDeathScript : MonoBehaviour
 
     public TextMeshProUGUI timerText;
 
-    private float timer = 60f; // ⏱ 타이머를 60초로 변경
+    private float timer = 10f; // ⏱ 타이머를 60초로 변경
 
     private Dictionary<int, int> puzzlePositionMap = new(); // puzzleNum -> positionIndex
     private Dictionary<int, SlidingPuzzle1Script> positionToPuzzle = new(); // positionIndex -> Script
@@ -97,7 +97,9 @@ public class SlidingGameManager1BeforeDeathScript : MonoBehaviour
 
         if (timer <= 0)
         {
-            UnityEngine.SceneManagement.SceneManager.LoadScene("Et in Arcadia ego_SlidingGameFirst");
+
+                UnityEngine.SceneManagement.SceneManager.LoadScene("Stage2_3");
+            
         }
     }
 

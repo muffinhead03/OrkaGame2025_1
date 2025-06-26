@@ -14,17 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_GroupName: Default Local Group
   m_GUID: b86f6a4566d524a428888d943276de28
-  m_SerializeEntries:
-  - m_GUID: 8f798805c15dd654db86196beb950527
-    m_Address: Assets/StoryLines/Stage2/Stage2_1/Stage2_1 Shared Data.asset
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d1dbfbe9c1d38aa4b9c24fc9f7a40a6f
-    m_Address: Assets/Scripts/StartGame/Stage2/Stage2_2/Stage2_2Above Shared Data.asset
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
+  m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: b84d744906957f64496c497811fdfe1e, type: 2}
   m_SchemaSet:

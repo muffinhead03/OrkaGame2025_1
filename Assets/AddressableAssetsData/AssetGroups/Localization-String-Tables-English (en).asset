@@ -221,8 +221,20 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-en
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e4e128e6f1f343c43a7bf9a88efc9ca1
+    m_Address: Stage2_6SelectBox_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f296f0ffb44ae5e43a98edc31f585823
     m_Address: Stage2_2Above_Line_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fc575fbc2d021e94997fe019bbac75f2
+    m_Address: Stage1_3StoryLine_en
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-en
