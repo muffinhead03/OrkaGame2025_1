@@ -1,26 +1,27 @@
+// SlidingGameManager1BeforeDeathScript.cs
 using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public class SlidingGameManager1BeforeDeathScript : MonoBehaviour
 {
     public static SlidingGameManager1BeforeDeathScript Instance;
 
-    public SlidingPuzzle1Script[] puzzleScripts; // Puzzle1 ~ Puzzle12 + EmptyPuzzle
-    public Vector2[] boardPositions; // 13개 좌표
+    public SlidingPuzzle1Script[] puzzleScripts;
+    public Vector2[] boardPositions;
 
     public GameObject hairpin, firstLock, doorLock, secondLock;
     public CanvasGroup hairpinCanvas, firstLockCanvas, doorLockCanvas, secondLockCanvas;
-
-    public CanvasGroup goatCanvas; // 염소 이미지에 붙은 CanvasGroup
-
+    public CanvasGroup goatCanvas;
     public TextMeshProUGUI timerText;
 
-    private float timer = 10f; // ⏱ 타이머를 60초로 변경
+    private float timer = 10f;
+    private bool isPaused = false;
 
-    private Dictionary<int, int> puzzlePositionMap = new(); // puzzleNum -> positionIndex
-    private Dictionary<int, SlidingPuzzle1Script> positionToPuzzle = new(); // positionIndex -> Script
+    private Dictionary<int, int> puzzlePositionMap = new();
+    private Dictionary<int, SlidingPuzzle1Script> positionToPuzzle = new();
 
     private bool hairpinCleared = false, firstLockCleared = false, finalCleared = false;
 
@@ -36,7 +37,6 @@ public class SlidingGameManager1BeforeDeathScript : MonoBehaviour
     {
         Instance = this;
 
-        // 초기 alpha를 1로 설정 (완전 불투명)
         SetAlpha(hairpinCanvas, 1f);
         SetAlpha(firstLockCanvas, 1f);
         SetAlpha(doorLockCanvas, 1f);
@@ -59,6 +59,8 @@ public class SlidingGameManager1BeforeDeathScript : MonoBehaviour
 
     public void TryMovePuzzle(SlidingPuzzle1Script clicked)
     {
+        if (isPaused) return;
+
         int emptyPos = puzzlePositionMap[0];
         int clickedPos = clicked.currentPositionIndex;
 
@@ -75,51 +77,54 @@ public class SlidingGameManager1BeforeDeathScript : MonoBehaviour
             positionToPuzzle[emptyPos] = clicked;
             positionToPuzzle[clickedPos] = empty;
 
-            Debug.Log($"{clicked.puzzleNumber}번 타일이 {clickedPos}번 좌표에 있다가 {emptyPos}번 좌표로 이동 가능합니다.");
             CheckClearConditions();
-        }
-        else
-        {
-            Debug.Log($"{clicked.puzzleNumber}번 타일이 {clickedPos}번 좌표에 이동 불가합니다.");
         }
     }
 
     void Update()
     {
-        if (finalCleared) return;
+        Debug.Log($"🔁 Update 실행 중 | isPaused: {isPaused} | timer: {timer:F2}");
+
+        if (isPaused || finalCleared)
+        {
+            Debug.Log("⏸ Update 멈춤: 일시정지 또는 완료됨");
+            return;
+        }
 
         timer -= Time.deltaTime;
         int min = Mathf.FloorToInt(timer / 60);
         int sec = Mathf.FloorToInt(timer % 60);
         timerText.text = $"{min:00}:{sec:00}";
 
-        UpdateGoatAlpha(); // 🐐 염소 투명도 조절
+        UpdateGoatAlpha();
 
-        if (timer <= 0)
+        if (timer <= 0f)
         {
-
-                UnityEngine.SceneManagement.SceneManager.LoadScene("Stage2_3");
-            
+            bool allCleared = hairpinCleared && firstLockCleared && finalCleared;
+            Debug.Log($"⏱ 타이머 종료 → 씬 이동: {(allCleared ? "Stage1_3" : "et_in_arcadua_egoAfterfirstSlidingDeath")}");
+            SceneManager.LoadScene(allCleared ? "Stage1_3" : "et_in_arcadua_egoAfterfirstSlidingDeath");
         }
     }
 
     void CheckClearConditions()
     {
         if (!hairpinCleared && MatchCondition(new List<int> { 3, 5, 8, 9 }, new List<List<int>> {
-                new() {2,3,5,6}, new() {3,4,6,7}, new() {5,6,8,9},
-                new() {6,7,9,10}, new() {8,9,11,12}, new() {9,10,12,13}
-            }))
+            new() {2,3,5,6}, new() {3,4,6,7}, new() {5,6,8,9},
+            new() {6,7,9,10}, new() {8,9,11,12}, new() {9,10,12,13}
+        }))
         {
             SetAlpha(hairpinCanvas, 0.1f);
             hairpinCleared = true;
+            Debug.Log("🔓 hairpin 클리어됨");
         }
 
         if (!firstLockCleared && MatchCondition(new List<int> { 5, 2, 6, 1, 7, 12 }, new List<List<int>> {
-                new() {2,3,4,5,6,7}, new() {5,6,7,8,9,10}, new() {8,9,10,11,12,13}
-            }))
+            new() {2,3,4,5,6,7}, new() {5,6,7,8,9,10}, new() {8,9,10,11,12,13}
+        }))
         {
             SetAlpha(firstLockCanvas, 0.1f);
             firstLockCleared = true;
+            Debug.Log("🔓 firstLock 클리어됨");
         }
 
         if (hairpinCleared && firstLockCleared && !finalCleared &&
@@ -130,6 +135,7 @@ public class SlidingGameManager1BeforeDeathScript : MonoBehaviour
             SetAlpha(doorLockCanvas, 0.1f);
             SetAlpha(secondLockCanvas, 0.1f);
             finalCleared = true;
+            Debug.Log("🔓 모든 퍼즐 클리어됨 (finalCleared = true)");
         }
     }
 
@@ -144,23 +150,22 @@ public class SlidingGameManager1BeforeDeathScript : MonoBehaviour
         group.alpha = alpha;
     }
 
-    // ✅ 수정된 염소 투명도 제어 함수
     void UpdateGoatAlpha()
     {
-        float elapsedTime = 60f - timer;
+        float elapsedTime = 10f - timer;
+        if (elapsedTime <= 1f) goatCanvas.alpha = 0f;
+        else goatCanvas.alpha = Mathf.Clamp01((elapsedTime - 1f) / 9f);
+    }
 
-        if (elapsedTime <= 10f)
-        {
-            goatCanvas.alpha = 0f;
-        }
-        else if (elapsedTime <= 60f)
-        {
-            float progress = (elapsedTime - 10f) / 50f;
-            goatCanvas.alpha = Mathf.Clamp01(progress);
-        }
-        else
-        {
-            goatCanvas.alpha = 1f;
-        }
+    public void PauseGame()
+    {
+        isPaused = true;
+        Debug.Log("✅ PauseGame() 호출됨: isPaused = true");
+    }
+
+    public void ResumeGame()
+    {
+        isPaused = false;
+        Debug.Log("▶️ ResumeGame() 호출됨: isPaused = false");
     }
 }
