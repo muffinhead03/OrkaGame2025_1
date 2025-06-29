@@ -18,7 +18,7 @@ public class LanguageCollector1_1 : MonoBehaviour
     };
 
     public readonly string[] KazaLines1_1 = {
-        "k", "k", "k", "kk"
+        "ыыым, таң атып қойды ма? ", "Бүгін нешесі еді? ", "Не дыбыс? А, бүгін ауылда музыка мерекесі (фестивалі) басталатын күн емес пе.", "(Бүгін міндетті түрде баруым керек, бүгін бармасам, қашан)"
     };
 
     public readonly string[] JapaneseLines1_1 = {
@@ -26,7 +26,7 @@ public class LanguageCollector1_1 : MonoBehaviour
     };
 
     public readonly string[] ChineseLines1_1 = {
-        "a", "a", "a", "a"
+        "(嗯……早上了吗……？)", "今天是几号来着？", "(这个声音是……啊，今天是村里的音乐节日啊)", "(我一定要去，要是错过今天，以后肯定没有机会)"
     };
 
     /// <summary>
