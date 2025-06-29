@@ -14,7 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_GroupName: Default Local Group
   m_GUID: b86f6a4566d524a428888d943276de28
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: f73156c162977f64b869900fdfc0a8c1
+    m_Address: Assets/Image/MiniGame/SlidingGame
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: b84d744906957f64496c497811fdfe1e, type: 2}
   m_SchemaSet:

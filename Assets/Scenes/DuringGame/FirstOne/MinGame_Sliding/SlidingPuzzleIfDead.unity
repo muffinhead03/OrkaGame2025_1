@@ -432,7 +432,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 5023325938549993616, guid: 267df5715d6274243956bbd05a35b94f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1437,7 +1437,7 @@ RectTransform:
   m_GameObject: {fileID: 763332084}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.097889, y: 1.097889, z: 1.097889}
+  m_LocalScale: {x: 0.7407018, y: 0.7407018, z: 0.7407018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 304338736}
@@ -2344,7 +2344,7 @@ RectTransform:
   m_GameObject: {fileID: 1058248129}
   m_LocalRotation: {x: -0.00039376493, y: 0.0031348884, z: 0.12462738, w: 0.9921986}
   m_LocalPosition: {x: 0, y: 0, z: -0}
-  m_LocalScale: {x: 1.1576875, y: 1.1576875, z: 1.1576875}
+  m_LocalScale: {x: 0.87929845, y: 0.87929845, z: 0.87929845}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 304338736}
@@ -2788,7 +2788,7 @@ RectTransform:
   m_GameObject: {fileID: 1165898950}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.165911, y: 1.165911, z: 1.165911}
+  m_LocalScale: {x: 0.81133413, y: 0.81133413, z: 0.81133413}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 304338736}
@@ -2814,7 +2814,7 @@ MonoBehaviour:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
+  m_Maskable: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
