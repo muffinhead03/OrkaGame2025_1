@@ -1,16 +1,10 @@
 fileFormatVersion: 2
-guid: 77bfd099cc00a854cbfe9bf42067be47
+guid: 52b55524fa0b0e14e8c886fd5b7e8cc5
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1644344562337473850
-    second: pan_default_0
-  - first:
-      213: 8719146470905738215
-    second: pan_default_1
-  - first:
-      213: -69402338199773545
-    second: pan_default_2
+      213: -8777195218635737643
+    second: ss4-1(cn)_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -102,78 +96,17 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: Android
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: tvOS
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: iOS
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: pan_default_0
-      rect:
-        serializedVersion: 2
-        x: 166
-        y: 1424
-        width: 7
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 6ca9789255d1e29e0800000000000000
-      internalID: -1644344562337473850
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: pan_default_1
+      name: ss4-1(cn)_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 832
-        height: 1415
+        width: 1276
+        height: 192
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -182,30 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7e3ffeee481a00970800000000000000
-      internalID: 8719146470905738215
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: pan_default_2
-      rect:
-        serializedVersion: 2
-        x: 620
-        y: 1409
-        width: 11
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 79e550de0fe690ff0800000000000000
-      internalID: -69402338199773545
+      spriteID: 5d5b5f4c373213680800000000000000
+      internalID: -8777195218635737643
       vertices: []
       indices: 
       edges: []
@@ -223,10 +134,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      pan_default_0: -1644344562337473850
-      pan_default_1: 8719146470905738215
-      pan_default_2: -69402338199773545
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
