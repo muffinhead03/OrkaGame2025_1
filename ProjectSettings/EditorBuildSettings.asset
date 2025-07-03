@@ -5,36 +5,15 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/Scenes/BeforeGame/SampleScene.unity
-    guid: 8c9cfa26abfee488c85f1582747f6a02
-  - enabled: 0
-    path: Assets/Scenes/BeforeGame/ContinueGame.unity
-    guid: 57740ec22fcf4f7449616623cd6c81e2
   - enabled: 1
     path: Assets/Scenes/BeforeGame/mainMenuPanel.unity
     guid: 5ee9e7fed31bf64459535d4b20032429
   - enabled: 0
-    path: Assets/Scenes/BeforeGame/SettingScene.unity
-    guid: 657f5bf7d25229542aa2e8d0cc9ab968
-  - enabled: 0
     path: Assets/Scenes/DuringGame/Endings/EtinArcadiaego.unity
     guid: 051763d0541aff046a88d509ffd1d906
-  - enabled: 0
-    path: Assets/Scenes/DuringGame/Second/MiniGame_Card/CardGameLater.unity
-    guid: f24fc089f57fbc94d955a87763270ff8
-  - enabled: 0
-    path: Assets/Scenes/DuringGame/Second/Stage1_2.unity
-    guid: e19733df83aee8244a0ffb9a18936a18
-  - enabled: 0
-    path: Assets/Scenes/DuringGame/Second/Stage1_2.unity
-    guid: e19733df83aee8244a0ffb9a18936a18
   - enabled: 1
     path: Assets/Scenes/DuringGame/FirstOne/MinGame_Sliding/SlidingPuzzle.unity
     guid: 6dca8178a79e8fd4c986c75534e87037
-  - enabled: 1
-    path: Assets/Scenes/DuringGame/FirstOne/Stage1_1/Stage1_1_Practice.unity
-    guid: 4cfb287b1547d844785a9e043e381bb0
   - enabled: 1
     path: Assets/Scenes/DuringGame/FirstOne/MinGame_Sliding/SlidingPuzzleIfDead.unity
     guid: 456c257a77541b547889d21de468e1e9
@@ -44,38 +23,35 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/DuringGame/Endings/et_in_arcadua_egoAfterfirstSlidingDeath.unity
     guid: d2633fe2141c53649b0083de2b8e0459
-  - enabled: 0
-    path: Assets/Scenes/DuringGame/FirstOne/Stage1_33.unity
-    guid: 609e36db67201b24cbf5b0cc0b545aa4
   - enabled: 1
-    path: Assets/Scenes/DuringGame/Second/Stage2_1.unity
-    guid: c6c19c3c64ba7ee4ba34f99794de8822
+    path: Assets/Scenes/DuringGame/Second/Stage2_1/Stage2_1.unity
+    guid: 315daac430a833642b403db9c085020f
   - enabled: 1
-    path: Assets/Scenes/DuringGame/Second/Stage2_2.unity
-    guid: e5b5bf49ea100ff44b0dc5d5fe2dc15f
+    path: Assets/Scenes/DuringGame/Second/Stage2_2/Stage2_2.unity
+    guid: 2445750005e4f9e4a895e9593e0111d2
   - enabled: 1
-    path: Assets/Scenes/DuringGame/Second/Stage2_3.unity
+    path: Assets/Scenes/DuringGame/Second/Stage2_3/Stage2_3.unity
     guid: ebee30e7405380143aa31e8c74a2d58d
   - enabled: 1
-    path: Assets/Scenes/DuringGame/Second/Stage2_4.unity
+    path: Assets/Scenes/DuringGame/Second/Stage2_4/Stage2_4.unity
     guid: 0a55958aabd2b3743a42ac6ecc8ed5cd
   - enabled: 1
-    path: Assets/Scenes/DuringGame/Second/Stage2_5.unity
+    path: Assets/Scenes/DuringGame/Second/Stage2_5/Stage2_5.unity
     guid: d5aabace1495801439ad879de8468431
   - enabled: 1
-    path: Assets/Scenes/DuringGame/Second/Stage2_6.unity
+    path: Assets/Scenes/DuringGame/Second/Stage2_6/Stage2_6.unity
     guid: b89eed9ebacd57a4a9022d434e619194
   - enabled: 1
-    path: Assets/Scenes/DuringGame/Second/Stage2_7.unity
+    path: Assets/Scenes/DuringGame/Second/Stage2_7/Stage2_7.unity
     guid: b8cac5b80ccee92448c7b0ad848d70be
   - enabled: 1
-    path: Assets/Scenes/DuringGame/Second/Stage2_8.unity
+    path: Assets/Scenes/DuringGame/Second/Stage2_8/Stage2_8.unity
     guid: c6a733a7cb0222145ab2e508fe0945d7
   - enabled: 1
-    path: Assets/Scenes/DuringGame/FirstOne/Stage1_3.unity
+    path: Assets/Scenes/DuringGame/FirstOne/Stage1_3/Stage1_3.unity
     guid: 9b723f47133c7c44289482694ce2e36d
   - enabled: 1
-    path: Assets/Scenes/DuringGame/FirstOne/Stage1_2.unity
+    path: Assets/Scenes/DuringGame/FirstOne/Stage1_2/Stage1_2.unity
     guid: cb7cec3abb0fbc34398dd3ac1c2d4cdb
   - enabled: 1
     path: Assets/Scenes/DuringGame/Second/MiniGame_Card/CardGameFirstStage.unity
