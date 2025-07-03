@@ -167,14 +167,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4694964627515387331, guid: 3d19d32c8e411964b8388bd1b3ab8dad, type: 3}
-      propertyPath: firstPanel
-      value: 
-      objectReference: {fileID: 1965874015}
-    - target: {fileID: 4694964627515387331, guid: 3d19d32c8e411964b8388bd1b3ab8dad, type: 3}
-      propertyPath: settingPanel
-      value: 
-      objectReference: {fileID: 573652516}
     - target: {fileID: 6493119606004853297, guid: 3d19d32c8e411964b8388bd1b3ab8dad, type: 3}
       propertyPath: m_Name
       value: 'SettingPanelController '
@@ -706,11 +698,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6766957906663910168, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
   m_PrefabInstance: {fileID: 573652514}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &573652516 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4490010343191142561, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
-  m_PrefabInstance: {fileID: 573652514}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &582666125
 GameObject:
   m_ObjectHideFlags: 0
@@ -967,14 +954,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: 'FirstPanelController '
       objectReference: {fileID: 0}
-    - target: {fileID: 4322015574077119998, guid: 1d5c6a14d43687a4da4a0c479663e7a5, type: 3}
-      propertyPath: firstPanel
-      value: 
-      objectReference: {fileID: 1965874015}
-    - target: {fileID: 4322015574077119998, guid: 1d5c6a14d43687a4da4a0c479663e7a5, type: 3}
-      propertyPath: settingPanel
-      value: 
-      objectReference: {fileID: 573652516}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1624,7 +1603,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 956926964328958139, guid: 0bd57cc8034161d498fe426cc0951fff, type: 3}
   m_PrefabInstance: {fileID: 1965874013}
   m_PrefabAsset: {fileID: 0}
-<<<<<<< HEAD:Assets/Scenes/DuringGame/Third/Stage3_1/Stage3_1.unity
 --- !u!1 &2012613727
 GameObject:
   m_ObjectHideFlags: 0
@@ -1700,13 +1678,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2012613727}
   m_CullTransparentMesh: 1
-=======
---- !u!1 &1965874015 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3946182027645135661, guid: 0bd57cc8034161d498fe426cc0951fff, type: 3}
-  m_PrefabInstance: {fileID: 1965874013}
-  m_PrefabAsset: {fileID: 0}
->>>>>>> b0900f85010224fad9ff40704dd1117bf4ca9a5c:Assets/Scenes/DuringGame/Third/Stage3_1/Stage3_1_Korean.unity
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
