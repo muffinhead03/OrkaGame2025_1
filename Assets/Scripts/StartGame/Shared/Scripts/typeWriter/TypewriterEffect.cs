@@ -1,8 +1,7 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
-using System;
-using System.Collections.Generic;
 
 public class TypewriterEffect : MonoBehaviour
 {
@@ -30,55 +29,37 @@ public class TypewriterEffect : MonoBehaviour
 
     private void SetActiveTextByLanguage()
     {
-        koreanText.gameObject.SetActive(false);
-        englishText.gameObject.SetActive(false);
-        japaneseText.gameObject.SetActive(false);
-        chineseText.gameObject.SetActive(false);
-        kazaText.gameObject.SetActive(false);
+        if (koreanText != null) koreanText.gameObject.SetActive(false);
+        if (englishText != null) englishText.gameObject.SetActive(false);
+        if (japaneseText != null) japaneseText.gameObject.SetActive(false);
+        if (chineseText != null) chineseText.gameObject.SetActive(false);
+        if (kazaText != null) kazaText.gameObject.SetActive(false);
 
         string lang = LanguageManager.GetLanguage()?.Trim().ToLower();
 
         switch (lang)
         {
-            case "korean":
-                activeText = koreanText;
-                break;
-            case "english":
-                activeText = englishText;
-                break;
-            case "japanese":
-                activeText = japaneseText;
-                break;
-            case "chinese":
-                activeText = chineseText;
-                break;
+            case "korean": activeText = koreanText; break;
+            case "english": activeText = englishText ?? koreanText; break;
+            case "japanese": activeText = japaneseText ?? koreanText; break;
+            case "chinese": activeText = chineseText ?? koreanText; break;
             case "kazahustan":
-            case "kaza":
-                activeText = kazaText;
-                break;
-            default:
-                activeText = koreanText;
-                break;
+            case "kaza": activeText = kazaText ?? koreanText; break;
+            default: activeText = koreanText; break;
         }
 
         if (activeText != null)
-        {
             activeText.gameObject.SetActive(true);
-        }
     }
-
-    
 
     public void SetText(string newText, float speed = -1f)
     {
         SetActiveTextByLanguage();
-
         fullText = newText;
         if (speed > 0f) typingSpeed = speed;
 
         if (typingCoroutine != null)
             StopCoroutine(typingCoroutine);
-
         typingCoroutine = StartCoroutine(TypeText());
     }
 
@@ -91,20 +72,19 @@ public class TypewriterEffect : MonoBehaviour
             activeText.text = fullText;
 
         IsComplete = true;
+        onTypingComplete?.Invoke();
     }
 
     private IEnumerator TypeText()
     {
         IsComplete = false;
-
         if (activeText == null)
         {
-            Debug.LogWarning("활성화된 텍스트 오브젝트가 없습니다.");
+            Debug.LogWarning("[TypewriterEffect] 활성화된 텍스트 오브젝트가 없습니다.");
             yield break;
         }
 
         activeText.text = "";
-
         foreach (char c in fullText)
         {
             activeText.text += c;

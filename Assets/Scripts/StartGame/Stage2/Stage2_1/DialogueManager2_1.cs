@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using System.Collections;
-using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class DialogueManagerStage2_1 : MonoBehaviour
 {
@@ -12,138 +13,213 @@ public class DialogueManagerStage2_1 : MonoBehaviour
     public RectTransform Chinese_Above, Chinese_Story;
     public RectTransform Kaza_Above, Kaza_Story;
 
-    [Header("UI 요소")]
-    public GameObject nextButton;
+    [Header("기본 위치값")]
+    public Vector2 AboPo = new Vector2(-750f, 160f);
+    public Vector2 StoPo = new Vector2(-250f, -20f);
 
-    [Header("타이핑 및 텍스트 처리")]
-    public TypewriterEffect typewriterEffect;
-    public LanguageCollector2_1 languageCollector;
+    [Header("UI 요소")]
+    public TextMeshProUGUI aboveText;    // “에코” 고정 라벨
+    public TextMeshProUGUI storyText;    // 대사 텍스트
+    public Button nextButton;            // Next 버튼
+
+    [Header("타이핑 속도")]
+    public float typingSpeed = 0.04f;
+
+    [Header("오디오")]
+    public AudioSource bgmSource;
+    public AudioSource waterSound;
+    public AudioSource birdSound;
+    public AudioSource grassSound;
 
     [Header("캐릭터 이미지 관리")]
     public Image characterImage;
-    public Sprite[] echoSprites; // arc_echo_default, arc_echo_3eyeclosed 등 Inspector에서 등록
+    public Sprite Eco_eyeclosed;
+    public Sprite Eco_default;
+    public Sprite Eco_surprised;
+    public Sprite Eco_ready;
 
-    [Header("오디오")]
-    public AudioSource[] audioSources; // 여러 사운드를 동시에 재생할 용도 (복수 AudioSource를 Array로)
+    [Header("배경 이미지")]
+    public Image backgroundImage;
+    public Sprite backGroundSprite;
 
-    [System.Serializable]
-    public class DialogueLineInfo
+    [Header("대사 관리")]
+    public LanguageCollector2_1 languageCollector;
+
+    private string[] lines;
+    private int index = 0;
+    private Coroutine typingCoroutine;
+
+    private void Awake()
     {
-        public string characterSprite;
-        public AudioClip[] audioClips; // 한 대사(한 행)에 여러 사운드를 등록할 수 있음
-        public string 기타;
-    }
-    public List<DialogueLineInfo> dialogueInfoList = new List<DialogueLineInfo>();
+        // Next 버튼 클릭 리스너 등록
+        if (nextButton != null)
+        {
+            nextButton.onClick.RemoveAllListeners();
+            nextButton.onClick.AddListener(OnNext);
+        }
 
-    private string[] currentLines;
-    private int lineIndex = 0;
+        // 언어 시스템 초기화
+        LanguageManager.Initialize();
+        LanguageManager.OnLanguageChanged += OnLanguageChanged;
+    }
 
     private void Start()
     {
+        // UI 언어별 배치
         SetupLanguageUI();
-        currentLines = languageCollector.GetLines();
-        StartCoroutine(ShowCurrentLine());
+
+        // Above 텍스트 설정
+        if (aboveText != null)
+            aboveText.text = "에코";
+
+        // 배경 이미지 & BGM 재생
+        if (backgroundImage != null && backGroundSprite != null)
+            backgroundImage.sprite = backGroundSprite;
+        if (bgmSource != null && !bgmSource.isPlaying)
+        {
+            bgmSource.loop = true;
+            bgmSource.Play();
+        }
+
+        // 대사 배열 로드
+        lines = languageCollector != null ? languageCollector.GetLines() : new string[0];
+        index = 0;
+
+        // 첫 대사 실행
+        if (nextButton != null)
+            nextButton.gameObject.SetActive(false);
+        StartCoroutine(PlayLineCoroutine());
     }
 
-    public void OnNextButtonClicked()
+    private IEnumerator PlayLineCoroutine()
     {
-        nextButton.SetActive(false);
-        lineIndex++;
-        currentLines = languageCollector.GetLines();
-        if (lineIndex >= currentLines.Length)
+        // 버튼 숨기기
+        if (nextButton != null)
+            nextButton.gameObject.SetActive(false);
+
+        // 표정 및 효과음 매핑
+        switch (index)
+        {
+            case 0:
+                if (characterImage != null) characterImage.sprite = Eco_eyeclosed;
+                waterSound?.Play(); birdSound?.Play();
+                break;
+            case 1:
+                if (characterImage != null) characterImage.sprite = Eco_default;
+                break;
+            case 2:
+                if (characterImage != null) characterImage.sprite = Eco_eyeclosed;
+                break;
+            case 3:
+            case 4:
+                if (characterImage != null) characterImage.sprite = Eco_surprised;
+                break;
+            case 5:
+                if (characterImage != null) characterImage.sprite = Eco_default;
+                grassSound?.Play();
+                break;
+            case 6:
+                if (characterImage != null) characterImage.sprite = Eco_ready;
+                break;
+            case 7:
+                if (characterImage != null) characterImage.sprite = Eco_default;
+                break;
+            case 8:
+                if (characterImage != null) characterImage.sprite = Eco_eyeclosed;
+                break;
+            case 9:
+                if (characterImage != null) characterImage.sprite = Eco_surprised;
+                break;
+        }
+
+        // 타입 라이터 이펙트 실행
+        if (typingCoroutine != null)
+            StopCoroutine(typingCoroutine);
+        typingCoroutine = StartCoroutine(TypeText(lines[index]));
+        yield return typingCoroutine;
+
+        // 버튼 활성화
+        if (nextButton != null)
+            nextButton.gameObject.SetActive(true);
+    }
+
+    private IEnumerator TypeText(string fullText)
+    {
+        if (storyText != null)
+        {
+            storyText.text = string.Empty;
+            foreach (char c in fullText)
+            {
+                storyText.text += c;
+                yield return new WaitForSeconds(typingSpeed);
+            }
+        }
+    }
+
+    private void OnNext()
+    {
+        if (nextButton != null)
+            nextButton.gameObject.SetActive(false);
+
+        index++;
+        if (index >= lines.Length)
+        {
+            SceneManager.LoadScene("Stage2_2");
             return;
-        StartCoroutine(ShowCurrentLine());
-    }
-
-    private IEnumerator ShowCurrentLine()
-    {
-        SetCharacterImage(lineIndex);
-        PlayAllAudioClips(lineIndex);
-        typewriterEffect.SetText(currentLines[lineIndex]);
-        yield return new WaitUntil(() => typewriterEffect.IsComplete);
-        nextButton.SetActive(true);
-    }
-
-    private void SetCharacterImage(int idx)
-    {
-        if (dialogueInfoList == null || idx >= dialogueInfoList.Count) return;
-        var info = dialogueInfoList[idx];
-        if (!string.IsNullOrEmpty(info.characterSprite))
-        {
-            foreach (var sprite in echoSprites)
-            {
-                if (sprite.name == info.characterSprite)
-                {
-                    characterImage.sprite = sprite;
-                    break;
-                }
-            }
         }
+
+        StartCoroutine(PlayLineCoroutine());
     }
 
-    // ★ 한 대사(행)마다 여러 소리가 동시에 나오도록
-    private void PlayAllAudioClips(int idx)
-    {
-        if (dialogueInfoList == null || idx >= dialogueInfoList.Count) return;
-        var info = dialogueInfoList[idx];
-
-        // 이전에 재생 중인 모든 소리 정지
-        foreach (var source in audioSources)
-            source.Stop();
-
-        if (info.audioClips != null && info.audioClips.Length > 0)
-        {
-            int cnt = Mathf.Min(audioSources.Length, info.audioClips.Length);
-            for (int i = 0; i < cnt; i++)
-            {
-                audioSources[i].clip = info.audioClips[i];
-                audioSources[i].Play();
-            }
-        }
-    }
-
-    // 언어 UI 세팅 등 이하 동일
     private void SetupLanguageUI()
     {
-        string lang = LanguageManager.GetLanguage();
-        DisableAllLangObjects();
+        // 모든 언어 객체 비활성화 (null 체크 추가)
+        if (Korean_Above != null) Korean_Above.gameObject.SetActive(false);
+        if (Korean_Story != null) Korean_Story.gameObject.SetActive(false);
+        if (English_Above != null) English_Above.gameObject.SetActive(false);
+        if (English_Story != null) English_Story.gameObject.SetActive(false);
+        if (Japanese_Above != null) Japanese_Above.gameObject.SetActive(false);
+        if (Japanese_Story != null) Japanese_Story.gameObject.SetActive(false);
+        if (Chinese_Above != null) Chinese_Above.gameObject.SetActive(false);
+        if (Chinese_Story != null) Chinese_Story.gameObject.SetActive(false);
+        if (Kaza_Above != null) Kaza_Above.gameObject.SetActive(false);
+        if (Kaza_Story != null) Kaza_Story.gameObject.SetActive(false);
+
+        // 활성화될 언어 객체 선택
+        string lang = LanguageManager.GetLanguage()?.Trim().ToLower();
+        RectTransform above = null, story = null;
         switch (lang)
         {
-            case "korean":
-                SetActiveAndPosition(Korean_Above, Korean_Story);
-                break;
-            case "english":
-                SetActiveAndPosition(English_Above, English_Story);
-                break;
-            case "japanese":
-                SetActiveAndPosition(Japanese_Above, Japanese_Story);
-                break;
-            case "chinese":
-                SetActiveAndPosition(Chinese_Above, Chinese_Story);
-                break;
+            case "korean": above = Korean_Above; story = Korean_Story; break;
+            case "english": above = English_Above; story = English_Story; break;
+            case "japanese": above = Japanese_Above; story = Japanese_Story; break;
+            case "chinese": above = Chinese_Above; story = Chinese_Story; break;
             case "kazahustan":
-            case "kaza":
-                SetActiveAndPosition(Kaza_Above, Kaza_Story);
-                break;
+            case "kaza": above = Kaza_Above; story = Kaza_Story; break;
+            default: above = Korean_Above; story = Korean_Story; break;
+        }
+
+        // 활성화 및 위치 설정
+        if (above != null && story != null)
+        {
+            above.gameObject.SetActive(true);
+            story.gameObject.SetActive(true);
+            above.anchoredPosition = AboPo;
+            story.anchoredPosition = StoPo;
         }
     }
-    private void SetActiveAndPosition(RectTransform above, RectTransform story)
+
+    private void OnLanguageChanged(string newLang)
     {
-        above.gameObject.SetActive(true);
-        story.gameObject.SetActive(true);
+        SetupLanguageUI();
+        // 대사 갱신 시 현재 라인 재출력
+        if (typingCoroutine != null)
+            StopCoroutine(typingCoroutine);
+        StartCoroutine(PlayLineCoroutine());
     }
-    private void DisableAllLangObjects()
+
+    private void OnDestroy()
     {
-        Korean_Above?.gameObject.SetActive(false);
-        Korean_Story?.gameObject.SetActive(false);
-        English_Above?.gameObject.SetActive(false);
-        English_Story?.gameObject.SetActive(false);
-        Japanese_Above?.gameObject.SetActive(false);
-        Japanese_Story?.gameObject.SetActive(false);
-        Chinese_Above?.gameObject.SetActive(false);
-        Chinese_Story?.gameObject.SetActive(false);
-        Kaza_Above?.gameObject.SetActive(false);
-        Kaza_Story?.gameObject.SetActive(false);
+        LanguageManager.OnLanguageChanged -= OnLanguageChanged;
     }
 }
-

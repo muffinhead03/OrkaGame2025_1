@@ -4,12 +4,11 @@ public class LanguageCollector2_1 : MonoBehaviour
 {
     // 언어별 대사 배열
     public readonly string[] KoreanLines2_1 = {
-        "으음... 숨이 막혀서...",
-        "아... 또 쓰러졌나보다...",
+        "으음... ",
+        "갑자기 숨이 막혀서... 아... 또 쓰러졌나보다...",
         "요즘 따라 숨이 더 자주 막히는 것 같아",
         "잠만, 여기는 어디야...!",
         "이 옷도 대체...! 난 분명 내 방에서 쓰러졌을 텐데...",
-        "[풀숲을 걷는 소리]",
         "음... 주변을 둘러봐도 여기가 어딘지 전혀 모르겠어",
         "마치 이 세상에 존재하지 않을 것 같은 아름다운 장소야",
         "...이런 상상하기 싫지만",
@@ -20,11 +19,11 @@ public class LanguageCollector2_1 : MonoBehaviour
 
     };
     public readonly string[] KazaLines2_1 = {
-       
+
     };
 
     public readonly string[] JapaneseLines2_1 = {
-       
+
     };
 
     public readonly string[] ChineseLines2_1 = {
