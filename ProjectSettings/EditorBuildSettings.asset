@@ -25,26 +25,26 @@ EditorBuildSettings:
     guid: d2633fe2141c53649b0083de2b8e0459
   - enabled: 1
     path: Assets/Scenes/DuringGame/Second/Stage2_1/Stage2_1.unity
-    guid: 315daac430a833642b403db9c085020f
+    guid: d0b239ed234df43499eaa8cdd3c69608
   - enabled: 1
     path: Assets/Scenes/DuringGame/Second/Stage2_2/Stage2_2.unity
-    guid: 2445750005e4f9e4a895e9593e0111d2
+    guid: 1c122665140e9044ea7a728ddb90c3ba
   - enabled: 1
-    path: Assets/Scenes/DuringGame/Second/Stage2_3/Stage2_3.unity
-    guid: ebee30e7405380143aa31e8c74a2d58d
+    path: Assets/Scenes/DuringGame/Second/Stage2_3_1/Stage2_3_1.unity
+    guid: 6e0c69a0b166a0548818e9052ef3c46b
   - enabled: 1
     path: Assets/Scenes/DuringGame/Second/Stage2_4/Stage2_4.unity
-    guid: 0a55958aabd2b3743a42ac6ecc8ed5cd
+    guid: 95ba6d1ac97098e4a9e86fc0aa9e571a
   - enabled: 1
     path: Assets/Scenes/DuringGame/Second/Stage2_5/Stage2_5.unity
-    guid: d5aabace1495801439ad879de8468431
-  - enabled: 1
+    guid: 1b5ecc94d8a105e4b8f98ee162d27cb3
+  - enabled: 0
     path: Assets/Scenes/DuringGame/Second/Stage2_6/Stage2_6.unity
     guid: b89eed9ebacd57a4a9022d434e619194
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/DuringGame/Second/Stage2_7/Stage2_7.unity
     guid: b8cac5b80ccee92448c7b0ad848d70be
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/DuringGame/Second/Stage2_8/Stage2_8.unity
     guid: c6a733a7cb0222145ab2e508fe0945d7
   - enabled: 1

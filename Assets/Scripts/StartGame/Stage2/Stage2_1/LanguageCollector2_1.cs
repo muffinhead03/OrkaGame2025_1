@@ -16,18 +16,18 @@ public class LanguageCollector2_1 : MonoBehaviour
         "어라? 저 물가에 누군가가 있어"
     };
     public readonly string[] EnglishLines2_1 = {
-
+        "k","k","k","k","k","k","k","k","k","k"
     };
     public readonly string[] KazaLines2_1 = {
-
+        "k","k","k","k","k","k","k","k","k","k"
     };
 
     public readonly string[] JapaneseLines2_1 = {
-
+        "k","k","k","k","k","k","k","k","k","k"
     };
 
     public readonly string[] ChineseLines2_1 = {
-
+        "k","k","k","k","k","k","k","k","k","k"
     };
 
     /// <summary>

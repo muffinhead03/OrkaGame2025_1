@@ -18,7 +18,7 @@ public class DialogueManagerStage2_1 : MonoBehaviour
     public Vector2 StoPo = new Vector2(-250f, -20f);
 
     [Header("UI 요소")]
-    public TextMeshProUGUI aboveText;    // “에코” 고정 라벨
+    public TextMeshProUGUI aboveText;    // 이름 레이블
     public TextMeshProUGUI storyText;    // 대사 텍스트
     public Button nextButton;            // Next 버튼
 
@@ -31,48 +31,46 @@ public class DialogueManagerStage2_1 : MonoBehaviour
     public AudioSource birdSound;
     public AudioSource grassSound;
 
-    [Header("캐릭터 이미지 관리")]
-    public Image characterImage;
-    public Sprite Eco_eyeclosed;
-    public Sprite Eco_default;
-    public Sprite Eco_surprised;
-    public Sprite Eco_ready;
+    [Header("표정 오브젝트")]
+    public GameObject Eco_eyeclosedObj;  // 눈 감은 표정
+    public GameObject Eco_defaultObj;    // 기본 표정
+    public GameObject Eco_surprisedObj;  // 놀란 표정
+    public GameObject Eco_readyObj;      // 준비 표정
 
     [Header("배경 이미지")]
     public Image backgroundImage;
     public Sprite backGroundSprite;
 
-    [Header("대사 관리")]
+    [Header("대사 스크립트")]
     public LanguageCollector2_1 languageCollector;
 
     private string[] lines;
-    private int index = 0;
+    private int index;
     private Coroutine typingCoroutine;
 
     private void Awake()
     {
-        // Next 버튼 클릭 리스너 등록
+        // Next 버튼 클릭 등록
         if (nextButton != null)
         {
             nextButton.onClick.RemoveAllListeners();
             nextButton.onClick.AddListener(OnNext);
+            nextButton.gameObject.SetActive(false);
         }
-
-        // 언어 시스템 초기화
         LanguageManager.Initialize();
         LanguageManager.OnLanguageChanged += OnLanguageChanged;
     }
 
     private void Start()
     {
-        // UI 언어별 배치
+        // 1) UI 언어 오브젝트 설정
         SetupLanguageUI();
 
-        // Above 텍스트 설정
+        // 2) 이름 레이블 설정
         if (aboveText != null)
             aboveText.text = "에코";
 
-        // 배경 이미지 & BGM 재생
+        // 3) 배경 & BGM
         if (backgroundImage != null && backGroundSprite != null)
             backgroundImage.sprite = backGroundSprite;
         if (bgmSource != null && !bgmSource.isPlaying)
@@ -81,85 +79,102 @@ public class DialogueManagerStage2_1 : MonoBehaviour
             bgmSource.Play();
         }
 
-        // 대사 배열 로드
-        lines = languageCollector != null ? languageCollector.GetLines() : new string[0];
-        index = 0;
+        // 4) 대사 배열 로드
+        LoadLinesForCurrentLanguage();
 
-        // 첫 대사 실행
-        if (nextButton != null)
-            nextButton.gameObject.SetActive(false);
-        StartCoroutine(PlayLineCoroutine());
+        // 5) 인덱스 초기화 후 첫 대사 시퀀스 시작
+        index = 0;
+        StartCoroutine(ShowLineSequence());
     }
 
-    private IEnumerator PlayLineCoroutine()
+    // 현재 언어에 맞춰 lines[] 에 대사들을 할당
+    private void LoadLinesForCurrentLanguage()
     {
-        // 버튼 숨기기
-        if (nextButton != null)
-            nextButton.gameObject.SetActive(false);
-
-        // 표정 및 효과음 매핑
-        switch (index)
+        string lang = LanguageManager.GetLanguage()?.Trim().ToLower();
+        switch (lang)
         {
-            case 0:
-                if (characterImage != null) characterImage.sprite = Eco_eyeclosed;
-                waterSound?.Play(); birdSound?.Play();
-                break;
-            case 1:
-                if (characterImage != null) characterImage.sprite = Eco_default;
-                break;
-            case 2:
-                if (characterImage != null) characterImage.sprite = Eco_eyeclosed;
-                break;
-            case 3:
-            case 4:
-                if (characterImage != null) characterImage.sprite = Eco_surprised;
-                break;
-            case 5:
-                if (characterImage != null) characterImage.sprite = Eco_default;
-                grassSound?.Play();
-                break;
-            case 6:
-                if (characterImage != null) characterImage.sprite = Eco_ready;
-                break;
-            case 7:
-                if (characterImage != null) characterImage.sprite = Eco_default;
-                break;
-            case 8:
-                if (characterImage != null) characterImage.sprite = Eco_eyeclosed;
-                break;
-            case 9:
-                if (characterImage != null) characterImage.sprite = Eco_surprised;
+            case "korean": lines = languageCollector.KoreanLines2_1; break;
+            case "english": lines = languageCollector.EnglishLines2_1; break;
+            case "japanese": lines = languageCollector.JapaneseLines2_1; break;
+            case "chinese": lines = languageCollector.ChineseLines2_1; break;
+            case "kazahustan":
+            case "kaza": lines = languageCollector.KazaLines2_1; break;
+            default:
+                Debug.LogWarning($"Unknown language '{lang}', default to Korean.");
+                lines = languageCollector.KoreanLines2_1;
                 break;
         }
+    }
 
-        // 타입 라이터 이펙트 실행
+    private IEnumerator ShowLineSequence()
+    {
+        // 1) 즉시 표정 교체
+        UpdateCharacterFace(index);
+
+        // 2) 0.5초 대기
+        yield return new WaitForSeconds(0.5f);
+
+        // 3) 대사 타입 이펙트
         if (typingCoroutine != null)
             StopCoroutine(typingCoroutine);
         typingCoroutine = StartCoroutine(TypeText(lines[index]));
         yield return typingCoroutine;
 
-        // 버튼 활성화
-        if (nextButton != null)
-            nextButton.gameObject.SetActive(true);
+        // 4) Next 버튼 활성화
+        nextButton?.gameObject.SetActive(true);
+    }
+
+    private void UpdateCharacterFace(int idx)
+    {
+        // 모든 표정 비활성화
+        Eco_eyeclosedObj?.SetActive(false);
+        Eco_defaultObj?.SetActive(false);
+        Eco_surprisedObj?.SetActive(false);
+        Eco_readyObj?.SetActive(false);
+
+        // 필요한 표정만 활성화
+        switch (idx)
+        {
+            case 0:
+            case 2:
+            case 8:
+                Eco_eyeclosedObj?.SetActive(true);
+                waterSound?.Play(); birdSound?.Play();
+                break;
+            case 1:
+            case 5:
+            case 7:
+                Eco_defaultObj?.SetActive(true);
+                if (idx == 5) grassSound?.Play();
+                break;
+            case 3:
+            case 4:
+            case 9:
+                Eco_surprisedObj?.SetActive(true);
+                break;
+            case 6:
+                Eco_readyObj?.SetActive(true);
+                break;
+            default:
+                Eco_defaultObj?.SetActive(true);
+                break;
+        }
     }
 
     private IEnumerator TypeText(string fullText)
     {
-        if (storyText != null)
+        if (storyText == null) yield break;
+        storyText.text = string.Empty;
+        foreach (char c in fullText)
         {
-            storyText.text = string.Empty;
-            foreach (char c in fullText)
-            {
-                storyText.text += c;
-                yield return new WaitForSeconds(typingSpeed);
-            }
+            storyText.text += c;
+            yield return new WaitForSeconds(typingSpeed);
         }
     }
 
     private void OnNext()
     {
-        if (nextButton != null)
-            nextButton.gameObject.SetActive(false);
+        nextButton?.gameObject.SetActive(false);
 
         index++;
         if (index >= lines.Length)
@@ -167,39 +182,33 @@ public class DialogueManagerStage2_1 : MonoBehaviour
             SceneManager.LoadScene("Stage2_2");
             return;
         }
-
-        StartCoroutine(PlayLineCoroutine());
+        StartCoroutine(ShowLineSequence());
     }
 
     private void SetupLanguageUI()
     {
-        // 모든 언어 객체 비활성화 (null 체크 추가)
-        if (Korean_Above != null) Korean_Above.gameObject.SetActive(false);
-        if (Korean_Story != null) Korean_Story.gameObject.SetActive(false);
-        if (English_Above != null) English_Above.gameObject.SetActive(false);
-        if (English_Story != null) English_Story.gameObject.SetActive(false);
-        if (Japanese_Above != null) Japanese_Above.gameObject.SetActive(false);
-        if (Japanese_Story != null) Japanese_Story.gameObject.SetActive(false);
-        if (Chinese_Above != null) Chinese_Above.gameObject.SetActive(false);
-        if (Chinese_Story != null) Chinese_Story.gameObject.SetActive(false);
-        if (Kaza_Above != null) Kaza_Above.gameObject.SetActive(false);
-        if (Kaza_Story != null) Kaza_Story.gameObject.SetActive(false);
+        // 모든 언어 UI 비활성화
+        var all = new[] {
+            Korean_Above, Korean_Story,
+            English_Above, English_Story,
+            Japanese_Above, Japanese_Story,
+            Chinese_Above, Chinese_Story,
+            Kaza_Above, Kaza_Story
+        };
+        foreach (var rt in all)
+            rt?.gameObject.SetActive(false);
 
-        // 활성화될 언어 객체 선택
+        // 현재 언어에 맞춰 다시 활성화
         string lang = LanguageManager.GetLanguage()?.Trim().ToLower();
-        RectTransform above = null, story = null;
+        RectTransform above = Korean_Above, story = Korean_Story;
         switch (lang)
         {
-            case "korean": above = Korean_Above; story = Korean_Story; break;
             case "english": above = English_Above; story = English_Story; break;
             case "japanese": above = Japanese_Above; story = Japanese_Story; break;
             case "chinese": above = Chinese_Above; story = Chinese_Story; break;
             case "kazahustan":
             case "kaza": above = Kaza_Above; story = Kaza_Story; break;
-            default: above = Korean_Above; story = Korean_Story; break;
         }
-
-        // 활성화 및 위치 설정
         if (above != null && story != null)
         {
             above.gameObject.SetActive(true);
@@ -211,11 +220,13 @@ public class DialogueManagerStage2_1 : MonoBehaviour
 
     private void OnLanguageChanged(string newLang)
     {
-        SetupLanguageUI();
-        // 대사 갱신 시 현재 라인 재출력
-        if (typingCoroutine != null)
-            StopCoroutine(typingCoroutine);
-        StartCoroutine(PlayLineCoroutine());
+        // *index는 유지*한 채, lines만 새로 로드
+        LoadLinesForCurrentLanguage();
+        // 만약 대사 맨 앞에서 다시 타이핑하고 싶다면 index=0; 해주면 됩니다.
+
+        // 코루틴 초기화 후, 동일한 인덱스의 대사 재실행
+        StopAllCoroutines();
+        StartCoroutine(ShowLineSequence());
     }
 
     private void OnDestroy()
