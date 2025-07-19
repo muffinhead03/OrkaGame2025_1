@@ -173,7 +173,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      medicinebag_0: 83509873967779595
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

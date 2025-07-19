@@ -1,0 +1,189 @@
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using System.Collections;
+using UnityEngine.SceneManagement;
+
+public class DialogueManager2_4 : MonoBehaviour
+{
+    [Header("언어 오브젝트")]
+    public RectTransform Korean_Above, Korean_Story;
+    public RectTransform English_Above, English_Story;
+    public RectTransform Japanese_Above, Japanese_Story;
+    public RectTransform Chinese_Above, Chinese_Story;
+    public RectTransform Kaza_Above, Kaza_Story;
+
+    [Header("기본 위치값")]
+    public Vector2 AboPo = new Vector2(-750f, 160f);
+    public Vector2 StoPo = new Vector2(-250f, -20f);
+
+    [Header("UI 요소")]
+    public TextMeshProUGUI aboveText;
+    public TextMeshProUGUI storyText;
+    public Image backgroundImage;
+    public Sprite backGroundSprite;
+    public GameObject Narke_2Obj;
+    public Image endingImage;
+
+    [Header("타이핑 속도")]
+    public float typingSpeed = 0.04f;
+
+    [Header("오디오")]
+    public AudioSource fluteSource;
+    public AudioSource breathSource;
+
+    [Header("대사 스크립트")]
+    public LanguageCollector2_4 languageCollector;
+
+    private string[] lines;
+    private int index;
+    private Coroutine typingCoroutine;
+
+    private void Awake()
+    {
+        LanguageManager.Initialize();
+        LanguageManager.OnLanguageChanged += OnLanguageChanged;
+    }
+
+    private void Start()
+    {
+        SetupLanguageUI();
+
+        if (backgroundImage != null && backGroundSprite != null)
+            backgroundImage.sprite = backGroundSprite;
+
+        if (Narke_2Obj != null)
+            Narke_2Obj.SetActive(true);
+
+        LoadLinesForCurrentLanguage();
+        index = 0;
+
+        // 1. 대사 출력 시작
+        StartCoroutine(ShowLineSequence());
+
+        // 2. 소리 순차 재생 & 엔딩이미지 페이드인
+        StartCoroutine(PlaySoundSequenceAndFade());
+    }
+
+    private void LoadLinesForCurrentLanguage()
+    {
+        string lang = LanguageManager.GetLanguage()?.Trim().ToLower();
+        switch (lang)
+        {
+            case "korean": lines = languageCollector.KoreanLines2_4; break;
+            case "english": lines = languageCollector.EnglishLines2_4; break;
+            case "japanese": lines = languageCollector.JapaneseLines2_4; break;
+            case "chinese": lines = languageCollector.ChineseLines2_4; break;
+            case "kazahustan":
+            case "kaza": lines = languageCollector.KazaLines2_4; break;
+            default:
+                Debug.LogWarning($"Unknown language '{lang}', defaulting to Korean.");
+                lines = languageCollector.KoreanLines2_4;
+                break;
+        }
+    }
+
+    private IEnumerator ShowLineSequence()
+    {
+        if (aboveText != null) aboveText.text = "나르케";
+
+        if (typingCoroutine != null)
+            StopCoroutine(typingCoroutine);
+        typingCoroutine = StartCoroutine(TypeText(lines[index]));
+        yield return typingCoroutine;
+    }
+
+    private IEnumerator TypeText(string fullText)
+    {
+        if (storyText == null) yield break;
+        storyText.text = string.Empty;
+        foreach (char c in fullText)
+        {
+            storyText.text += c;
+            yield return new WaitForSeconds(typingSpeed);
+        }
+    }
+
+    private IEnumerator PlaySoundSequenceAndFade()
+    {
+        // fluteSound 재생
+        if (fluteSource != null)
+        {
+            fluteSource.Play();
+            yield return new WaitWhile(() => fluteSource.isPlaying);
+        }
+
+        // flute 끝난 뒤 → breath 재생
+        if (breathSource != null)
+        {
+            breathSource.Play();
+        }
+
+        // breath 시작 후 2초 기다리고 엔딩 이미지 페이드인
+        yield return new WaitForSeconds(2f);
+        StartCoroutine(FadeInEndingImage());
+    }
+
+    private IEnumerator FadeInEndingImage()
+    {
+        if (endingImage == null) yield break;
+
+        Color color = endingImage.color;
+        color.a = 0;
+        endingImage.color = color;
+        endingImage.gameObject.SetActive(true);
+
+        float fadeDuration = 2.0f;
+        float timer = 0f;
+        while (timer < fadeDuration)
+        {
+            timer += Time.deltaTime;
+            float alpha = Mathf.Lerp(0, 1, timer / fadeDuration);
+            endingImage.color = new Color(color.r, color.g, color.b, alpha);
+            yield return null;
+        }
+    }
+
+    private void SetupLanguageUI()
+    {
+        var all = new[] {
+            Korean_Above, Korean_Story,
+            English_Above, English_Story,
+            Japanese_Above, Japanese_Story,
+            Chinese_Above, Chinese_Story,
+            Kaza_Above, Kaza_Story
+        };
+        foreach (var rt in all)
+            rt?.gameObject.SetActive(false);
+
+        string lang = LanguageManager.GetLanguage()?.Trim().ToLower();
+        RectTransform above = Korean_Above, story = Korean_Story;
+        switch (lang)
+        {
+            case "english": above = English_Above; story = English_Story; break;
+            case "japanese": above = Japanese_Above; story = Japanese_Story; break;
+            case "chinese": above = Chinese_Above; story = Chinese_Story; break;
+            case "kazahustan":
+            case "kaza": above = Kaza_Above; story = Kaza_Story; break;
+        }
+        if (above != null && story != null)
+        {
+            above.gameObject.SetActive(true);
+            story.gameObject.SetActive(true);
+            above.anchoredPosition = AboPo;
+            story.anchoredPosition = StoPo;
+        }
+    }
+
+    private void OnLanguageChanged(string newLang)
+    {
+        LoadLinesForCurrentLanguage();
+        StopAllCoroutines();
+        Start();
+    }
+
+    private void OnDestroy()
+    {
+        LanguageManager.OnLanguageChanged -= OnLanguageChanged;
+    }
+}

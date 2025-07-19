@@ -173,7 +173,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      teacup_mousehover(jp)_0: 2724636586283216879
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

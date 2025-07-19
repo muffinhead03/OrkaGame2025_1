@@ -173,7 +173,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      et in arcadia ego_0: 6055829140099893919
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

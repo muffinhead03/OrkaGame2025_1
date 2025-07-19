@@ -198,7 +198,9 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      pipe_mousehover(cn)_0: -8775678140440820121
+      pipe_mousehover(cn)_1: -3830511198732578661
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

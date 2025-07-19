@@ -43,7 +43,7 @@ public class LanguageCollector2_5 : MonoBehaviour
             case "chinese":
                 return ChineseLines2_5;
             default:
-                Debug.LogWarning($"[LanguageCollector2_5] Unknown language '{{lang}}', using Korean as fallback.");
+                Debug.LogWarning($"[LanguageCollector2_5] Unknown language '{lang}', using Korean as fallback.");
                 return KoreanLines2_5;
         }
     }

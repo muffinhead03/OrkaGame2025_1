@@ -255,4 +255,11 @@ public class DialogueManagerStage2_2 : MonoBehaviour
     {
         LanguageManager.OnLanguageChanged -= OnLanguageChanged;
     }
+    private void Update()
+    {
+        if (bgmSource != null && !bgmSource.isPlaying)
+        {
+            bgmSource.Play();
+        }
+    }
 }

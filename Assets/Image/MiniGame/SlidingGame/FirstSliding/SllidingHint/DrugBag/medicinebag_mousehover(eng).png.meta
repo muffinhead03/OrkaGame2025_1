@@ -198,7 +198,9 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      medicinebag_mousehover(eng)_0: -8289251732104544248
+      medicinebag_mousehover(eng)_1: 8540224342800502544
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

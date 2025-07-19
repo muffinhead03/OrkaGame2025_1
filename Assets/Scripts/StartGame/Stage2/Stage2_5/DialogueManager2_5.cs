@@ -1,109 +1,192 @@
 using UnityEngine;
-using UnityEngine.Localization.Components;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class DialogueManager2_5 : MonoBehaviour
 {
-    [Header("UI Components")]
-    public LocalizeStringEvent AboveLine;
-    public LocalizeStringEvent StoryLine;
-    public TMP_Text AboveLineText;
-    public TMP_Text StoryLineText;
-    public Button Button;
+    [Header("언어 오브젝트")]
+    public RectTransform Korean_Above, Korean_Story;
+    public RectTransform English_Above, English_Story;
+    public RectTransform Japanese_Above, Japanese_Story;
+    public RectTransform Chinese_Above, Chinese_Story;
+    public RectTransform Kaza_Above, Kaza_Story;
 
-    [Header("Character Images")]
-    public GameObject Eco;
-    public GameObject Cat;
+    [Header("기본 위치값")]
+    public Vector2 AboPo = new Vector2(-750f, 160f);
+    public Vector2 StoPo = new Vector2(-250f, -20f);
 
-    [Header("Audio")]
-    public AudioSource YellingSound;
+    [Header("UI 요소")]
+    public TextMeshProUGUI aboveText;
+    public TextMeshProUGUI storyText;
+    public Button nextButton;
 
-    private int index = 0;
+    [Header("타이핑 속도")]
+    public float typingSpeed = 0.04f;
 
-    private string[] storyKeys = {
-        "key2_5_1", "key2_5_2", "key2_5_3", "key2_5_4", "key2_5_5"
-    };
+    [Header("오디오")]
+    public AudioSource windSource;
+
+    [Header("배경 및 캐릭터")]
+    public Image backgroundImage;
+    public Sprite backGroundSprite;
+    public GameObject Narke_3Obj;
+
+    [Header("대사 스크립트")]
+    public LanguageCollector2_5 languageCollector;
+
+    private string[] lines;
+    private int index;
+    private Coroutine typingCoroutine;
+
+    private void Awake()
+    {
+        if (nextButton != null)
+        {
+            nextButton.onClick.RemoveAllListeners();
+            nextButton.onClick.AddListener(OnNext);
+            nextButton.gameObject.SetActive(false);
+        }
+        LanguageManager.Initialize();
+        LanguageManager.OnLanguageChanged += OnLanguageChanged;
+    }
 
     private void Start()
     {
-        Button.onClick.AddListener(OnClickNext);
-        Button.gameObject.SetActive(false);
-        ShowDialogue(index);
+        SetupLanguageUI();
+
+        if (backgroundImage != null && backGroundSprite != null)
+            backgroundImage.sprite = backGroundSprite;
+
+        if (windSource != null && !windSource.isPlaying)
+        {
+            windSource.loop = true;
+            windSource.Play();
+        }
+
+        LoadLinesForCurrentLanguage();
+        index = 0;
+        StartCoroutine(ShowLineSequence());
     }
 
-    void ShowDialogue(int i)
+    private void LoadLinesForCurrentLanguage()
     {
-        if (i >= storyKeys.Length)
-            return; // 더 이상 대사가 없으면 아무 것도 안 함
-
-        bool isEco = (i == 0 || i == 1 || i == 4);
-        string aboveKey = isEco ? "key1" : "key2";
-
-        AboveLine.StringReference.SetReference("Stage2_5AboveLine", aboveKey);
-        StoryLine.StringReference.SetReference("Stage2_5StoryLine", storyKeys[i]);
-
-        Eco.SetActive(isEco);
-        Cat.SetActive(!isEco);
-
-        AboveLine.OnUpdateString.RemoveAllListeners();
-        AboveLine.OnUpdateString.AddListener(text => AboveLineText.text = text);
-
-        StoryLine.OnUpdateString.RemoveAllListeners();
-        StoryLine.OnUpdateString.AddListener(OnStoryReady);
-
-        AboveLine.RefreshString();
-        StoryLine.RefreshString();
-
-        Button.gameObject.SetActive(false);
+        string lang = LanguageManager.GetLanguage()?.Trim().ToLower();
+        switch (lang)
+        {
+            case "korean": lines = languageCollector.KoreanLines2_5; break;
+            case "english": lines = languageCollector.EnglishLines2_5; break;
+            case "japanese": lines = languageCollector.JapaneseLines2_5; break;
+            case "chinese": lines = languageCollector.ChineseLines2_5; break;
+            case "kazahustan":
+            case "kaza": lines = languageCollector.KazaLines2_5; break;
+            default:
+                Debug.LogWarning($"Unknown language '{lang}', default to Korean.");
+                lines = languageCollector.KoreanLines2_5;
+                break;
+        }
     }
 
-
-    void OnStoryReady(string text)
+    private IEnumerator ShowLineSequence()
     {
-        StopAllCoroutines();
-        StartCoroutine(TypeText(text));
+        UpdateCharacterFace(index);
+        yield return new WaitForSeconds(0.5f);
+
+        if (typingCoroutine != null)
+            StopCoroutine(typingCoroutine);
+        typingCoroutine = StartCoroutine(TypeText(lines[index]));
+        yield return typingCoroutine;
+
+        nextButton?.gameObject.SetActive(true);
     }
 
-    IEnumerator TypeText(string fullText)
+    private void UpdateCharacterFace(int idx)
     {
-        StoryLineText.text = "";
+        Narke_3Obj?.SetActive(false);
+        if (idx == 0 || idx == 1)
+        {
+            if (windSource != null && !windSource.isPlaying)
+            {
+                windSource.Play();
+            }
+        }
+
+        Narke_3Obj?.SetActive(true);
+        if (aboveText != null) aboveText.text = "나르케";
+    }
+
+    private IEnumerator TypeText(string fullText)
+    {
+        if (storyText == null) yield break;
+        storyText.text = string.Empty;
         foreach (char c in fullText)
         {
-            StoryLineText.text += c;
-            yield return new WaitForSeconds(0.03f);
-        }
-
-        if (index == 0) // key2_5_1 ����
-        {
-            yield return new WaitForSeconds(1f);
-            YellingSound.Play();
-            yield return new WaitUntil(() => !YellingSound.isPlaying);
-            yield return new WaitForSeconds(0.5f);
-            index++;
-            ShowDialogue(index);
-        }
-        else
-        {
-            yield return new WaitForSeconds(0.5f);
-            Button.gameObject.SetActive(true);
+            storyText.text += c;
+            yield return new WaitForSeconds(typingSpeed);
         }
     }
 
-    void OnClickNext()
+    private void OnNext()
     {
+        nextButton?.gameObject.SetActive(false);
         index++;
-
-        if (index >= storyKeys.Length)
+        if (index >= lines.Length)
         {
-            SceneManager.LoadScene("CardgameSecondStage"); // 원하는 씬으로 전환
+            SceneManager.LoadScene("CardGameThirdStage");
+            return;
         }
-        else
+        StartCoroutine(ShowLineSequence());
+    }
+
+    private void SetupLanguageUI()
+    {
+        var all = new[] {
+            Korean_Above, Korean_Story,
+            English_Above, English_Story,
+            Japanese_Above, Japanese_Story,
+            Chinese_Above, Chinese_Story,
+            Kaza_Above, Kaza_Story
+        };
+        foreach (var rt in all)
+            rt?.gameObject.SetActive(false);
+
+        string lang = LanguageManager.GetLanguage()?.Trim().ToLower();
+        RectTransform above = Korean_Above, story = Korean_Story;
+        switch (lang)
         {
-            ShowDialogue(index);
+            case "english": above = English_Above; story = English_Story; break;
+            case "japanese": above = Japanese_Above; story = Japanese_Story; break;
+            case "chinese": above = Chinese_Above; story = Chinese_Story; break;
+            case "kazahustan":
+            case "kaza": above = Kaza_Above; story = Kaza_Story; break;
+        }
+        if (above != null && story != null)
+        {
+            above.gameObject.SetActive(true);
+            story.gameObject.SetActive(true);
+            above.anchoredPosition = AboPo;
+            story.anchoredPosition = StoPo;
         }
     }
 
+    private void OnLanguageChanged(string newLang)
+    {
+        LoadLinesForCurrentLanguage();
+        StopAllCoroutines();
+        StartCoroutine(ShowLineSequence());
+    }
+
+    private void OnDestroy()
+    {
+        LanguageManager.OnLanguageChanged -= OnLanguageChanged;
+    }
+
+    private void Update()
+    {
+        if (windSource != null && !windSource.isPlaying)
+        {
+            windSource.Play();
+        }
+    }
 }

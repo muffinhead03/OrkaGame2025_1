@@ -7,17 +7,21 @@ public class LanguageCollector2_4 : MonoBehaviour
         "히히 좋아~ "
     };
     public readonly string[] EnglishLines2_4 = {
+        "k"
 
     };
     public readonly string[] KazaLines2_4 = {
+        "k"
 
     };
 
     public readonly string[] JapaneseLines2_4 = {
+        "k"
 
     };
 
     public readonly string[] ChineseLines2_4 = {
+        "k"
 
     };
 

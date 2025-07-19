@@ -173,7 +173,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      injector_mousehover(eng)_0: -1575555428946956546
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
