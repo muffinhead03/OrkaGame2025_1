@@ -1,98 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="7bf14d68-d7c8-4e1d-a6f7-d13fe877f08b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/Font/KOREAN/Stage2/Stage2_3.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Font/KOREAN/Stage2/Stage2_3/NotoSerifKR-Black SDF.asset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Font/KOREAN/Stage2/Stage2_3/NotoSerifKR-Black SDF.asset.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Font/KOREAN/Stage3.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Font/KOREAN/Stage3/NotoSerifKR-Black SDF.asset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Font/KOREAN/Stage3/NotoSerifKR-Black SDF.asset.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Image/UI/스테이지3 선택박스/2_1/ss6-1(eng)-1.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Image/UI/스테이지3 선택박스/2_1/ss6-1(eng)-1.png.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Image/UI/스테이지3 선택박스/2_1/ss6-1(eng).png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Image/UI/스테이지3 선택박스/2_1/ss6-1(eng).png.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Image/UI/스테이지3 선택박스/2_1/ss6-1(kr)-1.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Image/UI/스테이지3 선택박스/2_1/ss6-1(kr)-1.png.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Image/UI/스테이지3 선택박스/2_1/ss6-1(kr).png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Image/UI/스테이지3 선택박스/2_1/ss6-1(kr).png.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Image/UI/스테이지3 선택박스/2_2/6-2(eng).png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Image/UI/스테이지3 선택박스/2_2/6-2(eng).png.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Image/UI/스테이지3 선택박스/2_2/6-2(kr).png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Image/UI/스테이지3 선택박스/2_2/6-2(kr).png.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Image/UI/스테이지3 선택박스/2_2/ss6-2(eng).png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Image/UI/스테이지3 선택박스/2_2/ss6-2(eng).png.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Resources.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage2/Stage2_3_1/HoverObjectSwitcher.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage2/Stage2_3_1/HoverObjectSwitcher.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage2/Stage2_4/DialogueManager2_4.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage2/Stage2_4/DialogueManager2_4.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage3/Stage3_1/DialogueManager3_1.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage3/Stage3_1/DialogueManager3_1.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage3/Stage3_2/DialogueManager3_2.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage3/Stage3_2/DialogueManager3_2.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage3/Stage3_3/DialogueManager3_3.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage3/Stage3_3/DialogueManager3_3.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage3/Stage3_4/DialogueManager3_4.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage3/Stage3_4/DialogueManager3_4.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage3/Stage3_4/LanguageCollector3_4.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage3/Stage3_5/DialogueManager3_5.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage3/Stage3_5/DialogueManager3_5.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Font/KOREAN/Stage2/Stage2_1/NotoSerifKR-Black SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Font/KOREAN/Stage2/Stage2_1/NotoSerifKR-Black SDF.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Image/BackGround/et in arcadia ego.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Image/BackGround/et in arcadia ego.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Coffee/teacup.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Coffee/teacup.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Coffee/teacup_mousehover(eng).png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Coffee/teacup_mousehover(eng).png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Coffee/teacup_mousehover(jp).png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Coffee/teacup_mousehover(jp).png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Coffee/teacup_mousehover(kaz).png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Coffee/teacup_mousehover(kaz).png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Coffee/teacup_mousehover.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Coffee/teacup_mousehover.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/DrugBag/medicinebag.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/DrugBag/medicinebag.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/DrugBag/medicinebag_mousehover(cn).png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/DrugBag/medicinebag_mousehover(cn).png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/DrugBag/medicinebag_mousehover(eng).png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/DrugBag/medicinebag_mousehover(eng).png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/DrugBag/medicinebag_mousehover(jp).png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/DrugBag/medicinebag_mousehover(jp).png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/DrugBag/medicinebag_mousehover(kaz).png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/DrugBag/medicinebag_mousehover(kaz).png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/DrugBag/medicinebag_mousehover.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/DrugBag/medicinebag_mousehover.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Jusa/injector.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Jusa/injector.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Jusa/injector_mousehover(cn).png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Jusa/injector_mousehover(cn).png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Jusa/injector_mousehover(eng).png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Jusa/injector_mousehover(eng).png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Jusa/injector_mousehover(jp).png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Jusa/injector_mousehover(jp).png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Jusa/injector_mousehover(kaz).png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Jusa/injector_mousehover(kaz).png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Jusa/injector_mousehover.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Jusa/injector_mousehover.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Piri/pipe.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Piri/pipe.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Piri/pipe_mousehover(cn).png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Piri/pipe_mousehover(cn).png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Piri/pipe_mousehover(eng).png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Piri/pipe_mousehover(eng).png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Piri/pipe_mousehover(jp).png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Piri/pipe_mousehover(jp).png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Piri/pipe_mousehover(kaz).png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Piri/pipe_mousehover(kaz).png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Piri/pipe_mousehover.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Image/MiniGame/SlidingGame/FirstSliding/SllidingHint/Piri/pipe_mousehover.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Image/UI/스테이지3 선택박스/6_1.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Image/UI/스테이지3 선택박스/2_1.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Image/UI/스테이지3 선택박스/6_2.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Image/UI/스테이지3 선택박스/2_2.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/DuringGame/Second/Stage2_1/Stage2_1.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/DuringGame/Second/Stage2_1/Stage2_1.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/DuringGame/Second/Stage2_2/Stage2_2.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/DuringGame/Second/Stage2_2/Stage2_2.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/DuringGame/Second/Stage2_3/Stage2_3.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/DuringGame/Second/Stage2_3/Stage2_3.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/DuringGame/Second/Stage2_3_1/Stage2_3_1.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/DuringGame/Second/Stage2_3_1/Stage2_3_1.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/DuringGame/Second/Stage2_4/Stage2_4.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/DuringGame/Second/Stage2_4/Stage2_4.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/DuringGame/Second/Stage2_5/Stage2_5.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/DuringGame/Second/Stage2_5/Stage2_5.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/DuringGame/Third/Stage3_1/Stage3_1.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/DuringGame/Third/Stage3_1/Stage3_1.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/DuringGame/Third/Stage3_2/Stage3_2.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/DuringGame/Third/Stage3_2/Stage3_2.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/DuringGame/Third/Stage3_3/Stage3_3.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/DuringGame/Third/Stage3_3/Stage3_3.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/DuringGame/Third/Stage3_4/Stage3_4.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/DuringGame/Third/Stage3_4/Stage3_4.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/DuringGame/Third/Stage3_5/Stage3_5.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/DuringGame/Third/Stage3_5/Stage3_5.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage2/Stage2_2/Dialogue Manager 2_2.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage2/Stage2_2/Dialogue Manager 2_2.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage2/Stage2_3/DialogueManager2_3.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage2/Stage2_3/DialogueManager2_3.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage2/Stage2_3_1/Dialogue Manager2_3_1.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage2/Stage2_3_1/Dialogue Manager2_3_1.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage2/Stage2_4/DialogueManeger2_4.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage2/Stage2_4/DialogueManeger2_4.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage2/Stage2_4/LanguegeDialogue2_4.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage2/Stage2_4/LanguegeDialogue2_4.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage2/Stage2_5/DialogueManager2_5.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage2/Stage2_5/DialogueManager2_5.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage2/Stage2_5/LanguageDialogue2_5.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage2/Stage2_5/LanguageDialogue2_5.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage3/Stage3_1/LanguageDialogue3_1.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage3/Stage3_1/LanguageCollector3_1.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage3/Stage3_1/LanguageDialogue3_1.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage3/Stage3_1/LanguageCollector3_1.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage3/Stage3_2/LanguageDialogue3_2.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage3/Stage3_2/LanguageCollector3_2.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage3/Stage3_2/LanguageDialogue3_2.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage3/Stage3_2/LanguageCollector3_2.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage3/Stage3_4/LanguageDialogue3_4.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage3/Stage3_4/LanguageCollector3_4.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage3/Stage3_4/LanguageDialogue3_4.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/UniversalRenderPipelineGlobalSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/UniversalRenderPipelineGlobalSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage3/Stage3_2/DialogueManager3_2.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage3/Stage3_2/DialogueManager3_2.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage3/Stage3_5/DialogueManager3_5.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage3/Stage3_5/DialogueManager3_5.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage3/Stage3_5/LanguageDialogue3_5.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/StartGame/Stage3/Stage3_5/LanguageDialogue3_5.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -102,9 +22,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 6
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
   <component name="ProjectId" id="305oKZqZYh4HZC9Lf3Pa9EAvkzL" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -115,7 +35,7 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "Rebasing main"
+    "git-widget-placeholder": "main"
   }
 }]]></component>
   <component name="TaskManager">

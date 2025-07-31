@@ -40,7 +40,6 @@ public class DialogueManager3_2 : MonoBehaviour
     public GameObject Narke_defaultObj;
     public GameObject Narke_2Obj;
 
-
     [Header("배경 이미지")]
     public Image backgroundImage;
     public Sprite backGroundSprite;
@@ -118,7 +117,6 @@ public class DialogueManager3_2 : MonoBehaviour
             yield break;
         }
 
-        // 사운드 제어 (index == 1일 때만 쾅, 그 외엔 BGM)
         if (index == 1 && !kwangPlayed)
         {
             kwangSound?.Play();
@@ -145,7 +143,6 @@ public class DialogueManager3_2 : MonoBehaviour
 
         nextButton?.gameObject.SetActive(true);
 
-        // 마지막 대사에서 선택지 버튼 표시
         if (index == lines.Length - 1)
         {
             string lang = LanguageManager.GetLanguage()?.Trim().ToLower();
@@ -174,21 +171,24 @@ public class DialogueManager3_2 : MonoBehaviour
                         string btnName = btn.gameObject.name.ToLower().Trim();
                         Debug.Log($"[선택지 버튼 찾음] {btnName}");
 
-                        if (btnName.StartsWith("2"))
+                        if (btnName.StartsWith("ss"))
                         {
-                            btn.gameObject.SetActive(true);
-
                             if (btnName.Contains("2_1"))
+                            {
+                                btn.onClick.RemoveAllListeners();
                                 btn.onClick.AddListener(() => LoadScene("Stage3_3"));
+                            }
                             else if (btnName.Contains("2_2"))
+                            {
+                                btn.onClick.RemoveAllListeners();
                                 btn.onClick.AddListener(() => LoadScene("Stage3_4"));
+                            }
                         }
                     }
                 }
             }
         }
-    }
-
+    } // ← 여기 중괄호 추가됨
 
     private void UpdateCharacterFace(int idx)
     {
@@ -202,9 +202,7 @@ public class DialogueManager3_2 : MonoBehaviour
 
         switch (idx)
         {
-            case 0:
-                Eco_smiledObj?.SetActive(true);
-                break;
+            case 0: Eco_smiledObj?.SetActive(true); break;
             case 1:
             case 3:
             case 4:
@@ -212,37 +210,24 @@ public class DialogueManager3_2 : MonoBehaviour
             case 6:
             case 8:
             case 10:
-            case 15:
-                Pan_defaultObj?.SetActive(true);
-                break;
+            case 15: Pan_defaultObj?.SetActive(true); break;
             case 2:
-            case 9:
-                Eco_eyeclosedObj?.SetActive(true);
-                break;
-            case 7:
-                Eco_readyObj?.SetActive(true);
-                break;
+            case 9: Eco_eyeclosedObj?.SetActive(true); break;
+            case 7: Eco_readyObj?.SetActive(true); break;
             case 11:
-            case 12:
-                Narke_defaultObj?.SetActive(true);
-                break;
-            case 13:
-                Narke_2Obj?.SetActive(true);
-                break;
-            case 14:
-                Eco_surprisedObj?.SetActive(true);
-                break;
+            case 12: Narke_defaultObj?.SetActive(true); break;
+            case 13: Narke_2Obj?.SetActive(true); break;
+            case 14: Eco_surprisedObj?.SetActive(true); break;
         }
 
-        // 이름 레이블 처리
         if (aboveText != null)
         {
-            if (Narke_defaultObj != null && Narke_defaultObj.activeSelf || Narke_2Obj != null && Narke_2Obj.activeSelf)
+            if ((Narke_defaultObj != null && Narke_defaultObj.activeSelf) || (Narke_2Obj != null && Narke_2Obj.activeSelf))
                 aboveText.text = "나르케";
-            else if (Eco_smiledObj != null && Eco_smiledObj.activeSelf ||
-                     Eco_readyObj != null && Eco_readyObj.activeSelf ||
-                     Eco_eyeclosedObj != null && Eco_eyeclosedObj.activeSelf ||
-                     Eco_surprisedObj != null && Eco_surprisedObj.activeSelf)
+            else if ((Eco_smiledObj != null && Eco_smiledObj.activeSelf) ||
+                     (Eco_readyObj != null && Eco_readyObj.activeSelf) ||
+                     (Eco_eyeclosedObj != null && Eco_eyeclosedObj.activeSelf) ||
+                     (Eco_surprisedObj != null && Eco_surprisedObj.activeSelf))
                 aboveText.text = "에코";
             else if (Pan_defaultObj != null && Pan_defaultObj.activeSelf)
                 aboveText.text = "판";

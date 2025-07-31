@@ -74,14 +74,34 @@ public class DialogueManager3_5 : MonoBehaviour
 
     private void ShowCurrentDialogue()
     {
+        // 일회성 오디오 정지
+        FestivalSource?.Stop();
+        DoorGoriSource?.Stop();
+        DoorOpenSource?.Stop();
+        FluteSource?.Stop();
+        FallSoundSource?.Stop();
+
         ApplyBackground(index);
         ApplyCharacter(index);
-        ManageLoopingSounds(index);
 
-        if (index == 3 && DoorGoriSource != null) DoorGoriSource.Play();
-        if (index == 9) StartCoroutine(HandleFluteThenFall());
+        // 대사 시작 시점에서 재생되는 사운드
+        if (index == 3 && DoorGoriSource != null)
+            DoorGoriSource.Play();
 
-        if (typingCoroutine != null) StopCoroutine(typingCoroutine);
+        if (index == 9 && FluteSource != null)
+        {
+            FluteSource.Play(); //  즉시 재생
+            StartCoroutine(PlayFluteThenFall()); // Flute 끝나고 Fall 재생
+        }
+
+        if (index == 10 && FestivalSource != null)
+        {
+            FestivalSource.loop = false;
+            FestivalSource.Play();
+        }
+
+        if (typingCoroutine != null)
+            StopCoroutine(typingCoroutine);
         typingCoroutine = StartCoroutine(TypeText(lines[index]));
     }
 
@@ -89,13 +109,25 @@ public class DialogueManager3_5 : MonoBehaviour
     {
         foreach (var bg in backgroundObjs)
             if (bg != null) bg.SetActive(false);
+        BlackImageObj?.SetActive(false);
+        SunBackGroundObj?.SetActive(false);
+        WhiteImageObj?.SetActive(false);
+        BackGroundObj?.SetActive(false);
 
         if (idx == 7)
             BlackImageObj?.SetActive(true);
-        else if (idx == 10 || idx == 11 || idx == 9)
+        else if (idx == 9 || idx == 10)
+        {
             SunBackGroundObj?.SetActive(true);
+        }
+        else if (idx == 11)
+        {
+            // WhiteImageObj는 페이드인에서 따로 활성화되므로 여기선 그대로 둠
+        }
         else
+        {
             BackGroundObj?.SetActive(true);
+        }
     }
 
     private void ApplyCharacter(int idx)
@@ -107,22 +139,14 @@ public class DialogueManager3_5 : MonoBehaviour
         {
             case 0:
             case 2:
-            case 9:
-                Eco_real6Obj?.SetActive(true); break;
-            case 1:
-                Eco_real_defaultObj?.SetActive(true); break;
-            case 3:
-                Eco_real5Obj?.SetActive(true); break;
-            case 4:
-                Eco_real2Obj?.SetActive(true); break;
-            case 5:
-                Eco_real3Obj?.SetActive(true); break;
-            case 6:
-                Eco_laughObj?.SetActive(true); break;
-            case 7:
-                Eco_banjunObj?.SetActive(true); break;
-            case 8:
-                Eco_real4Obj?.SetActive(true); break;
+            case 9: Eco_real6Obj?.SetActive(true); break;
+            case 1: Eco_real_defaultObj?.SetActive(true); break;
+            case 3: Eco_real5Obj?.SetActive(true); break;
+            case 4: Eco_real2Obj?.SetActive(true); break;
+            case 5: Eco_real3Obj?.SetActive(true); break;
+            case 6: Eco_laughObj?.SetActive(true); break;
+            case 7: Eco_banjunObj?.SetActive(true); break;
+            case 8: Eco_real4Obj?.SetActive(true); break;
         }
     }
 
@@ -135,6 +159,7 @@ public class DialogueManager3_5 : MonoBehaviour
             yield return new WaitForSeconds(typingSpeed);
         }
 
+        //  대사 종료 후 재생되는 오디오
         if (index == 1 && FestivalSource != null)
         {
             FestivalSource.loop = false;
@@ -160,38 +185,7 @@ public class DialogueManager3_5 : MonoBehaviour
         ShowCurrentDialogue();
     }
 
-    private void ManageLoopingSounds(int idx)
-    {
-        StopLoopingSounds();
-
-        if (idx >= 0 && idx <= 6)
-        {
-            if (BGMSource != null) { BGMSource.loop = true; BGMSource.Play(); }
-        }
-        else if (idx == 8 || idx == 9)
-        {
-            if (BreathSource != null) { BreathSource.loop = true; BreathSource.Play(); }
-        }
-        else if (idx == 10 || idx == 11)
-        {
-            if (BirdSource != null) { BirdSource.loop = true; BirdSource.Play(); }
-            if (idx == 10 && FestivalSource != null)
-            {
-                FestivalSource.loop = true;
-                FestivalSource.Play();
-            }
-        }
-    }
-
-    private void StopLoopingSounds()
-    {
-        if (BGMSource != null && BGMSource.isPlaying) BGMSource.Stop();
-        if (BreathSource != null && BreathSource.isPlaying) BreathSource.Stop();
-        if (BirdSource != null && BirdSource.isPlaying) BirdSource.Stop();
-        if (FestivalSource != null && FestivalSource.loop) FestivalSource.Stop();
-    }
-
-    private IEnumerator HandleFluteThenFall()
+    private IEnumerator PlayFluteThenFall()
     {
         if (FluteSource != null)
         {
@@ -199,8 +193,12 @@ public class DialogueManager3_5 : MonoBehaviour
             yield return new WaitWhile(() => FluteSource.isPlaying);
         }
 
-        if (FallSoundSource != null) FallSoundSource.Play();
-        yield return new WaitForSeconds(3f);
+        if (FallSoundSource != null)
+        {
+            FallSoundSource.Play();
+            yield return new WaitWhile(() => FallSoundSource.isPlaying);
+        }
+
         StartCoroutine(FadeToImage(SunBackGroundObj, 3f));
     }
 
@@ -283,5 +281,16 @@ public class DialogueManager3_5 : MonoBehaviour
     private void OnDestroy()
     {
         LanguageManager.OnLanguageChanged -= OnLanguageChanged;
+    }
+
+    private void Update()
+    {
+        //  반복 재생 사운드
+        if (index >= 0 && index <= 6 && BGMSource != null && !BGMSource.isPlaying)
+            BGMSource.Play();
+        else if ((index == 8 || index == 9) && BreathSource != null && !BreathSource.isPlaying)
+            BreathSource.Play();
+        else if ((index == 10 || index == 11) && BirdSource != null && !BirdSource.isPlaying)
+            BirdSource.Play();
     }
 }
