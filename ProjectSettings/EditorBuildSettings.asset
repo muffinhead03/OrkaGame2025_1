@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/BeforeGame/mainMenuPanel.unity
     guid: 5ee9e7fed31bf64459535d4b20032429
   - enabled: 0
@@ -29,13 +29,13 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/DuringGame/Second/Stage2_2/Stage2_2.unity
     guid: 1c122665140e9044ea7a728ddb90c3ba
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/DuringGame/Second/Stage2_3_1/Stage2_3_1.unity
     guid: 6e0c69a0b166a0548818e9052ef3c46b
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/DuringGame/Second/Stage2_4/Stage2_4.unity
     guid: 95ba6d1ac97098e4a9e86fc0aa9e571a
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/DuringGame/Second/Stage2_5/Stage2_5.unity
     guid: 1b5ecc94d8a105e4b8f98ee162d27cb3
   - enabled: 0
@@ -53,7 +53,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/DuringGame/FirstOne/Stage1_2/Stage1_2.unity
     guid: cb7cec3abb0fbc34398dd3ac1c2d4cdb
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/DuringGame/Second/MiniGame_Card/CardGameFirstStage.unity
     guid: e92f960b695308a4585f6a111bb73635
   - enabled: 0

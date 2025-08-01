@@ -174,6 +174,7 @@ public class FirstCardLanguage : MonoBehaviour
                 if (gameManager != null)
                 {
                     Debug.Log("[Dialogue] Last line clicked → Start timer manually.");
+                    
                     gameManager.StartTimerManually();
                 }
             }

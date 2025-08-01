@@ -5,7 +5,6 @@ public static class LanguageManager
 {
     private static string currentLanguage;
 
-    // ✅ 언어 변경 이벤트
     public static event Action<string> OnLanguageChanged;
 
     public static void Initialize()
@@ -25,8 +24,19 @@ public static class LanguageManager
                 case SystemLanguage.ChineseTraditional:
                     currentLanguage = "chinese";
                     break;
+                // ❗ SystemLanguage.Kazakh는 존재하지 않으므로 아래처럼 처리
+                /*
+                case SystemLanguage.Kazakh: // ⚠️ Unity에 존재하지 않음
+                    currentLanguage = "kazakh";
+                    break;
+                */
                 default:
-                    currentLanguage = "english";
+                    // PlayerPrefs 등을 통해 카자흐스탄어 감지 시
+                    string userLang = PlayerPrefs.GetString("user_language", "").ToLower();
+                    if (userLang == "kazakh" || userLang == "kk")
+                        currentLanguage = "kazakh";
+                    else
+                        currentLanguage = "english";
                     break;
             }
         }
@@ -39,7 +49,7 @@ public static class LanguageManager
         if (currentLanguage != lang)
         {
             currentLanguage = lang;
-            OnLanguageChanged?.Invoke(currentLanguage); // ✅ 변경 통보
+            OnLanguageChanged?.Invoke(currentLanguage);
         }
     }
 

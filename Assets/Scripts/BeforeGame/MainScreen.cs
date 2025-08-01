@@ -6,7 +6,7 @@ public class MainScreen : MonoBehaviour
     // Start 버튼 클릭 시 호출되는 함수
     public void OnStartButtonClicked()
     {
-        SceneManager.LoadScene("SlidingPuzzle");
+        SceneManager.LoadScene("CardGameFirstStage");
     }
 
     // Quit 버튼 클릭 시 호출되는 함수

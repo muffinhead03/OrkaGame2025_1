@@ -6,6 +6,7 @@ using System.Collections;
 
 public class PuzzleGameFirstManagerScript : MonoBehaviour
 {
+    private bool timerManuallyStarted = false;
     public CardGame1PanelManager[] slots;
     public string[] correctCardNames;
 
@@ -17,8 +18,14 @@ public class PuzzleGameFirstManagerScript : MonoBehaviour
     public CanvasGroup blackPanel; // 검은 화면용
     public AudioSource fluteAudioSource; // 피리 소리
 
+    public GameObject firstPanel;    // 설정된 외부에서 할당
+    public GameObject settingPanel;  // 설정된 외부에서 할당
+
     void Start()
     {
+        // 처음엔 타이머 비활성화 상태
+        timerManuallyStarted = false;
+
         if (blackPanel != null)
         {
             blackPanel.alpha = 0f;
@@ -29,7 +36,10 @@ public class PuzzleGameFirstManagerScript : MonoBehaviour
 
     void Update()
     {
-        if (isGameOver || isClearing) return;
+        if (!timerManuallyStarted || isGameOver || isClearing) return;
+
+        // 패널이 중앙에 있으면 타이머 일시 정지
+        if (IsPanelBlocking()) return;
 
         timeRemaining -= Time.deltaTime;
         timeRemaining = Mathf.Clamp(timeRemaining, 0f, 15f);
@@ -80,6 +90,28 @@ public class PuzzleGameFirstManagerScript : MonoBehaviour
             }
         }
         return true;
+    }
+
+    public void StartTimerManually()
+    {
+        if (!timerManuallyStarted)
+        {
+            timerManuallyStarted = true;
+            Debug.Log("[TIMER] ▶ Timer started manually!");
+        }
+    }
+
+    bool IsPanelBlocking()
+    {
+        Vector2 center = Vector2.zero;
+
+        if (firstPanel != null && Vector2.Distance(firstPanel.transform.position, center) < 1f)
+            return true;
+
+        if (settingPanel != null && Vector2.Distance(settingPanel.transform.position, center) < 1f)
+            return true;
+
+        return false;
     }
 
     IEnumerator HandleCorrectClear()

@@ -11,6 +11,7 @@ public class CardGame1Manager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     private Transform originalParent;
     private CardGame1PanelManager currentSlot;
 
+    public bool canDrag = true;
     private void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
@@ -39,6 +40,7 @@ public class CardGame1Manager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (!canDrag) return;
         Debug.Log("드래그 시작");
 
         originalPosition = rectTransform.anchoredPosition;
@@ -55,11 +57,14 @@ public class CardGame1Manager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (!canDrag) return;
+        
         rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (!canDrag) return;
         Debug.Log("드래그 끝");
         canvasGroup.blocksRaycasts = true;
 
