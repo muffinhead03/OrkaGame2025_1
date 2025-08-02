@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class CardGame1Manager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class CardGame1Manager : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
 {
     private Canvas canvas;
     private RectTransform rectTransform;
@@ -10,8 +10,17 @@ public class CardGame1Manager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     private Vector3 originalPosition;
     private Transform originalParent;
     private CardGame1PanelManager currentSlot;
+    
+    private FirstCardLanguageManager dialogueManager;
 
     public bool canDrag = true;
+    
+    private void Start()
+    {
+        dialogueManager = FindObjectOfType<FirstCardLanguageManager>();
+    }
+
+
     private void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
@@ -40,7 +49,7 @@ public class CardGame1Manager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (!canDrag) return;
+        if (!canDrag || dialogueManager == null || !dialogueManager.IsDialogueComplete()) return;
         Debug.Log("드래그 시작");
 
         originalPosition = rectTransform.anchoredPosition;
@@ -57,14 +66,16 @@ public class CardGame1Manager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (!canDrag) return;
-        
+        if (!canDrag || dialogueManager == null || !dialogueManager.IsDialogueComplete()) return;
+
+
         rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (!canDrag) return;
+        if (!canDrag || dialogueManager == null || !dialogueManager.IsDialogueComplete()) return;
+
         Debug.Log("드래그 끝");
         canvasGroup.blocksRaycasts = true;
 
@@ -86,12 +97,10 @@ public class CardGame1Manager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             }
         }
 
-        // ❗ 슬롯과 겹치지 않으면, 현재 위치에 남기되, 부모는 원래대로 되돌리기
+        // 슬롯과 겹치지 않으면 부모만 되돌림
         transform.SetParent(originalParent);
     }
 
-
-    // 슬롯과 얼마나 겹치는지 확인하는 함수
     private bool IsOverlappingEnough(RectTransform slot)
     {
         Rect cardRect = GetWorldRect(rectTransform);
@@ -122,5 +131,27 @@ public class CardGame1Manager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             return new Rect(xMin, yMin, xMax - xMin, yMax - yMin);
         else
             return new Rect(0, 0, 0, 0);
+    }
+
+    // ✅ 마우스 오버 시 크기 변경
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        Debug.Log($"[POINTER ENTER] {name} scale before: {transform.localScale}");
+
+        if (!canDrag || dialogueManager == null || !dialogueManager.IsDialogueComplete())
+        {
+            Debug.LogWarning($"[POINTER ENTER] Blocked - canDrag: {canDrag}, dialogueComplete: {(dialogueManager != null ? dialogueManager.IsDialogueComplete() : false)}");
+            return;
+        }
+
+        transform.localScale = new Vector3(1.2f, 1.2f, 1f);
+        Debug.Log($"[POINTER ENTER] {name} scale after: {transform.localScale}");
+    }
+
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (!canDrag || !dialogueManager.IsDialogueComplete()) return;
+        transform.localScale = Vector3.one;
     }
 }

@@ -192,6 +192,12 @@ public class FirstCardLanguageManager : MonoBehaviour
             }
         }
     }
+    
+    public bool IsDialogueComplete()
+    {
+        return currentLineIndex >= dialogueLines.Length;
+    }
+
 
 
 }
