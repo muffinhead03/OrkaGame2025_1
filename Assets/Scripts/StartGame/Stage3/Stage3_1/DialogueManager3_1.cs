@@ -126,6 +126,9 @@ public class DialogueManager3_1 : MonoBehaviour
         Eco_surprisedObj?.SetActive(false);
         Pan_defaultObj?.SetActive(false);
 
+        // 기본값: 에코
+        string characterName = "에코";
+
         switch (idx)
         {
             case 0:
@@ -139,6 +142,7 @@ public class DialogueManager3_1 : MonoBehaviour
             case 17:
             case 19:
                 Pan_defaultObj?.SetActive(true);
+                characterName = "판"; // Pan 이미지일 때는 "판"
                 break;
             case 2:
             case 3:
@@ -161,7 +165,11 @@ public class DialogueManager3_1 : MonoBehaviour
                 Eco_smiledObj?.SetActive(true);
                 break;
         }
+
+        if (aboveText != null)
+            aboveText.text = characterName;
     }
+
 
     private IEnumerator TypeText(string fullText)
     {
