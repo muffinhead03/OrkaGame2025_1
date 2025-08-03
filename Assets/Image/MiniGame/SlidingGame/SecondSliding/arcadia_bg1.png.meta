@@ -173,7 +173,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      arcadia_bg1_0: 6918010943490001376
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

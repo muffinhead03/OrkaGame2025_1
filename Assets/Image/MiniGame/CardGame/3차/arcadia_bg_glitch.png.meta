@@ -173,7 +173,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      arcadia_bg_glitch_0: -1187166961765071171
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -1000,6 +1000,8 @@ MonoBehaviour:
   Kaza_Story: {fileID: 1360717391}
   AboPo: {x: -750, y: 160}
   StoPo: {x: -250, y: -20}
+  aboveText: {fileID: 1739977095}
+  storyText: {fileID: 1739977089}
   nextButton: {fileID: 1739977087}
   fadeImage: {fileID: 1480357430}
   typingSpeed: 0.04
@@ -1251,6 +1253,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 906da017c4516654b9edb17f45dbee4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  KoreanLines2_3:
+  - "\uB0B4\uAC00 \uC774\uACBC\uB2E4!"
+  - "\uC5B4\uB77C, \uBC29\uAE08 \uBB34\uC2A8 \uC18C\uB9AC \uB4E4\uB9AC\uC9C0 \uC54A\uC558\uC5B4?"
+  - "\uBB34\uC2A8 \uC18C\uB9AC? \uC798\uBABB \uB4E4\uC740 \uAC70\uACA0\uC9C0~ \uB098\uB294
+    \uBABB \uB4E4\uC5C8\uB294\uAC78"
+  - "\uADF8\uAC83\uBCF4\uB2E4\uB3C4 \uB2E4\uC74C \uD310 \uC2DC\uC791\uD558\uC790"
+  - "(\uD558\uAE34 \uC774\uB7F0 \uD3C9\uD654\uB85C\uC6B4 \uACF3\uC5D0 \uADF8\uB7F0
+    \uC18C\uB9AC\uAC00...) \uADF8\uB798, \uC88B\uC544!"
 --- !u!224 &1360717391 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4995920051087956217, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
@@ -1513,11 +1523,11 @@ PrefabInstance:
     - target: {fileID: 909306515804224714, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
       propertyPath: m_fontAsset
       value: 
-      objectReference: {fileID: 11400000, guid: a805e41539f09ac4ca24fa7ee5a42e81, type: 2}
+      objectReference: {fileID: 11400000, guid: 332c3563fa576c14090e68532e5a4b5b, type: 2}
     - target: {fileID: 909306515804224714, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: -8229355675053043844, guid: a805e41539f09ac4ca24fa7ee5a42e81, type: 2}
+      objectReference: {fileID: 8619507339903502709, guid: 332c3563fa576c14090e68532e5a4b5b, type: 2}
     - target: {fileID: 909306515804224714, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
       propertyPath: m_hasFontAssetChanged
       value: 0
@@ -1525,11 +1535,11 @@ PrefabInstance:
     - target: {fileID: 3909544239928108003, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
       propertyPath: m_fontAsset
       value: 
-      objectReference: {fileID: 11400000, guid: a805e41539f09ac4ca24fa7ee5a42e81, type: 2}
+      objectReference: {fileID: 11400000, guid: 332c3563fa576c14090e68532e5a4b5b, type: 2}
     - target: {fileID: 3909544239928108003, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: -8229355675053043844, guid: a805e41539f09ac4ca24fa7ee5a42e81, type: 2}
+      objectReference: {fileID: 8619507339903502709, guid: 332c3563fa576c14090e68532e5a4b5b, type: 2}
     - target: {fileID: 3909544239928108003, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
       propertyPath: m_hasFontAssetChanged
       value: 0
@@ -1660,6 +1670,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 9104080948430714705, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
   m_PrefabInstance: {fileID: 1739977085}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1739977095 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3909544239928108003, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
+  m_PrefabInstance: {fileID: 1739977085}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1823231787
 GameObject:
   m_ObjectHideFlags: 0

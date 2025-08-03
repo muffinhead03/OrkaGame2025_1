@@ -173,7 +173,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      glitch_screen_0: -1751094128831538018
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

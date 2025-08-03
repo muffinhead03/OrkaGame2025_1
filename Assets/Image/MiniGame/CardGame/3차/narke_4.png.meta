@@ -173,7 +173,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      narke_4_0: -8474318504797988335
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

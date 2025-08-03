@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class LanguageCollector2_3 : MonoBehaviour
 {
-    // 언어별 대사 배열
-    public readonly string[] KoreanLines2_3 = {
+    [TextArea(2, 5)]
+    public string[] KoreanLines2_3 = {
         "내가 이겼다!",
         "어라, 방금 무슨 소리 들리지 않았어?",
         "무슨 소리? 잘못 들은 거겠지~ 나는 못 들었는걸",

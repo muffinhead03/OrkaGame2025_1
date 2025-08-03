@@ -173,7 +173,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      cracked_menu_0: 4159161058225915528
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
