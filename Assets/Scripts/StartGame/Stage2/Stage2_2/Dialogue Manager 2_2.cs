@@ -6,29 +6,29 @@ using UnityEngine.SceneManagement;
 
 public class DialogueManagerStage2_2 : MonoBehaviour
 {
-    [Header("¾ð¾î ¿ÀºêÁ§Æ®")]
+    [Header("ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®")]
     public RectTransform Korean_Above, Korean_Story;
     public RectTransform English_Above, English_Story;
     public RectTransform Japanese_Above, Japanese_Story;
     public RectTransform Chinese_Above, Chinese_Story;
     public RectTransform Kaza_Above, Kaza_Story;
 
-    [Header("±âº» À§Ä¡°ª")]
+    [Header("ï¿½âº» ï¿½ï¿½Ä¡ï¿½ï¿½")]
     public Vector2 AboPo = new Vector2(-750f, 160f);
     public Vector2 StoPo = new Vector2(-250f, -20f);
 
-    [Header("UI ¿ä¼Ò")]
-    public TextMeshProUGUI aboveText;    // ÀÌ¸§ ·¹ÀÌºí
-    public TextMeshProUGUI storyText;    // ´ë»ç ÅØ½ºÆ®
-    public Button nextButton;            // Next ¹öÆ°
+    [Header("UI ï¿½ï¿½ï¿½")]
+    public TextMeshProUGUI aboveText;    // ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½Ìºï¿½
+    public TextMeshProUGUI storyText;    // ï¿½ï¿½ï¿½ ï¿½Ø½ï¿½Æ®
+    public Button nextButton;            // Next ï¿½ï¿½Æ°
 
-    [Header("Å¸ÀÌÇÎ ¼Óµµ")]
+    [Header("Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½Óµï¿½")]
     public float typingSpeed = 0.04f;
 
-    [Header("¿Àµð¿À")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½")]
     public AudioSource bgmSource;
 
-    [Header("Ç¥Á¤ ¿ÀºêÁ§Æ®")]
+    [Header("Ç¥ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®")]
     public GameObject Eco_eyeclosedObj;
     public GameObject Eco_defaultObj;
     public GameObject Eco_surprisedObj;
@@ -37,11 +37,11 @@ public class DialogueManagerStage2_2 : MonoBehaviour
     public GameObject Narke_2Obj;
     public GameObject Narke_defaultObj;
 
-    [Header("¹è°æ ÀÌ¹ÌÁö")]
+    [Header("ï¿½ï¿½ï¿½ ï¿½Ì¹ï¿½ï¿½ï¿½")]
     public Image backgroundImage;
     public Sprite backGroundSprite;
 
-    [Header("´ë»ç ½ºÅ©¸³Æ®")]
+    [Header("ï¿½ï¿½ï¿½ ï¿½ï¿½Å©ï¿½ï¿½Æ®")]
     public LanguageCollector2_2 languageCollector;
 
     private string[] lines;
@@ -62,12 +62,12 @@ public class DialogueManagerStage2_2 : MonoBehaviour
 
     private void Start()
     {
-        // 1) UI ¾ð¾î ¿ÀºêÁ§Æ® ¼³Á¤
+        // 1) UI ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
         SetupLanguageUI();
 
-        // (°íÁ¤ ·¹ÀÌºí ¼³Á¤ Á¦°Å)
+        // (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
 
-        // 3) ¹è°æ & BGM
+        // 3) ï¿½ï¿½ï¿½ & BGM
         if (backgroundImage != null && backGroundSprite != null)
             backgroundImage.sprite = backGroundSprite;
         if (bgmSource != null && !bgmSource.isPlaying)
@@ -76,10 +76,10 @@ public class DialogueManagerStage2_2 : MonoBehaviour
             bgmSource.Play();
         }
 
-        // 4) ´ë»ç ¹è¿­ ·Îµå
+        // 4) ï¿½ï¿½ï¿½ ï¿½è¿­ ï¿½Îµï¿½
         LoadLinesForCurrentLanguage();
 
-        // 5) ÀÎµ¦½º ÃÊ±âÈ­ ÈÄ Ã¹ ´ë»ç ½ÃÄö½º ½ÃÀÛ
+        // 5) ï¿½Îµï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­ ï¿½ï¿½ Ã¹ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         index = 0;
         StartCoroutine(ShowLineSequence());
     }
@@ -117,7 +117,7 @@ public class DialogueManagerStage2_2 : MonoBehaviour
 
     private void UpdateCharacterFace(int idx)
     {
-        // ¸ðµç Ç¥Á¤ ºñÈ°¼ºÈ­
+        // ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½ ï¿½ï¿½È°ï¿½ï¿½È­
         Eco_eyeclosedObj?.SetActive(false);
         Eco_defaultObj?.SetActive(false);
         Eco_surprisedObj?.SetActive(false);
@@ -126,7 +126,7 @@ public class DialogueManagerStage2_2 : MonoBehaviour
         Narke_2Obj?.SetActive(false);
         Narke_defaultObj?.SetActive(false);
 
-        // ÇÊ¿äÇÑ Ç¥Á¤¸¸ È°¼ºÈ­
+        // ï¿½Ê¿ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½ï¿½ï¿½ È°ï¿½ï¿½È­
         switch (idx)
         {
             case 0:
@@ -179,13 +179,13 @@ public class DialogueManagerStage2_2 : MonoBehaviour
                 break;
         }
 
-        // È°¼ºÈ­µÈ Ç¥Á¤¿¡ µû¶ó ·¹ÀÌºí º¯°æ
+        // È°ï¿½ï¿½È­ï¿½ï¿½ Ç¥ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½
         if (aboveText != null)
         {
             if (Narke_2Obj.activeSelf || Narke_defaultObj.activeSelf)
-                aboveText.text = "³ª¸£ÄÉ";
+                aboveText.text = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½";
             else
-                aboveText.text = "¿¡ÄÚ";
+                aboveText.text = "ï¿½ï¿½ï¿½ï¿½";
         }
     }
 
@@ -207,7 +207,7 @@ public class DialogueManagerStage2_2 : MonoBehaviour
         index++;
         if (index >= lines.Length)
         {
-            SceneManager.LoadScene("Stage2_3");
+            SceneManager.LoadScene("CardGameFirstStage");
             return;
         }
         StartCoroutine(ShowLineSequence());

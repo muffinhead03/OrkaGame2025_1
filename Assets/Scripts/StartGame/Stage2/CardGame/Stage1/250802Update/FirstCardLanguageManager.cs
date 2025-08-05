@@ -140,9 +140,11 @@ public class FirstCardLanguageManager : MonoBehaviour
         // ✅ 대사가 전부 끝났을 때만 드래그 허용 + 타이머 시작
         if (currentLineIndex >= dialogueLines.Length)
         {
-            EnableCardMovement(true); // ← 여기에만!
+            EnableCardMovement(true);
             gameManager.StartTimerManually();
+            gameManager.EndDialogue(); // ✅ 당근 활성화!!
         }
+
     }
 
     void OnEnable()

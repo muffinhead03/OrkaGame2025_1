@@ -561,6 +561,7 @@ MonoBehaviour:
   fluteSource: {fileID: 1900080514}
   breathSource: {fileID: 56137151}
   languageCollector: {fileID: 1711785442}
+  nextButton: {fileID: 1246103436}
 --- !u!1 &669727718
 GameObject:
   m_ObjectHideFlags: 0
@@ -864,6 +865,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 26d84106dcab0ad42ad2b2407da64c2e, type: 3}
+--- !u!1 &1246103436 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5210547753146830, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
+  m_PrefabInstance: {fileID: 1696358712}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1402732833
 PrefabInstance:
   m_ObjectHideFlags: 0
