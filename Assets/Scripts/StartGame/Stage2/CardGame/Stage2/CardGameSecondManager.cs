@@ -13,10 +13,12 @@ public class CardGameSecondManager : MonoBehaviour
     [Header("UI 및 화면 효과")]
     public TextMeshProUGUI timerText;
     public CanvasGroup blackPanel;
+    public GameObject carrotObject;
 
     private float timeRemaining = 25f;
     private bool isGameOver = false;
     private bool isClearing = false;
+    private bool isClearConditionMet = false;
 
     void Start()
     {
@@ -27,8 +29,22 @@ public class CardGameSecondManager : MonoBehaviour
             blackPanel.interactable = false;
         }
 
+        // 카드들이 비활성화되어 있다면 여기서 모두 켜줌
+        foreach (var slot in slots)
+        {
+            if (slot != null && !slot.gameObject.activeSelf)
+            {
+                slot.gameObject.SetActive(true);
+            }
+        }
+
+        // 당근 오브젝트도 바로 활성화
+        if (carrotObject != null)
+            carrotObject.SetActive(true);
+
         UpdateTimerDisplay();
     }
+
 
     void Update()
     {
@@ -48,16 +64,84 @@ public class CardGameSecondManager : MonoBehaviour
             }
             else
             {
-                StartCoroutine(HandleCorrectClear());
+                // 정답은 맞췄지만 시간 초과 → 그냥 기다림
+                isClearConditionMet = true;
+                if (carrotObject != null)
+                    carrotObject.SetActive(true); // 당근 보이기
             }
         }
-        else if (CheckClearCondition())
+        else if (CheckClearCondition() && !isClearConditionMet)
         {
-            isClearing = true;
-            StartCoroutine(HandleCorrectClear());
+            isClearConditionMet = true;
+            if (carrotObject != null)
+                carrotObject.SetActive(true); // 당근 보이기
         }
     }
 
+    public void OnCarrotClicked()
+    {
+        if (!isClearConditionMet || isClearing) return;
+
+        Debug.Log("🥕 당근 클릭됨 → 연출 및 씬 전환 시작");
+        StartCoroutine(CarrotShakeAndLoadScene());
+    }
+
+    IEnumerator CarrotShakeAndLoadScene()
+    {
+        isClearing = true;
+
+        float rotTime = 0.4f;
+
+        yield return RotateZ(carrotObject.transform, 20f, rotTime);
+        yield return RotateZ(carrotObject.transform, -40f, 0.4f);
+        yield return RotateZ(carrotObject.transform, 40f, 0.4f);
+        yield return RotateZ(carrotObject.transform, -40f, 0.4f);
+
+        carrotObject.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+
+        yield return new WaitForSeconds(0.5f);
+        yield return StartCoroutine(FlashBlack());
+
+        SceneManager.LoadScene("Stage2_3_1");
+    }
+
+    IEnumerator RotateZ(Transform target, float relativeAngle, float duration)
+    {
+        float startZ = target.localEulerAngles.z;
+        float targetZ = startZ + relativeAngle;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            float z = Mathf.LerpAngle(startZ, targetZ, t);
+            target.localRotation = Quaternion.Euler(0f, 0f, z);
+            yield return null;
+        }
+
+        target.localRotation = Quaternion.Euler(0f, 0f, targetZ);
+    }
+
+    IEnumerator FlashBlack()
+    {
+        float duration = 0.5f;
+        float half = duration / 2f;
+
+        for (float t = 0f; t < half; t += Time.deltaTime)
+        {
+            blackPanel.alpha = Mathf.Lerp(0f, 1f, t / half);
+            yield return null;
+        }
+        blackPanel.alpha = 1f;
+
+        for (float t = 0f; t < half; t += Time.deltaTime)
+        {
+            blackPanel.alpha = Mathf.Lerp(1f, 0f, t / half);
+            yield return null;
+        }
+        blackPanel.alpha = 0f;
+    }
     void UpdateTimerDisplay()
     {
         int seconds = Mathf.CeilToInt(timeRemaining);
@@ -80,34 +164,4 @@ public class CardGameSecondManager : MonoBehaviour
         return true;
     }
 
-    IEnumerator HandleCorrectClear()
-    {
-        isGameOver = true;
-
-        yield return new WaitForSeconds(2f);
-        yield return StartCoroutine(FlashBlack());
-
-        yield return new WaitForSeconds(0.5f);
-        SceneManager.LoadScene("Stage2_5");
-    }
-
-    IEnumerator FlashBlack()
-    {
-        float duration = 0.5f;
-        float half = duration / 2f;
-
-        for (float t = 0f; t < half; t += Time.deltaTime)
-        {
-            blackPanel.alpha = Mathf.Lerp(0f, 1f, t / half);
-            yield return null;
-        }
-        blackPanel.alpha = 1f;
-
-        for (float t = 0f; t < half; t += Time.deltaTime)
-        {
-            blackPanel.alpha = Mathf.Lerp(1f, 0f, t / half);
-            yield return null;
-        }
-        blackPanel.alpha = 0f;
-    }
 }

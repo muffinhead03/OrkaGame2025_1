@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class CardGame2Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class CardGame2Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
 {
     private RectTransform rectTransform;
     private CanvasGroup canvasGroup;
@@ -23,10 +23,10 @@ public class CardGame2Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         originalParent = transform.parent;
         canvasGroup.blocksRaycasts = false;
 
-        // 최상위로 옮기기
+        // 드래그 시 최상위로 올림
         transform.SetParent(canvas.transform);
 
-        // 슬롯 분리
+        // 슬롯에서 분리
         DetachFromSlot();
     }
 
@@ -39,21 +39,27 @@ public class CardGame2Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         canvasGroup.blocksRaycasts = true;
 
-        // 슬롯들과 충돌 검사
         CardGame2PanelManager[] slots = GameObject.FindObjectsOfType<CardGame2PanelManager>();
         foreach (var slot in slots)
         {
             if (IsOverlappingEnough(slot.GetComponent<RectTransform>()))
             {
                 if (slot.TryPlaceCard(this))
-                {
-                    return; // 슬롯에 배치됨
-                }
+                    return;
             }
         }
 
-        // ⛔ 슬롯이랑 안 겹치면 → 현재 위치 그대로 두기 (그대로 UI에 남기기)
-        // 아무 것도 안 함!
+        // 슬롯과 충분히 겹치지 않으면: 아무 것도 안 함 (그 자리에 그대로)
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        transform.localScale = Vector3.one * 1.2f; // 마우스 올라갔을 때 확대
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        transform.localScale = Vector3.one; // 마우스 나갔을 때 원래 크기
     }
 
     private bool IsOverlappingEnough(RectTransform slot)

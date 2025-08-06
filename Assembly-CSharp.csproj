@@ -65,6 +65,7 @@
     <Compile Include="Assets\Scripts\StartGame\Shared\Scripts\typeWriter\TypewriterEffect.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage2\CardGame2PanelMangager.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage3\Stage3_2\LanguageCollector3_2.cs" />
+    <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\CarrotShaker.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\Stage2_2\Dialogue Manager 2_2.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage3\Stage3_1\DialogueManager3_1.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage1\SlidingGame\SlidingGameManager1BeforeDeath\SlidingGameManager1Script.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="Assets\Scripts\StartGame\Stage2\Stage2_4\DialogueManager2_4.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage1\Stage1_3\DialogueManager1_3.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage1\SlidingGame\SlidingGameManager1AfterFirstDeath\SlidingPuzzle1ScriptAfterDeath.cs" />
+    <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Endings\CardGameSecondEnding.cs" />
     <Compile Include="Assets\Scripts\StartGame\Shared\Scripts\FitToScreen\FitToScreen.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage3\Stage3_5\LanguageDialogue3_5.cs" />
     <Compile Include="Assets\Scripts\BeforeGame\MainScreen.cs" />
@@ -111,6 +113,7 @@
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface-Mobile.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\SDFFunctions.hlsl" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface.shader" />
+    <None Include="Assets\Image\MiniGame\CardGame\3차\UI_CardThirdGlitchEffect.shader" />
     <None Include="Assets\TextMesh Pro\Sprites\EmojiOne Attribution.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Custom-Atlas.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF.shader" />

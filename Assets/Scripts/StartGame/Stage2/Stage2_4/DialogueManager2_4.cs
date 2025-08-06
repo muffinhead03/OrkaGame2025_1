@@ -6,18 +6,19 @@ using UnityEngine.SceneManagement;
 
 public class DialogueManager2_4 : MonoBehaviour
 {
-    [Header("¾ð¾î ¿ÀºêÁ§Æ®")]
+    [Header("ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®")]
     public RectTransform Korean_Above, Korean_Story;
     public RectTransform English_Above, English_Story;
     public RectTransform Japanese_Above, Japanese_Story;
     public RectTransform Chinese_Above, Chinese_Story;
     public RectTransform Kaza_Above, Kaza_Story;
 
-    [Header("±âº» À§Ä¡°ª")]
+    [Header("ï¿½âº» ï¿½ï¿½Ä¡ï¿½ï¿½")]
     public Vector2 AboPo = new Vector2(-750f, 160f);
     public Vector2 StoPo = new Vector2(-250f, -20f);
 
-    [Header("UI ¿ä¼Ò")]
+    
+    [Header("UI ï¿½ï¿½ï¿½")]
     public TextMeshProUGUI aboveText;
     public TextMeshProUGUI storyText;
     public Image backgroundImage;
@@ -25,19 +26,22 @@ public class DialogueManager2_4 : MonoBehaviour
     public GameObject Narke_2Obj;
     public Image endingImage;
 
-    [Header("Å¸ÀÌÇÎ ¼Óµµ")]
+    [Header("Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½Óµï¿½")]
     public float typingSpeed = 0.04f;
 
-    [Header("¿Àµð¿À")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½")]
     public AudioSource fluteSource;
     public AudioSource breathSource;
 
-    [Header("´ë»ç ½ºÅ©¸³Æ®")]
+    [Header("ï¿½ï¿½ï¿½ ï¿½ï¿½Å©ï¿½ï¿½Æ®")]
     public LanguageCollector2_4 languageCollector;
 
     private string[] lines;
     private int index;
     private Coroutine typingCoroutine;
+
+    
+    public GameObject nextButton;
 
     private void Awake()
     {
@@ -47,6 +51,9 @@ public class DialogueManager2_4 : MonoBehaviour
 
     private void Start()
     {
+        if (nextButton != null)
+            nextButton.SetActive(false);
+
         SetupLanguageUI();
 
         if (backgroundImage != null && backGroundSprite != null)
@@ -58,10 +65,10 @@ public class DialogueManager2_4 : MonoBehaviour
         LoadLinesForCurrentLanguage();
         index = 0;
 
-        // 1. ´ë»ç Ãâ·Â ½ÃÀÛ
+        // 1. ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         StartCoroutine(ShowLineSequence());
 
-        // 2. ¼Ò¸® ¼øÂ÷ Àç»ý & ¿£µùÀÌ¹ÌÁö ÆäÀÌµåÀÎ
+        // 2. ï¿½Ò¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ & ï¿½ï¿½ï¿½ï¿½ï¿½Ì¹ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìµï¿½ï¿½ï¿½
         StartCoroutine(PlaySoundSequenceAndFade());
     }
 
@@ -85,7 +92,7 @@ public class DialogueManager2_4 : MonoBehaviour
 
     private IEnumerator ShowLineSequence()
     {
-        if (aboveText != null) aboveText.text = "³ª¸£ÄÉ";
+        if (aboveText != null) aboveText.text = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½";
 
         if (typingCoroutine != null)
             StopCoroutine(typingCoroutine);
@@ -97,29 +104,35 @@ public class DialogueManager2_4 : MonoBehaviour
     {
         if (storyText == null) yield break;
         storyText.text = string.Empty;
+
         foreach (char c in fullText)
         {
             storyText.text += c;
             yield return new WaitForSeconds(typingSpeed);
         }
+
+        // âœ… íƒ€ì´í•‘ ëë‚¬ìœ¼ë©´ ë²„íŠ¼ ì¼œì£¼ê¸°
+        if (nextButton != null)
+            nextButton.gameObject.SetActive(true);
     }
+
 
     private IEnumerator PlaySoundSequenceAndFade()
     {
-        // fluteSound Àç»ý
+        // fluteSound ï¿½ï¿½ï¿½
         if (fluteSource != null)
         {
             fluteSource.Play();
             yield return new WaitWhile(() => fluteSource.isPlaying);
         }
 
-        // flute ³¡³­ µÚ ¡æ breath Àç»ý
+        // flute ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ breath ï¿½ï¿½ï¿½
         if (breathSource != null)
         {
             breathSource.Play();
         }
 
-        // breath ½ÃÀÛ ÈÄ 2ÃÊ ±â´Ù¸®°í ¿£µù ÀÌ¹ÌÁö ÆäÀÌµåÀÎ
+        // breath ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ 2ï¿½ï¿½ ï¿½ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¹ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìµï¿½ï¿½ï¿½
         yield return new WaitForSeconds(2f);
         StartCoroutine(FadeInEndingImage());
     }
@@ -186,4 +199,27 @@ public class DialogueManager2_4 : MonoBehaviour
     {
         LanguageManager.OnLanguageChanged -= OnLanguageChanged;
     }
+
+    public void OnNextClicked()
+    {
+        Debug.Log("Next ë²„íŠ¼ ëˆŒë¦¼");
+
+        nextButton.gameObject.SetActive(false);
+
+        index++;
+        if (index < lines.Length)
+        {
+            if (typingCoroutine != null)
+                StopCoroutine(typingCoroutine);
+
+            typingCoroutine = StartCoroutine(TypeText(lines[index]));
+        }
+        else
+        {
+            Debug.Log("ëª¨ë“  ëŒ€ì‚¬ ì¢…ë£Œ â†’ ì—”ë”© ì²˜ë¦¬ ì‹œìž‘");
+            StartCoroutine(PlaySoundSequenceAndFade());
+        }
+    }
+
+
 }
