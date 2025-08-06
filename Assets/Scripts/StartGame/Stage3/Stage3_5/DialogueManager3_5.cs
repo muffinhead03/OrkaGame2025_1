@@ -23,7 +23,6 @@ public class DialogueManager3_5 : MonoBehaviour
     public GameObject BlackImageObj;
     public GameObject WhiteImageObj;
     public GameObject BackGroundObj;
-    public GameObject SunBackGroundObj;
 
     [Header("캐릭터 이미지 오브젝트")]
     public GameObject Eco_real6Obj, Eco_real_defaultObj, Eco_real5Obj, Eco_real2Obj;
@@ -71,7 +70,7 @@ public class DialogueManager3_5 : MonoBehaviour
         };
 
         backgroundObjs = new[] {
-            BackGroundObj, BlackImageObj, SunBackGroundObj, WhiteImageObj,
+            BackGroundObj, BlackImageObj, WhiteImageObj,
             Real_bg1Obj, Real_bg2Obj
         };
 
@@ -141,6 +140,7 @@ public class DialogueManager3_5 : MonoBehaviour
         if (index == 10 && FluteSource != null)
         {
             FluteSource.Play();
+            nextButton.gameObject.SetActive(false);
             StartCoroutine(PlayFluteThenFall());
         }
 
@@ -259,10 +259,13 @@ public class DialogueManager3_5 : MonoBehaviour
         else if (index == 12)
         {
             // 대사 출력 완료 후 WhiteImageObj 페이드인
-            StartCoroutine(FadeToImage(WhiteImageObj, 3f));
+            yield return StartCoroutine(FadeToImage(WhiteImageObj, 3f));
         }
 
-        nextButton.gameObject.SetActive(true);
+        if (index != 10)
+        {
+            nextButton.gameObject.SetActive(true);
+        }
     }
 
     public void OnClickNext()
@@ -287,7 +290,10 @@ public class DialogueManager3_5 : MonoBehaviour
             yield return new WaitWhile(() => FallSoundSource.isPlaying);
         }
 
-        StartCoroutine(FadeToImage(Real_bg2Obj, 3f));
+        yield return StartCoroutine(FadeToImage(Real_bg2Obj, 3f)); // 배경 페이드인
+
+        index++; // 자동 진행
+        ShowCurrentDialogue(); // 다음 대사 출력 (case 11)
     }
 
     private IEnumerator FadeToImage(GameObject targetObj, float duration)

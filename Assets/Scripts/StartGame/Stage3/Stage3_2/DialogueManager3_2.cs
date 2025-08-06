@@ -36,6 +36,7 @@ public class DialogueManager3_2 : MonoBehaviour
     public GameObject Eco_surprisedObj;
 
     public GameObject Pan_defaultObj;
+    public GameObject Pan_4eyeclosedObj;
 
     public GameObject Narke_defaultObj;
     public GameObject Narke_2Obj;
@@ -197,6 +198,7 @@ public class DialogueManager3_2 : MonoBehaviour
         Eco_readyObj?.SetActive(false);
         Eco_surprisedObj?.SetActive(false);
         Pan_defaultObj?.SetActive(false);
+        Pan_4eyeclosedObj?.SetActive(false);
         Narke_defaultObj?.SetActive(false);
         Narke_2Obj?.SetActive(false);
 
@@ -206,11 +208,11 @@ public class DialogueManager3_2 : MonoBehaviour
             case 1:
             case 3:
             case 4:
-            case 5:
             case 6:
             case 8:
             case 10:
             case 15: Pan_defaultObj?.SetActive(true); break;
+            case 5: Pan_4eyeclosedObj?.SetActive(true);break;
             case 2:
             case 9: Eco_eyeclosedObj?.SetActive(true); break;
             case 7: Eco_readyObj?.SetActive(true); break;
@@ -222,17 +224,27 @@ public class DialogueManager3_2 : MonoBehaviour
 
         if (aboveText != null)
         {
-            if ((Narke_defaultObj != null && Narke_defaultObj.activeSelf) || (Narke_2Obj != null && Narke_2Obj.activeSelf))
+            if ((Narke_defaultObj != null && Narke_defaultObj.activeSelf) ||
+                (Narke_2Obj != null && Narke_2Obj.activeSelf))
+            {
                 aboveText.text = "나르케";
+            }
             else if ((Eco_smiledObj != null && Eco_smiledObj.activeSelf) ||
                      (Eco_readyObj != null && Eco_readyObj.activeSelf) ||
                      (Eco_eyeclosedObj != null && Eco_eyeclosedObj.activeSelf) ||
                      (Eco_surprisedObj != null && Eco_surprisedObj.activeSelf))
+            {
                 aboveText.text = "에코";
-            else if (Pan_defaultObj != null && Pan_defaultObj.activeSelf)
+            }
+            else if ((Pan_defaultObj != null && Pan_defaultObj.activeSelf) ||
+                     (Pan_4eyeclosedObj != null && Pan_4eyeclosedObj.activeSelf)) // 여기 추가됨
+            {
                 aboveText.text = "판";
+            }
             else
+            {
                 aboveText.text = "";
+            }
         }
     }
 
@@ -293,7 +305,32 @@ public class DialogueManager3_2 : MonoBehaviour
         LoadLinesForCurrentLanguage();
         StopAllCoroutines();
         StartCoroutine(ShowLineSequence());
+
+        UpdateLanguageSpecificObjects(newLang);
     }
+
+    private void UpdateLanguageSpecificObjects(string lang)
+    {
+        DisableAllLanguageObjects();
+
+        GameObject[] target = null;
+        switch (lang.Trim().ToLower())
+        {
+            case "korean": target = koreanObjects; break;
+            case "english": target = englishObjects; break;
+            case "japanese": target = japaneseObjects; break;
+            case "chinese": target = chineseObjects; break;
+            case "kaza":
+            case "kazahustan": target = kazaObjects; break;
+        }
+
+        if (target != null)
+        {
+            foreach (var obj in target)
+                if (obj != null) obj.SetActive(true);
+        }
+    }
+
 
     private void OnDestroy()
     {

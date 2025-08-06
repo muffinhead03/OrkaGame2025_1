@@ -28,7 +28,7 @@ public class DialogueManager3_3 : MonoBehaviour
     [Header("배경 및 캐릭터")]
     public Image backgroundImage;
     public GameObject blackImageObj;
-    public GameObject Pan_defaultObj;
+    public GameObject Pan_4eyeclosedObj;
     public GameObject Pan_2Obj;
 
     [Header("오디오")]
@@ -125,9 +125,9 @@ public class DialogueManager3_3 : MonoBehaviour
         if (backgroundImage != null) backgroundImage.enabled = (idx == 0);
         if (blackImageObj != null) blackImageObj.SetActive(idx == 1);
 
-        Pan_defaultObj?.SetActive(false);
+        Pan_4eyeclosedObj?.SetActive(false);
         Pan_2Obj?.SetActive(false);
-        if (idx == 0) Pan_defaultObj?.SetActive(true);
+        if (idx == 0) Pan_4eyeclosedObj?.SetActive(true);
 
         if (bgmSource != null)
         {

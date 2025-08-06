@@ -41,6 +41,7 @@ public class DialogueManager3_4_backup
     public GameObject Eco_tearObj;
 
     [Header("¿Àµð¿À")]
+    public AudioSource bgmSource;
     public AudioSource glitchSound;
     public AudioSource footSound;
     public AudioSource fluteSound;
@@ -94,6 +95,12 @@ public class DialogueManager3_4_backup
         UpdateVisuals(index);
         UpdateAboveText(index);
 
+        if (index == 2 && bgmSource != null && !bgmSource.isPlaying)
+        {
+            bgmSource.loop = true;
+            bgmSource.Play();
+        }
+
         yield return new WaitForSeconds(0.5f);
 
         if (typingCoroutine != null)
@@ -103,13 +110,22 @@ public class DialogueManager3_4_backup
 
         nextButton?.gameObject.SetActive(true);
 
-        if (index == 0 && glitchSound != null) glitchSound.Play();
-        if (index == 1 && footSound != null) footSound.Play();
-        if (index == 8)
+        switch (index)
         {
-            if (fluteSound != null) fluteSound.Play();
-            if (blackImageObj != null && fadeImage != null)
-                StartCoroutine(FadeToBlack(4f));
+            case 0:
+                glitchSound?.Play();
+                break;
+
+            case 1:
+                footSound?.Play();
+                break;
+
+            case 8:
+                fluteSound?.Play();
+
+                if (blackImageObj != null && fadeImage != null)
+                    StartCoroutine(FadeToBlack(4f));
+                break;
         }
     }
 

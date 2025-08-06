@@ -296,7 +296,32 @@ public class DialogueManager2_3_1 : MonoBehaviour
         LoadLinesForCurrentLanguage();
         StopAllCoroutines();
         StartCoroutine(ShowLineSequence());
+
+        UpdateLanguageSpecificObjects(newLang);
     }
+
+    private void UpdateLanguageSpecificObjects(string lang)
+    {
+        DisableAllLanguageObjects();
+
+        GameObject[] target = null;
+        switch (lang.Trim().ToLower())
+        {
+            case "korean": target = koreanObjects; break;
+            case "english": target = englishObjects; break;
+            case "japanese": target = japaneseObjects; break;
+            case "chinese": target = chineseObjects; break;
+            case "kaza":
+            case "kazahustan": target = kazaObjects; break;
+        }
+
+        if (target != null)
+        {
+            foreach (var obj in target)
+                if (obj != null) obj.SetActive(true);
+        }
+    }
+
 
     private void OnDestroy()
     {

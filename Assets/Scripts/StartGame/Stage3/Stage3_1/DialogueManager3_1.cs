@@ -35,6 +35,7 @@ public class DialogueManager3_1 : MonoBehaviour
     public GameObject Eco_smiledObj;
     public GameObject Eco_surprisedObj;
     public GameObject Pan_defaultObj;
+    public GameObject Pan_4eyeclosedObj;
 
     [Header("배경 이미지")]
     public Image backgroundImage;
@@ -125,7 +126,7 @@ public class DialogueManager3_1 : MonoBehaviour
         Eco_smiledObj?.SetActive(false);
         Eco_surprisedObj?.SetActive(false);
         Pan_defaultObj?.SetActive(false);
-
+        Pan_4eyeclosedObj?.SetActive(false);
         // 기본값: 에코
         string characterName = "에코";
 
@@ -137,11 +138,14 @@ public class DialogueManager3_1 : MonoBehaviour
             case 1:
             case 7:
             case 8:
-            case 9:
             case 11:
-            case 17:
             case 19:
                 Pan_defaultObj?.SetActive(true);
+                characterName = "판"; // Pan 이미지일 때는 "판"
+                break;
+            case 9:
+            case 17:
+                Pan_4eyeclosedObj?.SetActive(true);
                 characterName = "판"; // Pan 이미지일 때는 "판"
                 break;
             case 2:
