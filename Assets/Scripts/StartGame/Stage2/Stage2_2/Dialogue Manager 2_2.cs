@@ -183,9 +183,9 @@ public class DialogueManagerStage2_2 : MonoBehaviour
         if (aboveText != null)
         {
             if (Narke_2Obj.activeSelf || Narke_defaultObj.activeSelf)
-                aboveText.text = "������";
+                aboveText.text = "나르케";
             else
-                aboveText.text = "����";
+                aboveText.text = "에코";
         }
     }
 
@@ -261,5 +261,8 @@ public class DialogueManagerStage2_2 : MonoBehaviour
         {
             bgmSource.Play();
         }
+
+       
     }
+
 }

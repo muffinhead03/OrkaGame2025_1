@@ -26,7 +26,6 @@ public class DialogueManager2_3_1 : MonoBehaviour
     public float typingSpeed = 0.04f;
 
     [Header("오디오")]
-    public AudioSource bgmSource;
     public AudioSource glitchSound;
 
     [Header("표정 오브젝트")]
@@ -71,12 +70,6 @@ public class DialogueManager2_3_1 : MonoBehaviour
 
         if (backgroundImage != null && backGroundSprite != null)
             backgroundImage.sprite = backGroundSprite;
-
-        if (bgmSource != null && !bgmSource.isPlaying)
-        {
-            bgmSource.loop = true;
-            bgmSource.Play();
-        }
 
         LoadLinesForCurrentLanguage();
 
@@ -125,10 +118,6 @@ public class DialogueManager2_3_1 : MonoBehaviour
         typingCoroutine = StartCoroutine(TypeText(lines[index]));
         yield return typingCoroutine;
 
-        if (index == 4 && bgmSource != null && bgmSource.isPlaying)
-        {
-            bgmSource.Stop();
-        }
 
         nextButton?.gameObject.SetActive(true);
 
@@ -190,21 +179,7 @@ public class DialogueManager2_3_1 : MonoBehaviour
         Eco_readyObj?.SetActive(false);
         Narke_2Obj?.SetActive(false);
 
-        if (idx >= 0 && idx <= 3)
-        {
-            if (glitchCoroutine == null)
-                glitchCoroutine = StartCoroutine(GlitchLoop());
-        }
-        else if (idx == 4)
-        {
-            if (glitchCoroutine != null)
-            {
-                StopCoroutine(glitchCoroutine);
-                glitchCoroutine = null;
-            }
-            if (glitchSound != null && glitchSound.isPlaying)
-                glitchSound.Stop();
-        }
+        
 
         switch (idx)
         {
@@ -330,9 +305,24 @@ public class DialogueManager2_3_1 : MonoBehaviour
 
     private void Update()
     {
-        if (bgmSource != null && !bgmSource.isPlaying && index < 4)
+        if (index >= 0 && index <= 2)
         {
-            bgmSource.Play();
+            if (glitchCoroutine == null)
+            {
+                glitchCoroutine = StartCoroutine(GlitchLoop());
+            }
+        }
+        else
+        {
+            if (glitchCoroutine != null)
+            {
+                StopCoroutine(glitchCoroutine);
+                glitchCoroutine = null;
+            }
+            if (glitchSound != null && glitchSound.isPlaying)
+            {
+                glitchSound.Stop();
+            }
         }
     }
 

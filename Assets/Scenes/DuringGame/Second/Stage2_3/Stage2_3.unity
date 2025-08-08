@@ -1521,6 +1521,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 1252496409}
     m_Modifications:
     - target: {fileID: 909306515804224714, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
+      propertyPath: m_text
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 909306515804224714, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
       propertyPath: m_fontAsset
       value: 
       objectReference: {fileID: 11400000, guid: 332c3563fa576c14090e68532e5a4b5b, type: 2}
@@ -1535,11 +1539,11 @@ PrefabInstance:
     - target: {fileID: 3909544239928108003, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
       propertyPath: m_fontAsset
       value: 
-      objectReference: {fileID: 11400000, guid: 332c3563fa576c14090e68532e5a4b5b, type: 2}
+      objectReference: {fileID: 11400000, guid: c9bae321d9725034283485f92fa12f73, type: 2}
     - target: {fileID: 3909544239928108003, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: 8619507339903502709, guid: 332c3563fa576c14090e68532e5a4b5b, type: 2}
+      objectReference: {fileID: 5942693883793868140, guid: c9bae321d9725034283485f92fa12f73, type: 2}
     - target: {fileID: 3909544239928108003, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
       propertyPath: m_hasFontAssetChanged
       value: 0
@@ -1913,8 +1917,8 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 24542b41ed8bf2440b123ce9ed2f7b59, type: 3}
-  m_Resource: {fileID: 8300000, guid: 24542b41ed8bf2440b123ce9ed2f7b59, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 7f9b174250c46d94dbec45d632343166, type: 3}
+  m_Resource: {fileID: 8300000, guid: 7f9b174250c46d94dbec45d632343166, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1

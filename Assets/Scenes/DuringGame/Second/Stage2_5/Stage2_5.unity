@@ -684,7 +684,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -3518352737123688903, guid: 43db124bfe5004845bf52ed86df4c5b7, type: 3}
+  m_Sprite: {fileID: -8474318504797988335, guid: cb2477268c4bf1d49a8e55561e832a03, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -906,11 +906,11 @@ PrefabInstance:
     - target: {fileID: 3909544239928108003, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
       propertyPath: m_fontAsset
       value: 
-      objectReference: {fileID: 11400000, guid: 332c3563fa576c14090e68532e5a4b5b, type: 2}
+      objectReference: {fileID: 11400000, guid: c9bae321d9725034283485f92fa12f73, type: 2}
     - target: {fileID: 3909544239928108003, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: 8619507339903502709, guid: 332c3563fa576c14090e68532e5a4b5b, type: 2}
+      objectReference: {fileID: 5942693883793868140, guid: c9bae321d9725034283485f92fa12f73, type: 2}
     - target: {fileID: 3909544239928108003, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
       propertyPath: m_hasFontAssetChanged
       value: 0
@@ -1265,8 +1265,8 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 72ff300b6bff9de40add8bef03e720a0, type: 3}
-  m_Resource: {fileID: 8300000, guid: 72ff300b6bff9de40add8bef03e720a0, type: 3}
+  m_audioClip: {fileID: 8300000, guid: af234cd47e718704b8f1c3b0c28f1806, type: 3}
+  m_Resource: {fileID: 8300000, guid: af234cd47e718704b8f1c3b0c28f1806, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1

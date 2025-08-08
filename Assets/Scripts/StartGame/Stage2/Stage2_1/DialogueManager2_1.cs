@@ -26,8 +26,7 @@ public class DialogueManagerStage2_1 : MonoBehaviour
     public float typingSpeed = 0.04f;
 
     [Header("오디오")]
-    public AudioSource bgmSource;
-    public AudioSource waterSound;
+    public AudioSource ArcadiaBGMSource;
     public AudioSource birdSound;
     public AudioSource grassSound;
 
@@ -70,14 +69,7 @@ public class DialogueManagerStage2_1 : MonoBehaviour
         if (aboveText != null)
             aboveText.text = "에코";
 
-        // 3) 배경 & BGM
-        if (backgroundImage != null && backGroundSprite != null)
-            backgroundImage.sprite = backGroundSprite;
-        if (bgmSource != null && !bgmSource.isPlaying)
-        {
-            bgmSource.loop = true;
-            bgmSource.Play();
-        }
+        
 
         // 4) 대사 배열 로드
         LoadLinesForCurrentLanguage();
@@ -126,40 +118,42 @@ public class DialogueManagerStage2_1 : MonoBehaviour
 
     private void UpdateCharacterFace(int idx)
     {
-        // 모든 표정 비활성화
         Eco_eyeclosedObj?.SetActive(false);
         Eco_defaultObj?.SetActive(false);
         Eco_surprisedObj?.SetActive(false);
         Eco_readyObj?.SetActive(false);
 
-        // 필요한 표정만 활성화
         switch (idx)
         {
             case 0:
             case 2:
             case 8:
                 Eco_eyeclosedObj?.SetActive(true);
-                waterSound?.Play(); birdSound?.Play();
                 break;
+
             case 1:
             case 5:
             case 7:
                 Eco_defaultObj?.SetActive(true);
-                if (idx == 5) grassSound?.Play();
                 break;
+
             case 3:
             case 4:
             case 9:
                 Eco_surprisedObj?.SetActive(true);
                 break;
+
             case 6:
                 Eco_readyObj?.SetActive(true);
                 break;
+
             default:
                 Eco_defaultObj?.SetActive(true);
                 break;
         }
     }
+
+
 
     private IEnumerator TypeText(string fullText)
     {
@@ -228,6 +222,52 @@ public class DialogueManagerStage2_1 : MonoBehaviour
         StopAllCoroutines();
         StartCoroutine(ShowLineSequence());
     }
+
+    private void Update()
+    {
+        if (index >= 0 && index <= 8)
+        {
+            if (ArcadiaBGMSource != null && !ArcadiaBGMSource.isPlaying)
+            {
+                ArcadiaBGMSource.loop = true;
+                ArcadiaBGMSource.Play();
+            }
+        }
+        else
+        {
+            if (ArcadiaBGMSource != null && ArcadiaBGMSource.isPlaying)
+                ArcadiaBGMSource.Stop();
+        }
+
+        if (index == 0)
+        {
+            if (birdSound != null && !birdSound.isPlaying)
+            {
+                birdSound.loop = true;
+                birdSound.Play();
+            }
+        }
+        else
+        {
+            if (birdSound != null && birdSound.isPlaying)
+                birdSound.Stop();
+        }
+
+        if (index >= 4 && index <= 7)
+        {
+            if (grassSound != null && !grassSound.isPlaying)
+            {
+                grassSound.loop = true;
+                grassSound.Play();
+            }
+        }
+        else
+        {
+            if (grassSound != null && grassSound.isPlaying)
+                grassSound.Stop();
+        }
+    }
+
 
     private void OnDestroy()
     {

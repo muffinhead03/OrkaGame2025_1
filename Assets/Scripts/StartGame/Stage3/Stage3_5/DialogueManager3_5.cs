@@ -50,7 +50,7 @@ public class DialogueManager3_5 : MonoBehaviour
     private Vector3 panJumpTargetScale = Vector3.one;
     private bool isPanJumping = false;
     private float panJumpTimer = 0f;
-    private float panJumpDuration = 2f;
+    private float panJumpDuration = 1f;
 
     private void Awake()
     {
@@ -434,11 +434,24 @@ public class DialogueManager3_5 : MonoBehaviour
         {
             panJumpTimer += Time.deltaTime;
             float t = Mathf.Clamp01(panJumpTimer / panJumpDuration);
-            Pan_realObj.transform.localScale = Vector3.Lerp(Vector3.zero, panJumpTargetScale, t);
+
+            if (t < 0.5f)
+            {
+                float scaleT = t / 0.5f;  // 0 ~ 1
+                Pan_realObj.transform.localScale = Vector3.Lerp(Vector3.zero, panJumpTargetScale, scaleT);
+            }
+            else
+            {
+                float scaleT = (t - 0.5f) / 0.5f;  // 0 ~ 1
+                Pan_realObj.transform.localScale = Vector3.Lerp(panJumpTargetScale, Vector3.zero, scaleT);
+            }
 
             if (t >= 1f)
+            {
                 isPanJumping = false;
+                Pan_realObj.transform.localScale = Vector3.zero;
+                Pan_realObj.SetActive(false);  // 애니메이션 끝나면 판 이미지 숨기기
+            }
         }
     }
-
 }

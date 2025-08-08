@@ -173,7 +173,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      rescue_carrot_0: 5300514006656259646
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

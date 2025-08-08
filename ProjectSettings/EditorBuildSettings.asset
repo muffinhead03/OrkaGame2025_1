@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/BeforeGame/mainMenuPanel.unity
     guid: 5ee9e7fed31bf64459535d4b20032429
   - enabled: 0
@@ -23,13 +23,13 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/DuringGame/FirstOne/MinGame_Sliding/endings/et_in_arcadua_egoAfterfirstSlidingDeath.unity
     guid: d2633fe2141c53649b0083de2b8e0459
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/DuringGame/Second/Stage2_1/Stage2_1.unity
     guid: d0b239ed234df43499eaa8cdd3c69608
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/DuringGame/Second/Stage2_2/Stage2_2.unity
     guid: 1c122665140e9044ea7a728ddb90c3ba
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/DuringGame/Second/Stage2_3/Stage2_3.unity
     guid: 63ad86f8ea8e25b40b8579d5bec04452
   - enabled: 1
@@ -50,27 +50,42 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/DuringGame/Second/Stage2_8/Stage2_8.unity
     guid: c6a733a7cb0222145ab2e508fe0945d7
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/DuringGame/FirstOne/Stage1_3/Stage1_3.unity
     guid: 9b723f47133c7c44289482694ce2e36d
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/DuringGame/FirstOne/Stage1_2/Stage1_2.unity
     guid: cb7cec3abb0fbc34398dd3ac1c2d4cdb
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/DuringGame/Second/MiniGame_Card/CardGameFirstStage.unity
     guid: e92f960b695308a4585f6a111bb73635
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/DuringGame/Second/MiniGame_Card/CardgameSecondStage.unity
     guid: a799b866362e24d40aaa96adad99b2f0
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/DuringGame/Second/MiniGame_Card/CardGameThirdStage.unity
     guid: f0ec29ce08857054ebb1424cf6e1d7e4
   - enabled: 0
     path: Assets/Scenes/DuringGame/FirstOne/MinGame_Sliding/Stage1_1/Stage1_1.unity
     guid: 452c9941fcd3e394bae4172616856f9b
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/DuringGame/Second/MiniGame_Card/Endings/EtInArcadiaEgoAfterSecondCardGame.unity
     guid: 9273f91120ba388499ba9db464e515c6
+  - enabled: 0
+    path: Assets/Scenes/DuringGame/Third/Stage3_2/Stage3_2.unity
+    guid: 499ffd23d25d4ba4088e723c68302f9f
+  - enabled: 0
+    path: Assets/Scenes/DuringGame/Third/Stage3_1/Stage3_1.unity
+    guid: 36172275a297b8b438ff302abd0da351
+  - enabled: 0
+    path: Assets/Scenes/DuringGame/Third/Stage3_3/Stage3_3.unity
+    guid: e89a666e96df1fe48a03744b46321b9d
+  - enabled: 0
+    path: Assets/Scenes/DuringGame/Third/Stage3_4/Stage3_4.unity
+    guid: 46fd762dfa7004543a5287f7c82afbac
+  - enabled: 0
+    path: Assets/Scenes/DuringGame/Third/Stage3_5/Stage3_5.unity
+    guid: ff853558b2e6e3f4181ffbab1d93f161
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 56caa72cd59bab146bf413f67f6d86cb, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}

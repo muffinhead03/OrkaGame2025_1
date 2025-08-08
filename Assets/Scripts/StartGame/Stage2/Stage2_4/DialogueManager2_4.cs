@@ -92,7 +92,7 @@ public class DialogueManager2_4 : MonoBehaviour
 
     private IEnumerator ShowLineSequence()
     {
-        if (aboveText != null) aboveText.text = "������";
+        if (aboveText != null) aboveText.text = "나르케";
 
         if (typingCoroutine != null)
             StopCoroutine(typingCoroutine);
@@ -111,7 +111,7 @@ public class DialogueManager2_4 : MonoBehaviour
             yield return new WaitForSeconds(typingSpeed);
         }
 
-        // ✅ 타이핑 끝났으면 버튼 켜주기
+        // 타이핑 끝났으면 버튼 켜주기
         if (nextButton != null)
             nextButton.gameObject.SetActive(true);
     }

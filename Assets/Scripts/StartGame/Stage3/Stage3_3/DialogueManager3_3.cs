@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
-using UnityEngine.SceneManagement;
 
 public class DialogueManager3_3 : MonoBehaviour
 {
@@ -21,6 +20,7 @@ public class DialogueManager3_3 : MonoBehaviour
     public TextMeshProUGUI aboveText;
     public TextMeshProUGUI storyText;
     public Button nextButton;
+    public Image endingImage;
 
     [Header("타이핑 속도")]
     public float typingSpeed = 0.04f;
@@ -33,7 +33,6 @@ public class DialogueManager3_3 : MonoBehaviour
 
     [Header("오디오")]
     public AudioSource bgmSource;
-    public AudioSource jumpSound;
 
     [Header("대사 스크립트")]
     public LanguageCollector3_3 languageCollector;
@@ -41,10 +40,12 @@ public class DialogueManager3_3 : MonoBehaviour
     private string[] lines;
     private int index;
     private Coroutine typingCoroutine;
-    private Vector3 pan2TargetScale = Vector3.one;
+
+    // 점프 애니메이션 관련
     private bool isJumpScaling = false;
     private float jumpTimer = 0f;
     private float jumpDuration = 0.3f;
+    private Vector3 pan2TargetScale = Vector3.one;
 
     private void Awake()
     {
@@ -63,10 +64,14 @@ public class DialogueManager3_3 : MonoBehaviour
         if (aboveText != null)
             aboveText.text = "판";
 
+        if (endingImage != null)
+            endingImage.gameObject.SetActive(false); // 명시적으로 비활성화
+
+
         LoadLinesForCurrentLanguage();
 
         index = 0;
-        StartCoroutine(ShowLineSequence());
+        StartCoroutine(ShowLineSequence());       
     }
 
     private void LoadLinesForCurrentLanguage()
@@ -97,26 +102,18 @@ public class DialogueManager3_3 : MonoBehaviour
 
         nextButton?.gameObject.SetActive(true);
 
-        if (index == 1 && Pan_2Obj != null)
+        // 판 이미지가 점프 없이 그냥 평범하게 보이도록 처리
+        if ((index == 1 || index == lines.Length - 1) && Pan_2Obj != null)
         {
-            Pan_2Obj.transform.localScale = Vector3.zero;
+            Pan_2Obj.transform.localScale = Vector3.one;
             Pan_2Obj.SetActive(true);
-            isJumpScaling = true;
-            jumpTimer = 0f;
-            jumpSound?.Play();
         }
-    }
 
-    private void Update()
-    {
-        if (isJumpScaling && Pan_2Obj != null)
+        // 마지막 대사면 2초 대기 후 엔딩 이미지 페이드인
+        if (index == lines.Length - 1)
         {
-            jumpTimer += Time.deltaTime;
-            float t = Mathf.Clamp01(jumpTimer / jumpDuration);
-            Pan_2Obj.transform.localScale = Vector3.Lerp(Vector3.zero, pan2TargetScale, t);
-
-            if (t >= 1f)
-                isJumpScaling = false;
+            yield return new WaitForSeconds(2f);
+            StartCoroutine(FadeInEndingImage());
         }
     }
 
@@ -164,6 +161,33 @@ public class DialogueManager3_3 : MonoBehaviour
         }
         StartCoroutine(ShowLineSequence());
     }
+
+    private IEnumerator FadeInEndingImage()
+    {
+        Debug.Log("FadeInEndingImage 호출됨");
+
+        if (endingImage == null)
+        {
+            Debug.LogWarning("endingImage가 null입니다!");
+            yield break;
+        }
+
+        Color color = endingImage.color;
+        color.a = 0;
+        endingImage.color = color;
+        endingImage.gameObject.SetActive(true);
+
+        float fadeDuration = 2.0f;
+        float timer = 0f;
+        while (timer < fadeDuration)
+        {
+            timer += Time.deltaTime;
+            float alpha = Mathf.Lerp(0, 1, timer / fadeDuration);
+            endingImage.color = new Color(color.r, color.g, color.b, alpha);
+            yield return null;
+        }
+    }
+
 
     private void SetupLanguageUI()
     {
