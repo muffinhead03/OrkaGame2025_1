@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
@@ -17,214 +18,278 @@ public class DialogueManagerStage1_1 : MonoBehaviour
     public Vector2 StoPo = new Vector2(-250f, -20f);
 
     [Header("UI 요소")]
-    public GameObject nextButton;
-    public CanvasGroup blackFade;
+    public TextMeshProUGUI aboveText;
+    public TextMeshProUGUI storyText;
+    public Button nextButton;
 
-    [Header("타이핑 및 텍스트 처리")]
-    public TypewriterEffect typewriterEffect;
-    public LanguageCollector1_1 languageCollector;
+    [Header("배경 이미지")]
+    public GameObject BlackImage;
+    public Image Real_bg1_Image;
+    public Sprite Real_bg1_Sprite;
+
+    [Header("캐릭터 이미지")]
+    public GameObject Real_echo_default;
+    public GameObject Real_echo_2;
+    public GameObject Real_echo_5;
 
     [Header("오디오")]
-    public AudioSource mainBGM;
-    public AudioSource softMusic;
+    public AudioSource bgmSource;
+    public AudioSource FestivalSound;
 
-    private string[] currentLines;
-    private int lineIndex = 0;
+    [Header("타이핑 속도")]
+    public float typingSpeed = 0.04f;
+
+    [Header("대사 스크립트")]
+    public LanguageCollector1_1 languageCollector;
+
+    private string[] lines;
+    private int index;
+    private Coroutine typingCoroutine;
+
+    private void Awake()
+    {
+        if (nextButton != null)
+        {
+            nextButton.onClick.RemoveAllListeners();
+            nextButton.onClick.AddListener(OnNext);
+            nextButton.gameObject.SetActive(false);
+        }
+
+        LanguageManager.Initialize();
+        LanguageManager.OnLanguageChanged += OnLanguageChanged;
+    }
 
     private void Start()
     {
-        SetupLanguageUI(); // 언어에 따라 UI 오브젝트 선택 및 배치
+        SetupLanguageUI();
 
-        currentLines = languageCollector.GetLines();// 현재 언어에 맞는 대사 배열 가져오기
+        LoadLinesForCurrentLanguage();
 
-        Debug.Log($"[Start] Current language: {LanguageManager.GetLanguage()}");
-        Debug.Log($"[Start] Total lines: {currentLines.Length}");
-
-        StartCoroutine(PlayDialogueSequence());// 첫 대사 출력 시작
+        index = 0;
+        StartCoroutine(ShowLineSequence());
     }
 
-
-
-    private IEnumerator PlayDialogueSequence()
+    private void LoadLinesForCurrentLanguage()
     {
-        nextButton.SetActive(false);
-
-        Debug.Log("[PlayDialogueSequence] Showing line 0");
-        yield return StartCoroutine(ShowLine(currentLines[0]));
-
-        nextButton.SetActive(true);
-    }
-
-    public void OnNextButtonClicked()
-    {
-        nextButton.SetActive(false);
-        lineIndex++;
-
-        // ✅ 현재 언어 기준으로 다시 대사 배열 갱신
-        currentLines = languageCollector.GetLines();
-
-        Debug.Log($"[OnNextButtonClicked] lineIndex = {lineIndex}");
-        Debug.Log($"[OnNextButtonClicked] Language: {LanguageManager.GetLanguage()}");
-
-        if (lineIndex >= currentLines.Length)
+        string lang = LanguageManager.GetLanguage()?.Trim().ToLower();
+        switch (lang)
         {
-            Debug.LogWarning("[OnNextButtonClicked] No more lines to show!");
-            return;
-        }
-
-        switch (lineIndex)
-        {
-            case 1:
-                StartCoroutine(FadeOutAndNextLine());
-                break;
-            case 2:
-                StartCoroutine(PlayLineWithDelay(2, 0.1f, mainBGM));
-                break;
-            case 3:
-                StartCoroutine(PlayLineWithDelay(3, 0.5f, softMusic));
-                break;
-            case 4:
-                StartCoroutine(PlayLineWithDelay(4, 0.5f));
-                break;
-            case 5:
-                StartCoroutine(PlayLineWithDelay(5, 0.5f));
-                break;
+            case "korean": lines = languageCollector.KoreanLines1_1; break;
+            case "english": lines = languageCollector.EnglishLines1_1; break;
+            case "japanese": lines = languageCollector.JapaneseLines1_1; break;
+            case "chinese": lines = languageCollector.ChineseLines1_1; break;
+            case "kazahustan":
+            case "kaza": lines = languageCollector.KazaLines1_1; break;
             default:
-                StartCoroutine(PlayLineWithDelay(lineIndex, 0.5f));
-                break;
+                Debug.LogWarning($"Unknown language '{lang}', default to Korean.");
+                lines = languageCollector.KoreanLines1_1;
+            break;
         }
     }
 
-    private IEnumerator FadeOutAndNextLine()
+    private IEnumerator ShowLineSequence()
     {
-        float duration = 1f;
-        float elapsed = 0f;
+        yield return UpdateVisuals(index);
 
-        Debug.Log("[FadeOutAndNextLine] Fading out...");
+        if (typingCoroutine != null)
+            StopCoroutine(typingCoroutine);
 
-        while (elapsed < duration)
+        typingCoroutine = StartCoroutine(TypeText(lines[index]));
+        yield return typingCoroutine;
+
+        nextButton?.gameObject.SetActive(true);
+    }
+
+    private IEnumerator UpdateVisuals(int idx)
+    {
+        // 배경 초기화 - 둘 다 끔
+        if (BlackImage != null) BlackImage.SetActive(false);
+        if (Real_bg1_Image != null)
         {
-            elapsed += Time.deltaTime;
-            blackFade.alpha = Mathf.Lerp(1f, 0f, elapsed / duration);
+            Real_bg1_Image.gameObject.SetActive(false);
+            // 투명도 1로 초기화 (페이드인 시작 전)
+            Color c = Real_bg1_Image.color;
+            c.a = 1f;
+            Real_bg1_Image.color = c;
+        }
+
+        // 캐릭터 초기화
+        if (Real_echo_default != null) Real_echo_default.SetActive(false);
+        if (Real_echo_2 != null) Real_echo_2.SetActive(false);
+        if (Real_echo_5 != null) Real_echo_5.SetActive(false);
+
+        // 사운드 초기화
+        if (bgmSource != null)
+        {
+            if (idx < 2 && bgmSource.isPlaying) bgmSource.Stop();
+        }
+        if (FestivalSound != null)
+        {
+            if (idx != 2 && FestivalSound.isPlaying) FestivalSound.Stop();
+        }
+
+        switch (idx)
+        {
+            case 0:
+                // BlackImage 켜고 Real_bg1 꺼짐
+                if (BlackImage != null) BlackImage.SetActive(true);
+                break;
+
+            case 1:
+                // BlackImage 켠 상태에서 2초 대기
+                if (BlackImage != null) BlackImage.SetActive(true);
+
+                // 2초 대기
+                yield return new WaitForSeconds(2f);
+
+               
+
+                if (Real_bg1_Image != null)
+                {
+                    Real_bg1_Image.gameObject.SetActive(true);
+                    Real_bg1_Image.sprite = Real_bg1_Sprite;
+
+                    // 페이드인 코루틴 실행
+                    yield return StartCoroutine(FadeInImage(Real_bg1_Image, 1.5f));
+                }
+
+                // 캐릭터 등장
+                if (Real_echo_default != null) Real_echo_default.SetActive(true);
+                break;
+
+            case 2:
+                if (Real_bg1_Image != null)
+                {
+                    Real_bg1_Image.gameObject.SetActive(true);
+                    Real_bg1_Image.sprite = Real_bg1_Sprite;
+
+                    Color c = Real_bg1_Image.color;
+                    c.a = 1f;
+                    Real_bg1_Image.color = c;
+                }
+                if (Real_echo_2 != null) Real_echo_2.SetActive(true);
+                if (bgmSource != null && !bgmSource.isPlaying)
+                {
+                    bgmSource.loop = true;
+                    bgmSource.Play();
+                }
+                if (FestivalSound != null && !FestivalSound.isPlaying)
+                {
+                    FestivalSound.Play();
+                }
+                break;
+
+            case 3:
+                if (Real_bg1_Image != null)
+                {
+                    Real_bg1_Image.gameObject.SetActive(true);
+                    Real_bg1_Image.sprite = Real_bg1_Sprite;
+
+                    Color c = Real_bg1_Image.color;
+                    c.a = 1f;
+                    Real_bg1_Image.color = c;
+                }
+                if (Real_echo_5 != null) Real_echo_5.SetActive(true);
+                if (FestivalSound != null && FestivalSound.isPlaying)
+                {
+                    FestivalSound.Stop();
+                }
+                if (bgmSource != null && !bgmSource.isPlaying)
+                {
+                    bgmSource.loop = true;
+                    bgmSource.Play();
+                }
+                break;
+        }
+
+        yield break;
+    }
+
+    private IEnumerator FadeInImage(Image img, float duration)
+    {
+        Color c = img.color;
+        c.a = 0f;
+        img.color = c;
+
+        img.gameObject.SetActive(true);
+
+        float timer = 0f;
+        while (timer < duration)
+        {
+            timer += Time.deltaTime;
+            c.a = Mathf.Lerp(0f, 1f, timer / duration);
+            img.color = c;
             yield return null;
         }
-
-        blackFade.alpha = 0f;
-        yield return new WaitForSeconds(0.1f);
-
-        Debug.Log("[FadeOutAndNextLine] Showing line 1");
-        yield return StartCoroutine(ShowLine(currentLines[1]));
-
-        nextButton.SetActive(true);
     }
 
-    private IEnumerator PlayLineWithDelay(int index, float delay, AudioSource audio = null)
+    private IEnumerator TypeText(string fullText)
     {
-        Debug.Log($"[PlayLineWithDelay] Waiting {delay}s then showing line {index}");
+        if (storyText == null) yield break;
 
-        yield return new WaitForSeconds(delay);
-
-        if (audio != null)
+        storyText.text = "";
+        foreach (char c in fullText)
         {
-            audio.Play();
-            Debug.Log("[PlayLineWithDelay] Audio played");
+            storyText.text += c;
+            yield return new WaitForSeconds(typingSpeed);
         }
-
-        if (index >= currentLines.Length)
-        {
-            Debug.LogWarning($"[PlayLineWithDelay] Line index {index} out of bounds!");
-            yield break;
-        }
-
-        yield return StartCoroutine(ShowLine(currentLines[index]));
-
-        nextButton.SetActive(true);
     }
 
-    private IEnumerator ShowLine(string line)
+    private void OnNext()
     {
-        Debug.Log($"[ShowLine] Showing: {line}");
+        nextButton?.gameObject.SetActive(false);
 
-        typewriterEffect.SetText(line);
-        yield return new WaitUntil(() => typewriterEffect.IsComplete);
-
-        Debug.Log("[ShowLine] Typing complete");
+        index++;
+        if (lines == null || index >= lines.Length)
+        {
+            SceneManager.LoadScene("Stage1_2");
+            return;
+        }
+        StartCoroutine(ShowLineSequence());
     }
 
     private void SetupLanguageUI()
     {
-        string lang = LanguageManager.GetLanguage(); // 🔥 이미 소문자로 처리됨
-        DisableAllLangObjects();
+        var all = new[] {
+            Korean_Above, Korean_Story,
+            English_Above, English_Story,
+            Japanese_Above, Japanese_Story,
+            Chinese_Above, Chinese_Story,
+            Kaza_Above, Kaza_Story
+        };
+        foreach (var rt in all)
+            rt?.gameObject.SetActive(false);
+
+        string lang = LanguageManager.GetLanguage()?.Trim().ToLower();
+        RectTransform above = Korean_Above, story = Korean_Story;
 
         switch (lang)
         {
-            case "korean":
-                SetActiveAndPosition(Korean_Above, Korean_Story);
-                break;
-            case "english":
-                SetActiveAndPosition(English_Above, English_Story);
-                break;
-            case "japanese":
-                SetActiveAndPosition(Japanese_Above, Japanese_Story);
-                break;
-            case "chinese":
-                SetActiveAndPosition(Chinese_Above, Chinese_Story);
-                break;
+            case "english": above = English_Above; story = English_Story; break;
+            case "japanese": above = Japanese_Above; story = Japanese_Story; break;
+            case "chinese": above = Chinese_Above; story = Chinese_Story; break;
             case "kazahustan":
-            case "kaza":
-                SetActiveAndPosition(Kaza_Above, Kaza_Story);
-                break;
-            default:
-                Debug.LogWarning($"[SetupLanguageUI] Unknown language '{lang}'");
-                break;
+            case "kaza": above = Kaza_Above; story = Kaza_Story; break;
         }
-    }
 
-
-
-    private void SetActiveAndPosition(RectTransform above, RectTransform story)
-    {
-        above.gameObject.SetActive(true);
-        story.gameObject.SetActive(true);
-        above.anchoredPosition = AboPo;
-        story.anchoredPosition = StoPo;
-    }
-
-    private void DisableAllLangObjects()
-    {
-        Korean_Above?.gameObject.SetActive(false);
-        Korean_Story?.gameObject.SetActive(false);
-        English_Above?.gameObject.SetActive(false);
-        English_Story?.gameObject.SetActive(false);
-        Japanese_Above?.gameObject.SetActive(false);
-        Japanese_Story?.gameObject.SetActive(false);
-        Chinese_Above?.gameObject.SetActive(false);
-        Chinese_Story?.gameObject.SetActive(false);
-        Kaza_Above?.gameObject.SetActive(false);
-        Kaza_Story?.gameObject.SetActive(false);
-    }
-    
-    private void Awake()
-    {
-        LanguageManager.Initialize();
-        LanguageManager.OnLanguageChanged += OnLanguageChanged; // ✅ 이벤트 등록
-    }
-
-    private void OnDestroy()
-    {
-        LanguageManager.OnLanguageChanged -= OnLanguageChanged; // ✅ 이벤트 해제
+        if (above != null && story != null)
+        {
+            above.gameObject.SetActive(true);
+            story.gameObject.SetActive(true);
+            above.anchoredPosition = AboPo;
+            story.anchoredPosition = StoPo;
+        }
     }
 
     private void OnLanguageChanged(string newLang)
     {
-        Debug.Log($"[DialogueManager] Language changed to: {newLang}");
-    
-        SetupLanguageUI(); // UI 갱신
-        currentLines = languageCollector.GetLines(); // 대사 갱신
-        typewriterEffect.StopTyping(); // 현재 텍스트 멈추고
-        typewriterEffect.SetText(currentLines[lineIndex]); // 다시 시작
+        LoadLinesForCurrentLanguage();
+        StopAllCoroutines();
+        StartCoroutine(ShowLineSequence());
     }
 
-
-
+    private void OnDestroy()
+    {
+        LanguageManager.OnLanguageChanged -= OnLanguageChanged;
+    }
 }
