@@ -1,7 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Video;
 using TMPro;
 using System.Collections;
+using UnityEngine.SceneManagement;
+
 
 public class DialogueManager3_3 : MonoBehaviour
 {
@@ -20,7 +23,7 @@ public class DialogueManager3_3 : MonoBehaviour
     public TextMeshProUGUI aboveText;
     public TextMeshProUGUI storyText;
     public Button nextButton;
-    public Image endingImage;
+    public VideoPlayer endingVideoPlayer;
 
     [Header("타이핑 속도")]
     public float typingSpeed = 0.04f;
@@ -30,6 +33,13 @@ public class DialogueManager3_3 : MonoBehaviour
     public GameObject blackImageObj;
     public GameObject Pan_4eyeclosedObj;
     public GameObject Pan_2Obj;
+
+    public GameObject CarrotButton;
+    public GameObject DialogueImage;
+    public GameObject FirstPanel;
+    public GameObject SettingPanel;
+    public GameObject blackCoverPanel;
+
 
     [Header("오디오")]
     public AudioSource bgmSource;
@@ -64,9 +74,7 @@ public class DialogueManager3_3 : MonoBehaviour
         if (aboveText != null)
             aboveText.text = "판";
 
-        if (endingImage != null)
-            endingImage.gameObject.SetActive(false); // 명시적으로 비활성화
-
+        
 
         LoadLinesForCurrentLanguage();
 
@@ -89,6 +97,42 @@ public class DialogueManager3_3 : MonoBehaviour
         }
     }
 
+    private IEnumerator JumpScaleInOut(GameObject targetObj, float duration = 0.5f)
+    {
+        if (targetObj == null) yield break;
+
+        targetObj.SetActive(true);
+        Vector3 startScale = Vector3.zero;
+        Vector3 endScale = Vector3.one;
+
+        // 스케일 업 (등장)
+        float t = 0f;
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            float scaleT = t / duration;
+            targetObj.transform.localScale = Vector3.Lerp(startScale, endScale, scaleT);
+            yield return null;
+        }
+
+        // 잠시 유지 (선택 사항, 생략 가능)
+        // yield return new WaitForSeconds(0.1f);
+
+        // 스케일 다운 (사라짐)
+        t = 0f;
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            float scaleT = t / duration;
+            targetObj.transform.localScale = Vector3.Lerp(endScale, startScale, scaleT);
+            yield return null;
+        }
+
+        targetObj.SetActive(false);
+    }
+
+
+
     private IEnumerator ShowLineSequence()
     {
         UpdateVisuals(index);
@@ -102,19 +146,31 @@ public class DialogueManager3_3 : MonoBehaviour
 
         nextButton?.gameObject.SetActive(true);
 
-        // 판 이미지가 점프 없이 그냥 평범하게 보이도록 처리
         if ((index == 1 || index == lines.Length - 1) && Pan_2Obj != null)
         {
-            Pan_2Obj.transform.localScale = Vector3.one;
-            Pan_2Obj.SetActive(true);
+            yield return StartCoroutine(JumpScaleInOut(Pan_2Obj, 0.5f));
+
+            if (index == 1)
+            {
+                yield return new WaitForSeconds(0.5f); // 애니메이션 후 잠깐 대기
+                PlayEndingVideo();
+            }
         }
 
-        // 마지막 대사면 2초 대기 후 엔딩 이미지 페이드인
-        if (index == lines.Length - 1)
-        {
-            yield return new WaitForSeconds(2f);
-            StartCoroutine(FadeInEndingImage());
-        }
+
+    }
+
+
+
+    private void OnVideoFinished(VideoPlayer vp)
+    {
+        Debug.Log("비디오 재생이 종료되었습니다.");
+
+        // 예: 비디오 재생이 끝난 후 씬 전환 등 추가 작업이 필요하면 여기서 처리
+        if (blackCoverPanel != null) blackCoverPanel.SetActive(false);
+
+        // 씬 전환
+        SceneManager.LoadScene("Stage3_2");
     }
 
     private void UpdateVisuals(int idx)
@@ -140,6 +196,38 @@ public class DialogueManager3_3 : MonoBehaviour
         }
     }
 
+    private void PlayEndingVideo()
+    {
+        if (endingVideoPlayer == null)
+        {
+            Debug.LogWarning("endingVideoPlayer가 설정되어 있지 않습니다!");
+            return;
+        }
+
+        // 검은색 커버 패널 활성화
+        if (blackCoverPanel != null) blackCoverPanel.SetActive(true);
+
+        // 비디오 재생 전에 이미지들 비활성화
+        if (backgroundImage != null) backgroundImage.enabled = false;
+        if (blackImageObj != null) blackImageObj.SetActive(false);
+        if (Pan_4eyeclosedObj != null) Pan_4eyeclosedObj.SetActive(false);
+        if (Pan_2Obj != null) Pan_2Obj.SetActive(false);
+
+        // 새로 추가한 오브젝트 비활성화
+        if (CarrotButton != null) CarrotButton.SetActive(false);
+        if (DialogueImage != null) DialogueImage.SetActive(false);
+        if (FirstPanel != null) FirstPanel.SetActive(false);
+        if (SettingPanel != null) SettingPanel.SetActive(false);
+
+
+        endingVideoPlayer.gameObject.SetActive(true);
+        endingVideoPlayer.Play();
+
+        // 비디오 종료 시 호출될 이벤트 등록
+        endingVideoPlayer.loopPointReached += OnVideoFinished;
+    }
+
+
     private IEnumerator TypeText(string fullText)
     {
         if (storyText == null) yield break;
@@ -160,32 +248,6 @@ public class DialogueManager3_3 : MonoBehaviour
             return;
         }
         StartCoroutine(ShowLineSequence());
-    }
-
-    private IEnumerator FadeInEndingImage()
-    {
-        Debug.Log("FadeInEndingImage 호출됨");
-
-        if (endingImage == null)
-        {
-            Debug.LogWarning("endingImage가 null입니다!");
-            yield break;
-        }
-
-        Color color = endingImage.color;
-        color.a = 0;
-        endingImage.color = color;
-        endingImage.gameObject.SetActive(true);
-
-        float fadeDuration = 2.0f;
-        float timer = 0f;
-        while (timer < fadeDuration)
-        {
-            timer += Time.deltaTime;
-            float alpha = Mathf.Lerp(0, 1, timer / fadeDuration);
-            endingImage.color = new Color(color.r, color.g, color.b, alpha);
-            yield return null;
-        }
     }
 
 

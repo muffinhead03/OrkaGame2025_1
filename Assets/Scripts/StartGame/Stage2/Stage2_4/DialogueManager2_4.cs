@@ -155,6 +155,14 @@ public class DialogueManager2_4 : MonoBehaviour
             endingImage.color = new Color(color.r, color.g, color.b, alpha);
             yield return null;
         }
+
+        yield return new WaitForSeconds(2f);
+
+        // index 정보 저장
+        PlayerPrefs.SetInt("StartFromIndex", 4); // Stage2_3_1에서 index 4부터 시작하게
+
+        // Stage2_3_1로 이동
+        SceneManager.LoadScene("Stage2_3_1");
     }
 
     private void SetupLanguageUI()

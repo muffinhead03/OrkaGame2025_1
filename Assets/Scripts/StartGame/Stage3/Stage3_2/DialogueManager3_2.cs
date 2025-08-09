@@ -6,6 +6,33 @@ using System.Collections;
 
 public class DialogueManager3_2 : MonoBehaviour
 {
+    private int currentCase = 0;
+
+    public void ChangeCase(int caseNumber)
+    {
+        currentCase = caseNumber;
+        index = caseNumber; // 대사 인덱스도 맞춰줌 (필요시 수정)
+
+        Debug.Log($"케이스 {caseNumber}로 변경");
+
+        // 케이스 변경 후 대사 진행 재시작
+        StopAllCoroutines();
+        StartCoroutine(ShowLineSequence());
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "Stage3_2")
+        {
+            DialogueManager3_2 dm = FindObjectOfType<DialogueManager3_2>();
+            if (dm != null)
+            {
+                dm.ChangeCase(15);  // 케이스 15로 바로 시작
+            }
+        }
+    }
+
+
     [Header("언어 오브젝트")]
     public RectTransform Korean_Above, Korean_Story;
     public RectTransform English_Above, English_Story;
@@ -71,6 +98,7 @@ public class DialogueManager3_2 : MonoBehaviour
 
         LanguageManager.Initialize();
         LanguageManager.OnLanguageChanged += OnLanguageChanged;
+        SceneManager.sceneLoaded += OnSceneLoaded; // 씬 로드 이벤트 등록
     }
 
     private void Start()
@@ -82,14 +110,14 @@ public class DialogueManager3_2 : MonoBehaviour
 
         LoadLinesForCurrentLanguage();
 
+        ChangeCase(currentCase);
+
         if (lines == null || lines.Length == 0)
         {
             Debug.LogError("[DialogueManager3_2] 대사가 없습니다.");
             return;
         }
 
-        index = 0;
-        StartCoroutine(ShowLineSequence());
     }
 
     private void LoadLinesForCurrentLanguage()
@@ -335,6 +363,7 @@ public class DialogueManager3_2 : MonoBehaviour
     private void OnDestroy()
     {
         LanguageManager.OnLanguageChanged -= OnLanguageChanged;
+        SceneManager.sceneLoaded -= OnSceneLoaded; // 씬 로드 이벤트 해제
     }
 
     private void Update()

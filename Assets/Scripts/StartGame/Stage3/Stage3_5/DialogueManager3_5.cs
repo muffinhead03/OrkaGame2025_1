@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
+using UnityEngine.Video;
+
 
 public class DialogueManager3_5 : MonoBehaviour
 {
@@ -12,10 +14,18 @@ public class DialogueManager3_5 : MonoBehaviour
     public RectTransform Chinese_Above, Chinese_Story;
     public RectTransform Kaza_Above, Kaza_Story;
 
+    [Header("비디오 재생 시 비활성화될 UI")]
+    public GameObject CarrotButton;
+    public GameObject DialogueImage;
+    public GameObject FirstPanel;
+    public GameObject SettingPanel;
+
+
     [Header("UI 요소")]
     public TextMeshProUGUI aboveText;
     public TextMeshProUGUI storyText;
     public Button nextButton;
+    public VideoPlayer endingVideoPlayer;
 
     [Header("배경 이미지 오브젝트")]
     public GameObject Real_bg1Obj;
@@ -260,6 +270,12 @@ public class DialogueManager3_5 : MonoBehaviour
         {
             // 대사 출력 완료 후 WhiteImageObj 페이드인
             yield return StartCoroutine(FadeToImage(WhiteImageObj, 3f));
+
+            // 페이드인 완료 후 2초 대기
+            yield return new WaitForSeconds(2f);
+
+            // 동영상 재생
+            PlayEndingVideo();
         }
 
         if (index != 10)
@@ -267,6 +283,36 @@ public class DialogueManager3_5 : MonoBehaviour
             nextButton.gameObject.SetActive(true);
         }
     }
+
+    private void PlayEndingVideo()
+    {
+        if (endingVideoPlayer == null)
+        {
+            Debug.LogWarning("endingVideoPlayer가 설정되어 있지 않습니다!");
+            return;
+        }
+
+        CarrotButton?.SetActive(false);
+        DialogueImage?.SetActive(false);
+        FirstPanel?.SetActive(false);
+        SettingPanel?.SetActive(false);
+
+
+        endingVideoPlayer.gameObject.SetActive(true);
+        endingVideoPlayer.Play();
+
+        // 필요 시 비디오 종료 콜백 등록
+        endingVideoPlayer.loopPointReached += OnVideoFinished;
+    }
+
+    private void OnVideoFinished(VideoPlayer vp)
+    {
+        Debug.Log("비디오 재생이 종료되었습니다.");
+
+        // 동영상 종료 후 처리 필요 시 여기에 작성
+        // 예: 다음 씬 로드, UI 활성화 등
+    }
+
 
     public void OnClickNext()
     {

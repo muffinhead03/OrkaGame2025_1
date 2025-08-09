@@ -79,7 +79,16 @@ public class DialogueManager2_3_1 : MonoBehaviour
             return;
         }
 
-        index = 0;
+        if (PlayerPrefs.HasKey("StartFromIndex"))
+        {
+            index = PlayerPrefs.GetInt("StartFromIndex");
+            PlayerPrefs.DeleteKey("StartFromIndex"); // 다음 진입부터는 초기화
+        }
+        else
+        {
+            index = 0;
+        }
+
         StartCoroutine(ShowLineSequence());
     }
 

@@ -32,13 +32,13 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/DuringGame/Second/Stage2_3/Stage2_3.unity
     guid: 63ad86f8ea8e25b40b8579d5bec04452
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/DuringGame/Second/Stage2_3_1/Stage2_3_1.unity
     guid: 6e0c69a0b166a0548818e9052ef3c46b
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/DuringGame/Second/Stage2_4/Stage2_4.unity
     guid: 95ba6d1ac97098e4a9e86fc0aa9e571a
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/DuringGame/Second/Stage2_5/Stage2_5.unity
     guid: 1b5ecc94d8a105e4b8f98ee162d27cb3
   - enabled: 0
@@ -83,7 +83,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/DuringGame/Third/Stage3_4/Stage3_4.unity
     guid: 46fd762dfa7004543a5287f7c82afbac
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/DuringGame/Third/Stage3_5/Stage3_5.unity
     guid: ff853558b2e6e3f4181ffbab1d93f161
   m_configObjects:
