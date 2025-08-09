@@ -173,17 +173,8 @@ public class DialogueManager2_3 : MonoBehaviour
 
         if (aboveText != null)
         {
-<<<<<<< HEAD
-            string lang = LanguageManager.GetLanguage();
-            string speakerKo =
-                ((Narke_2Obj && Narke_2Obj.activeSelf) || (Narke_defaultObj && Narke_defaultObj.activeSelf))
-                ? "³ª¸£ÄÉ" : "¿¡ÄÚ";
-
-            aboveText.text = LocalizeSpeakerName(speakerKo, lang);
-=======
             bool isNarke = (Narke_2Obj && Narke_2Obj.activeSelf) || (Narke_defaultObj && Narke_defaultObj.activeSelf);
             aboveText.text = GetSpeakerName(isNarke);
->>>>>>> 58898e4f1273b97d2ada7bf00e039897dc67cb45
         }
     }
 
@@ -250,29 +241,21 @@ public class DialogueManager2_3 : MonoBehaviour
             above.anchoredPosition = AboPo;
             story.anchoredPosition = StoPo;
 
-<<<<<<< HEAD
+            // í™œì„±í™”ëœ ì»¨í…Œì´ë„ˆ ì•ˆì˜ TMPë¥¼ ì•ˆì „í•˜ê²Œ ì¬ë°”ì¸ë”©
             var newAbove = above.GetComponentsInChildren<TextMeshProUGUI>(true).FirstOrDefault();
             var newStory = story.GetComponentsInChildren<TextMeshProUGUI>(true).FirstOrDefault();
-            if (newAbove != null) aboveText = newAbove;
-            if (newStory != null) storyText = newStory;
-=======
-            // âœ… í™œì„±í™”ëœ ì»¨í…Œì´ë„ˆ ì•ˆì˜ TMPë¡œ ë‹¤ì‹œ ë°”ì¸ë”© (ì¤‘ìš”!)
-            aboveText = above.GetComponentInChildren<TextMeshProUGUI>(true);
-            storyText = story.GetComponentInChildren<TextMeshProUGUI>(true);
+            if (newAbove != null) aboveText = newAbove; else Debug.LogError("[DialogueManager2_3] aboveText ë°”ì¸ë”© ì‹¤íŒ¨");
+            if (newStory != null) storyText = newStory; else Debug.LogError("[DialogueManager2_3] storyText ë°”ì¸ë”© ì‹¤íŒ¨");
         }
         else
         {
             Debug.LogError("[DialogueManager2_3] ì–¸ì–´ UI ì»¨í…Œì´ë„ˆê°€ ì„¤ì •ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
->>>>>>> 58898e4f1273b97d2ada7bf00e039897dc67cb45
         }
     }
 
     private void OnLanguageChanged(string newLang)
     {
-<<<<<<< HEAD
-=======
         // ì–¸ì–´ ë³€ê²½ ì‹œ: UI ì¬ë°”ì¸ë”© â†’ ëŒ€ì‚¬ ì¬ë¡œë“œ â†’ ì§„í–‰ ë¦¬ì…‹ â†’ ë‹¤ì‹œ ì‹œì‘
->>>>>>> 58898e4f1273b97d2ada7bf00e039897dc67cb45
         SetupLanguageUI();
         LoadLinesForCurrentLanguage();
         StopAllCoroutines();
@@ -305,26 +288,8 @@ public class DialogueManager2_3 : MonoBehaviour
         SceneManager.LoadScene(sceneName);
     }
 
-<<<<<<< HEAD
-    private string LocalizeSpeakerName(string speakerKo, string lang)
-    {
-        lang = (lang ?? "").Trim().ToLower();
-
-        // ¿µ¾îÀÏ ¶§¸¸ ¿µ¾îÇ¥±â·Î ¸ÅÇÎ
-        if (lang == "english")
-        {
-            if (speakerKo == "¿¡ÄÚ") return "Echo";
-            if (speakerKo == "³ª¸£ÄÉ") return "Narke";
-        }
-
-        // ±× ¿Ü ¾ğ¾î´Â ¿ø¹®(ÇÑ±¹¾î) À¯Áö
-        return speakerKo;
-    }
-
-=======
     private void OnDestroy()
     {
         LanguageManager.OnLanguageChanged -= OnLanguageChanged;
     }
->>>>>>> 58898e4f1273b97d2ada7bf00e039897dc67cb45
 }
