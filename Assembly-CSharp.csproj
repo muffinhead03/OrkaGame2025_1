@@ -50,6 +50,7 @@
     <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage3\ThirdCardGameEffectController.cs" />
     <Compile Include="Assets\Scripts\StartGame\Shared\Scripts\FirstPanel\FirstPanelController.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\Stage2_3_1\LanguageCollector2_3_1.cs" />
+    <Compile Include="Assets\Scripts\StartGame\Stage1\Stage1_3\LanguageCollector1_3.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage2\CardGame2Manager.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\Stage2_5\DialogueManager2_5.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage1\SlidingGame\SlidingGameManager1AfterFirstDeath\SlidingPuzzleAfterDeathImageChangePiri.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="Assets\Scripts\StartGame\Stage1\SlidingGame\SlidingGameManager1BeforeDeath\SlidingGameManager1Script.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\Stage2_3\LanguageCollector2_3.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage1\CardGame1PanelManager.cs" />
+    <Compile Include="Assets\Scripts\StartGame\Stage1\Stage1_2\LanguageCollector1_2.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage2\SecondCardClickLinesDB.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\Stage2_4\DialogueManager2_4.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage1\Stage1_3\DialogueManager1_3.cs" />

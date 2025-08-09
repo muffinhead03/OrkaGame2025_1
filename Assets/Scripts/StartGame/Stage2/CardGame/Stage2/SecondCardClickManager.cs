@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 public class SecondCardClickManager : MonoBehaviour
 {
+
     [Header("CardClick 루트 (초기 비활성 추천)")]
     [SerializeField] private GameObject cardClickRoot;
 
@@ -60,6 +61,21 @@ public class SecondCardClickManager : MonoBehaviour
     // 자막/음악 동작 카드(1-based 기준)
     private static readonly int[] CardsWithCaption = { 1, 2, 3, 7, 10 };
     private static readonly int[] CardsWithMusic   = { 1, 2, 3, 4, 5, 7, 8, 10 };
+// 1,2,3,7,8,10번만 자막, 나머진 없음
+    private static bool TryGetFixedIndexForCard(int cardNumberOneBased, out int fixedIndex)
+    {
+        switch (cardNumberOneBased)
+        {
+            case 1: fixedIndex = 0; return true;
+            case 2: fixedIndex = 1; return true;
+            case 3: fixedIndex = 2; return true;
+            case 7: fixedIndex = 3; return true;
+            case 8: fixedIndex = 4; return true;
+            case 10: fixedIndex = 5; return true;
+            default:
+                fixedIndex = -1; return false; // 4,5,6,9 → 자막 없음
+        }
+    }
 
     void Awake()
     {
@@ -128,91 +144,64 @@ public class SecondCardClickManager : MonoBehaviour
     }
 
     /// <summary>슬롯(0~9) 클릭 시 호출</summary>
-public void OnCardClickedBySlot(int slotIndexZeroBased)
-{
-    // --- 디버그: 매니저가 여러 개인지 확인 ---
-    Debug.Log($"[2ndCardClick] BEFORE mgrID={GetInstanceID()}, slot={slotIndexZeroBased}, cnt={perSlotClickCount[slotIndexZeroBased]}");
-
-    if (uiLocked && autoUnlockOnFirstClick)
+    public void OnCardClickedBySlot(int slotIndexZeroBased)
     {
-        if (verboseLog) Debug.Log("[2ndCardClick] UI가 잠겨있어 autoUnlockOnFirstClick으로 Unlock");
-        UnlockAndShow();
-    }
+        if (uiLocked && autoUnlockOnFirstClick) UnlockAndShow();
+        if (uiLocked) return;
 
-    if (uiLocked)
-    {
-        if (verboseLog) Debug.Log("[2ndCardClick] UI Locked, ignore click");
-        return;
-    }
-
-    if (slotIndexZeroBased < 0 || slotIndexZeroBased >= 10)
-    {
-        Debug.LogWarning($"[2ndCardClick] invalid slot={slotIndexZeroBased}");
-        return;
-    }
-
-    int oneBased = slotIndexZeroBased + 1;
-    bool needCaption = Contains(CardsWithCaption, oneBased);
-    bool needMusic   = Contains(CardsWithMusic,   oneBased);
-
-    if (verboseLog) Debug.Log($"[2ndCardClick] Click card {oneBased} (caption={needCaption}, music={needMusic})");
-
-    // ===== 음악 처리 (기존 그대로) =====
-    // ... (생략: 동일)
-
-    // ===== 9번 카드 특수 이펙트 (기존 그대로) =====
-    // ... (생략: 동일)
-
-    // ===== 자막 처리 =====
-    // 증가 여부를 미리 결정해두고, 실제 증가는 함수 '맨 끝'에서 수행
-    bool willIncrement = needCaption;
-
-    if (needCaption)
-    {
-        ActivateUIForCurrentLanguage();
-
-        // clickIdx는 '증가 전' 값을 사용
-        int clickIdx = Mathf.Clamp(perSlotClickCount[slotIndexZeroBased], 0, 5);
-
-        string line = (linesDB != null) ? linesDB.GetLineBySlot(slotIndexZeroBased, clickIdx) : "";
-
-        if (string.IsNullOrEmpty(line))
-            line = $"[{currentLang}:{oneBased}-{clickIdx + 1}]"; // 폴백 토큰
-
-        string debugHeader = debugEchoInCaption
-            ? $"<color=#00AAFF>[DBG card={oneBased}, idx={clickIdx}]</color>\n"
-            : "";
-
-        // activeTMP가 없어도 '증가'는 뒤에서 수행해야 하므로 여기서 return 하지 않음
-        if (activeTMP == null)
+        if (slotIndexZeroBased < 0 || slotIndexZeroBased >= 10)
         {
-            Debug.LogWarning("[2ndCardClick] activeTMP가 없습니다. (자막 미표시, 카운트는 증가됨)");
+            Debug.LogWarning($"[2ndCardClick] invalid slot={slotIndexZeroBased}");
+            return;
         }
-        else
+
+        int oneBased = slotIndexZeroBased + 1;
+
+        // 음악은 기존 규칙 유지
+        bool needMusic = Contains(CardsWithMusic, oneBased);
+        if (verboseLog) Debug.Log($"[2ndCardClick] Click card {oneBased} (music={needMusic})");
+
+        // === 음악 처리 (원래 로직 그대로 복붙/유지) ===
+        // ... (생략)
+
+        // 9번 특수 이펙트
+        if (oneBased == 9 && tintPanelImage != null)
         {
+            StopCoroutine(nameof(TintRoutine));
+            StartCoroutine(TintRoutine());
+        }
+
+        // === 자막: 카드→고정 인덱스 ===
+        if (TryGetFixedIndexForCard(oneBased, out int clickIdx))
+        {
+            ActivateUIForCurrentLanguage();
+            if (activeTMP == null) { Debug.LogWarning("[2ndCardClick] activeTMP가 없습니다."); return; }
+
+            string line = (linesDB != null) ? linesDB.GetLineBySlot(slotIndexZeroBased, clickIdx) : "";
+            if (string.IsNullOrEmpty(line))
+                line = $"[{currentLang}:{oneBased}-{clickIdx + 1}]";
+
+            string debugHeader = debugEchoInCaption
+                ? $"<color=#00AAFF>[DBG card={oneBased}, FIXED idx={clickIdx}]</color>\n"
+                : "";
+
             activeTMP.gameObject.SetActive(true);
             SetTMPColorBlack();
             activeTMP.text = debugHeader + line;
             activeTMP.ForceMeshUpdate(true);
-        }
 
-        if (verboseLog) Debug.Log($"[2ndCardClick] Caption show card={oneBased}, lineIdx={clickIdx}, text='{line}'");
-    }
-    else
-    {
-        if (cardClickRoot && cardClickRoot.activeSelf)
+            if (verboseLog) Debug.Log($"[2ndCardClick] Caption show card={oneBased}, fixedIdx={clickIdx}, text='{line}'");
+        }
+        else
         {
-            cardClickRoot.SetActive(false);
-            if (verboseLog) Debug.Log($"[2ndCardClick] cardClickRoot 비활성 (card={oneBased}, caption=false)");
+            // 자막 없는 카드(4,5,6,9)
+            if (cardClickRoot && cardClickRoot.activeSelf)
+                cardClickRoot.SetActive(false);
+            if (verboseLog) Debug.Log($"[2ndCardClick] No caption for card {oneBased}");
         }
     }
 
-    // ====== ★ 증가를 항상 보장 (자막 표시 실패해도 증가) ======
-    if (willIncrement && perSlotClickCount[slotIndexZeroBased] < 5)
-        perSlotClickCount[slotIndexZeroBased]++;
 
-    Debug.Log($"[2ndCardClick] AFTER  mgrID={GetInstanceID()}, slot={slotIndexZeroBased}, cnt={perSlotClickCount[slotIndexZeroBased]}");
-}
 
 
     // ===== Helpers =====
