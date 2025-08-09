@@ -8,8 +8,9 @@ public class LanguageCollector2_5 : MonoBehaviour
         "너는 여기 있어야만 해",
     };
     public readonly string[] EnglishLines2_5 = {
-
-    };
+    "WHAT?",
+    "YOU MUST STAY HERE",
+};
     public readonly string[] KazaLines2_5 = {
 
     };

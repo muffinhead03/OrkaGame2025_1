@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class DialogueManager2_3 : MonoBehaviour
 {
@@ -63,6 +64,7 @@ public class DialogueManager2_3 : MonoBehaviour
     private void Start()
     {
         SetupLanguageUI();
+        if (nextButton != null) nextButton.transform.SetAsLastSibling();
 
         if (backgroundImage != null && backGroundSprite != null)
             backgroundImage.sprite = backGroundSprite;
@@ -181,10 +183,12 @@ public class DialogueManager2_3 : MonoBehaviour
 
         if (aboveText != null)
         {
-            if ((Narke_2Obj && Narke_2Obj.activeSelf) || (Narke_defaultObj && Narke_defaultObj.activeSelf))
-                aboveText.text = "나르케";
-            else
-                aboveText.text = "에코";
+            string lang = LanguageManager.GetLanguage();
+            string speakerKo =
+                ((Narke_2Obj && Narke_2Obj.activeSelf) || (Narke_defaultObj && Narke_defaultObj.activeSelf))
+                ? "나르케" : "에코";
+
+            aboveText.text = LocalizeSpeakerName(speakerKo, lang);
         }
     }
 
@@ -268,11 +272,17 @@ public class DialogueManager2_3 : MonoBehaviour
             story.gameObject.SetActive(true);
             above.anchoredPosition = AboPo;
             story.anchoredPosition = StoPo;
+
+            var newAbove = above.GetComponentsInChildren<TextMeshProUGUI>(true).FirstOrDefault();
+            var newStory = story.GetComponentsInChildren<TextMeshProUGUI>(true).FirstOrDefault();
+            if (newAbove != null) aboveText = newAbove;
+            if (newStory != null) storyText = newStory;
         }
     }
 
     private void OnLanguageChanged(string newLang)
     {
+        SetupLanguageUI();
         LoadLinesForCurrentLanguage();
         StopAllCoroutines();
         StartCoroutine(ShowLineSequence());
@@ -308,4 +318,20 @@ public class DialogueManager2_3 : MonoBehaviour
         yield return new WaitForSeconds(0.3f);
         SceneManager.LoadScene(sceneName);
     }
+
+    private string LocalizeSpeakerName(string speakerKo, string lang)
+    {
+        lang = (lang ?? "").Trim().ToLower();
+
+        // 영어일 때만 영어표기로 매핑
+        if (lang == "english")
+        {
+            if (speakerKo == "에코") return "Echo";
+            if (speakerKo == "나르케") return "Narke";
+        }
+
+        // 그 외 언어는 원문(한국어) 유지
+        return speakerKo;
+    }
+
 }

@@ -11,8 +11,13 @@ public class LanguageCollector2_3 : MonoBehaviour
         "(하긴 이런 평화로운 곳에 그런 소리가...) 그래, 좋아!"
     };
     public readonly string[] EnglishLines2_3 = {
+    "I did it...!",
+    "Wait... did you hear that noise?",
+    "What? That can't be right - I didn't hear a thing",
+    "Never mind that, let's just start the next round",
+    "(Well... there's no way a place this peaceful would have such a noise like that...) Okay...!"
+};
 
-    };
     public readonly string[] KazaLines2_3 = {
 
     };

@@ -11,8 +11,12 @@ public class LanguageCollector2_3_1 : MonoBehaviour
         "자, 계속 게임 하자"
     };
     public readonly string[] EnglishLines2_3_1 = {
-
-    };
+    "Something feels wrong! I keep hearing someone screaming from somewhere",
+    "It's nothing, seriously~",
+    "No, I should go check where that sound came from",
+    "What are you talking about, Echo~ You're acting kinda weird",
+    "Come on, let's keep the game going"
+};
     public readonly string[] KazaLines2_3_1 = {
 
     };

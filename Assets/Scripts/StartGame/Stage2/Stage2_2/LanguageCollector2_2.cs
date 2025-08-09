@@ -38,8 +38,40 @@ public class LanguageCollector2_2 : MonoBehaviour
 
     };
     public readonly string[] EnglishLines2_2 = {
+    "Hmm hmm~¢Ü",
+    "(A cat...?) Excuse me...",
+    "Hmm? And who might you be, then?",
+    "(What is it...? Why does looking at him make me feel so nostalgic...?)",
+    "You're someone who's wandered here from another world",
+    "How did you figure that out?",
+    "The folks living here, they wear nothing but faces full of love, no worries in sight---at least until this world starts falling apart",
+    "Just like me, the adorable one",
+    "Where is this place...?",
+    "This place? It's Arcadia",
+    "A peaceful paradise where only love exists",
+    "Am I... in heaven...?",
+    "Heaven? Hmm... sounds a lot like it",
+    "Here, only those chosen by someone can step through",
+    "Who made that choice...?",
+    "Enough with the fancy talk! Let me introduce myself",
+    "I'm Narcissus! As you can see, I'm one adorable, charming little cat",
+    "Just call me Narke~ And you are?",
+    "I'm Echo... Um, I'm not really cute or anything like you... I'm just... an ordinary person",
+    "Hmm~ I gotta say, you're pretty lovely in your own way~",
+    "Come here and take a look at the beautiful reflection of you and me by the water",
+    "Is this... really me?  Did I really look like this?",
+    "It... really looks like a living person... No, it's so human that it almost feels like a doll instead",
+    "Hehe, so... what's your next move?",
+    "I just... want to go back to my home",
+    "If Dad finds out I'm gone, he's going to be really angry",
+    "And today's the day of the music festival in my town that I've been really looking forward to, so I should go back",
+    "You really don't remember how you got here?",
+    "Yeah... like usual, I suddenly couldn't breathe and passed out... and when I woke up, I was here",
+    "Then there's still time --- why don't we play some cards together and slowly remind you of things?",
+    "(Right... there's still a bit of time... I'm not sure why, but I want to be with him a little more) Yeah...! That sounds good"
+};
 
-    };
+
     public readonly string[] KazaLines2_2 = {
 
     };

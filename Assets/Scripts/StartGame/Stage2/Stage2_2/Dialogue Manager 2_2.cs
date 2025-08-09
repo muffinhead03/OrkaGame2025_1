@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class DialogueManagerStage2_2 : MonoBehaviour
 {
@@ -64,6 +65,7 @@ public class DialogueManagerStage2_2 : MonoBehaviour
     {
         // 1) UI ��� ������Ʈ ����
         SetupLanguageUI();
+        if (nextButton != null) nextButton.transform.SetAsLastSibling();
 
         // (���� ���̺� ���� ����)
 
@@ -179,13 +181,11 @@ public class DialogueManagerStage2_2 : MonoBehaviour
                 break;
         }
 
-        // Ȱ��ȭ�� ǥ���� ���� ���̺� ����
         if (aboveText != null)
         {
-            if (Narke_2Obj.activeSelf || Narke_defaultObj.activeSelf)
-                aboveText.text = "나르케";
-            else
-                aboveText.text = "에코";
+            string lang = LanguageManager.GetLanguage();
+            string speakerKo = (Narke_2Obj.activeSelf || Narke_defaultObj.activeSelf) ? "나르케" : "에코";
+            aboveText.text = LocalizeSpeakerName(speakerKo, lang);
         }
     }
 
@@ -241,11 +241,18 @@ public class DialogueManagerStage2_2 : MonoBehaviour
             story.gameObject.SetActive(true);
             above.anchoredPosition = AboPo;
             story.anchoredPosition = StoPo;
+
+            var newAbove = above.GetComponentsInChildren<TextMeshProUGUI>(true).FirstOrDefault();
+            var newStory = story.GetComponentsInChildren<TextMeshProUGUI>(true).FirstOrDefault();
+            if (newAbove != null) aboveText = newAbove;
+            if (newStory != null) storyText = newStory;
         }
+
     }
 
     private void OnLanguageChanged(string newLang)
     {
+        SetupLanguageUI();             // 패널 전환 + TMP 재바인딩
         LoadLinesForCurrentLanguage();
         StopAllCoroutines();
         StartCoroutine(ShowLineSequence());
@@ -264,5 +271,21 @@ public class DialogueManagerStage2_2 : MonoBehaviour
 
        
     }
+
+    private string LocalizeSpeakerName(string speakerKo, string lang)
+    {
+        lang = (lang ?? "").Trim().ToLower();
+
+        // 영어일 때만 영어 이름으로 매핑
+        if (lang == "english")
+        {
+            if (speakerKo == "에코") return "Echo";
+            if (speakerKo == "나르케") return "Narke";
+        }
+
+        // 그 외(한국어 등)는 원래 이름 유지
+        return speakerKo;
+    }
+
 
 }

@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class DialogueManager2_4 : MonoBehaviour
 {
@@ -55,6 +56,7 @@ public class DialogueManager2_4 : MonoBehaviour
             nextButton.SetActive(false);
 
         SetupLanguageUI();
+        if(nextButton != null) nextButton.transform.SetAsLastSibling();
 
         if (backgroundImage != null && backGroundSprite != null)
             backgroundImage.sprite = backGroundSprite;
@@ -193,11 +195,21 @@ public class DialogueManager2_4 : MonoBehaviour
             story.gameObject.SetActive(true);
             above.anchoredPosition = AboPo;
             story.anchoredPosition = StoPo;
+
+            var newAbove = above.GetComponentsInChildren<TextMeshProUGUI>(true).FirstOrDefault();
+            var newStory = story.GetComponentsInChildren<TextMeshProUGUI>(true).FirstOrDefault();
+            if (newAbove != null) aboveText = newAbove;
+            if (newStory != null) storyText = newStory;
+
+          
+            if (aboveText != null)
+                aboveText.text = (lang == "english") ? "Narke" : "나르케";
         }
     }
 
     private void OnLanguageChanged(string newLang)
     {
+        SetupLanguageUI();
         LoadLinesForCurrentLanguage();
         StopAllCoroutines();
         Start();

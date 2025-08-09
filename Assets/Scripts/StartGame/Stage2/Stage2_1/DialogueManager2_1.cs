@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class DialogueManagerStage2_1 : MonoBehaviour
 {
@@ -64,6 +65,7 @@ public class DialogueManagerStage2_1 : MonoBehaviour
     {
         // 1) UI 언어 오브젝트 설정
         SetupLanguageUI();
+        if (nextButton != null) nextButton.transform.SetAsLastSibling();
 
         // 2) 이름 레이블 설정
         if (aboveText != null)
@@ -209,19 +211,23 @@ public class DialogueManagerStage2_1 : MonoBehaviour
             story.gameObject.SetActive(true);
             above.anchoredPosition = AboPo;
             story.anchoredPosition = StoPo;
+
+            var newAbove = above.GetComponentsInChildren<TextMeshProUGUI>(true).FirstOrDefault();
+            var newStory = story.GetComponentsInChildren<TextMeshProUGUI>(true).FirstOrDefault();
+            if (newAbove != null) aboveText = newAbove;
+            if (newStory != null) storyText = newStory;
         }
     }
 
     private void OnLanguageChanged(string newLang)
     {
-        // *index는 유지*한 채, lines만 새로 로드
-        LoadLinesForCurrentLanguage();
-        // 만약 대사 맨 앞에서 다시 타이핑하고 싶다면 index=0; 해주면 됩니다.
+        SetupLanguageUI();             // 패널 전환 + TMP 재바인딩
+        LoadLinesForCurrentLanguage(); // 대사 재로드
 
-        // 코루틴 초기화 후, 동일한 인덱스의 대사 재실행
         StopAllCoroutines();
         StartCoroutine(ShowLineSequence());
     }
+
 
     private void Update()
     {

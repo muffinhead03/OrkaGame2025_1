@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class DialogueManager2_5 : MonoBehaviour
 {
@@ -107,14 +108,19 @@ public class DialogueManager2_5 : MonoBehaviour
         if (idx == 0 || idx == 1)
         {
             if (windSource != null && !windSource.isPlaying)
-            {
                 windSource.Play();
-            }
         }
 
         Narke_3Obj?.SetActive(true);
-        if (aboveText != null) aboveText.text = "나르케";
+
+        //  여기! 하드코딩된 "나르케"를 언어에 맞게 설정
+        if (aboveText != null)
+        {
+            var lang = LanguageManager.GetLanguage()?.Trim().ToLower();
+            aboveText.text = (lang == "english") ? "Narke" : "나르케";
+        }
     }
+
 
     private IEnumerator TypeText(string fullText)
     {
@@ -167,11 +173,21 @@ public class DialogueManager2_5 : MonoBehaviour
             story.gameObject.SetActive(true);
             above.anchoredPosition = AboPo;
             story.anchoredPosition = StoPo;
+
+            var newAbove = above.GetComponentsInChildren<TextMeshProUGUI>(true).FirstOrDefault();
+            var newStory = story.GetComponentsInChildren<TextMeshProUGUI>(true).FirstOrDefault();
+            if (newAbove != null) aboveText = newAbove;
+            if (newStory != null) storyText = newStory;
         }
+
+        
+        if (aboveText != null)
+            aboveText.text = (lang == "english") ? "Narke" : "나르케";
     }
 
     private void OnLanguageChanged(string newLang)
     {
+        SetupLanguageUI();
         LoadLinesForCurrentLanguage();
         StopAllCoroutines();
         StartCoroutine(ShowLineSequence());
