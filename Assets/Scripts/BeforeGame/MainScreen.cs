@@ -3,22 +3,49 @@ using UnityEngine.SceneManagement;
 
 public class MainScreen : MonoBehaviour
 {
-    // Start 버튼 클릭 시 호출되는 함수
-    public void OnStartButtonClicked()
+    [Header("Panels")]
+    [SerializeField] private GameObject languagePanel;   // ⬅ 인스펙터에 할당
+    [SerializeField] private bool hidePanelOnStart = true;
+
+    private void Start()
     {
-        SceneManager.LoadScene("Stage2_1");
+        // 초기에는 비활성화
+        if (hidePanelOnStart && languagePanel != null)
+            languagePanel.SetActive(false);
     }
 
-    // Quit 버튼 클릭 시 호출되는 함수
+    // Start 버튼
+    public void OnStartButtonClicked()
+    {
+        SceneManager.LoadScene("CardGameFirstStage");
+    }
+
+    // Quit 버튼
     public void OnQuitButtonClicked()
     {
-        // 에디터에서는 UnityEditor를 통해 플레이 모드 종료
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else
-        // 빌드된 게임에서는 애플리케이션 종료
         Application.Quit();
 #endif
     }
-}
 
+    // Language 버튼
+    public void OnLanguageButtonClicked()
+    {
+        if (languagePanel == null)
+        {
+            Debug.LogError("[MainScreen] languagePanel이 할당되지 않았습니다.");
+            return;
+        }
+        languagePanel.SetActive(true);   // 필요하면 Toggle로 바꿔도 됨
+        // languagePanel.SetActive(!languagePanel.activeSelf);
+    }
+
+    // 닫기 버튼(패널 안에 Close 버튼 연결용)
+    public void OnCloseLanguagePanel()
+    {
+        if (languagePanel != null)
+            languagePanel.SetActive(false);
+    }
+}

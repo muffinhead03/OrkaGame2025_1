@@ -1261,6 +1261,16 @@ MonoBehaviour:
   - "\uADF8\uAC83\uBCF4\uB2E4\uB3C4 \uB2E4\uC74C \uD310 \uC2DC\uC791\uD558\uC790"
   - "(\uD558\uAE34 \uC774\uB7F0 \uD3C9\uD654\uB85C\uC6B4 \uACF3\uC5D0 \uADF8\uB7F0
     \uC18C\uB9AC\uAC00...) \uADF8\uB798, \uC88B\uC544!"
+  EnglishLines2_3:
+  - "I did it\u2026!"
+  - "Wait\u2026 did you hear that noise?"
+  - "What? That can\u2019t be right\u2014I didn\u2019t hear a thing"
+  - "Never mind that, let\u2019s just start the next round"
+  - "(Well\u2026 there\u2019s no way a place this peaceful would have such a noise
+    like that\u2026) Okay\u2026!"
+  KazaLines2_3: []
+  JapaneseLines2_3: []
+  ChineseLines2_3: []
 --- !u!224 &1360717391 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4995920051087956217, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
