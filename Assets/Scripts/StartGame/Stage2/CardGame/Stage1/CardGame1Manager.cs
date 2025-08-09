@@ -11,13 +11,13 @@ public class CardGame1Manager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     private Transform originalParent;
     private CardGame1PanelManager currentSlot;
     
-    private FirstCardLanguageManager dialogueManager;
+    private PuzzleGameFirstManagerScript dialogueManager;
 
     public bool canDrag = true;
     
     private void Start()
     {
-        dialogueManager = FindObjectOfType<FirstCardLanguageManager>();
+        dialogueManager = FindObjectOfType<PuzzleGameFirstManagerScript>();
     }
 
 
@@ -151,7 +151,8 @@ public class CardGame1Manager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (!canDrag || !dialogueManager.IsDialogueComplete()) return;
+        if (!canDrag || dialogueManager == null || !dialogueManager.IsDialogueComplete()) return;
         transform.localScale = Vector3.one;
     }
+
 }

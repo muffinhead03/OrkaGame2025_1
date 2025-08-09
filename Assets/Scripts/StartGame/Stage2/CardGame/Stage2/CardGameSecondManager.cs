@@ -15,11 +15,11 @@ public class CardGameSecondManager : MonoBehaviour
     public CanvasGroup blackPanel;
     public GameObject carrotObject;
 
-    private float timeRemaining = 25f;
+    // ✅ 25 → 120초로 변경
+    private float timeRemaining = 120f; 
     private bool isGameOver = false;
     private bool isClearing = false;
     private bool isClearConditionMet = false;
-
     void Start()
     {
         if (blackPanel != null)
@@ -29,16 +29,12 @@ public class CardGameSecondManager : MonoBehaviour
             blackPanel.interactable = false;
         }
 
-        // 카드들이 비활성화되어 있다면 여기서 모두 켜줌
         foreach (var slot in slots)
         {
             if (slot != null && !slot.gameObject.activeSelf)
-            {
                 slot.gameObject.SetActive(true);
-            }
         }
 
-        // 당근 오브젝트도 바로 활성화
         if (carrotObject != null)
             carrotObject.SetActive(true);
 
@@ -51,7 +47,9 @@ public class CardGameSecondManager : MonoBehaviour
         if (isGameOver || isClearing) return;
 
         timeRemaining -= Time.deltaTime;
-        timeRemaining = Mathf.Clamp(timeRemaining, 0f, 25f);
+
+        // ✅ 최대값도 25 → 120으로 변경
+        timeRemaining = Mathf.Clamp(timeRemaining, 0f, 120f);
         UpdateTimerDisplay();
 
         if (timeRemaining <= 0)
@@ -64,17 +62,16 @@ public class CardGameSecondManager : MonoBehaviour
             }
             else
             {
-                // 정답은 맞췄지만 시간 초과 → 그냥 기다림
                 isClearConditionMet = true;
                 if (carrotObject != null)
-                    carrotObject.SetActive(true); // 당근 보이기
+                    carrotObject.SetActive(true);
             }
         }
         else if (CheckClearCondition() && !isClearConditionMet)
         {
             isClearConditionMet = true;
             if (carrotObject != null)
-                carrotObject.SetActive(true); // 당근 보이기
+                carrotObject.SetActive(true);
         }
     }
 
@@ -102,7 +99,7 @@ public class CardGameSecondManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         yield return StartCoroutine(FlashBlack());
 
-        SceneManager.LoadScene("Stage2_3_1");
+        SceneManager.LoadScene("Stage2_4");
     }
 
     IEnumerator RotateZ(Transform target, float relativeAngle, float duration)
@@ -144,11 +141,16 @@ public class CardGameSecondManager : MonoBehaviour
     }
     void UpdateTimerDisplay()
     {
-        int seconds = Mathf.CeilToInt(timeRemaining);
-        float t = 1f - (timeRemaining / 25f);
+        int totalSeconds = Mathf.CeilToInt(timeRemaining);
+        int minutes = totalSeconds / 60;
+        int seconds = totalSeconds % 60;
+
+        // ✅ 색상 변화 비율도 120초 기준
+        float t = 1f - (timeRemaining / 120f);
         Color newColor = Color.Lerp(Color.white, Color.red, t);
+
         timerText.color = newColor;
-        timerText.text = $"00:{seconds:00}";
+        timerText.text = $"{minutes:00}:{seconds:00}";
     }
 
     bool CheckClearCondition()

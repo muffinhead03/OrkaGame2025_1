@@ -11,7 +11,9 @@ public class PuzzleGameFirstManagerScript : MonoBehaviour
     public string[] correctCardNames;
 
     public TextMeshProUGUI timerText;
-    private float timeRemaining = 15f;
+    [SerializeField] 
+    private float totalTimeSeconds = 60f; // ✅ 전체 제한시간 (기본 60초)
+    private float timeRemaining;
     private bool isGameOver = false;
     private bool isClearing = false;
 
@@ -24,10 +26,21 @@ public class PuzzleGameFirstManagerScript : MonoBehaviour
     
     public GameObject carrotObject; // 당근 오브젝트 (Inspector에서 연결)
     private bool isDialoguePlaying = true; // 대사 출력 중 여부
+    
+    [Header("Post-Dialogue Image Swap")]
+    [SerializeField] private Image targetUIImage;     // 유지할 오브젝트의 Image 컴포넌트
+    [SerializeField] private Sprite spriteAfterHint;  // 대사 끝나고 바꿀 새 스프라이트
+    [SerializeField] private bool setNativeSize = false; // 필요하면 원본 사이즈 맞추기
+    private bool spriteSwapped = false; // 중복 교체 방지
+    
     void Start()
     {
         // 처음엔 타이머 비활성화 상태
         timerManuallyStarted = false;
+
+        // ✅ 타이머 초기값 세팅
+        timeRemaining = totalTimeSeconds;
+        UpdateTimerDisplay(); // 초기 화면에 바로 표시
 
         if (blackPanel != null)
         {
@@ -41,13 +54,78 @@ public class PuzzleGameFirstManagerScript : MonoBehaviour
             carrotObject.SetActive(false); // 대사 중 숨기기
     }
 
+
     public void EndDialogue()
     {
         isDialoguePlaying = false;
 
+        // ✅ 여기서 이미지 교체 수행 (CardClick 활성화 시점과 동일 프레임)
+        TrySwapPostDialogueSprite();
+
         if (carrotObject != null)
             carrotObject.SetActive(true); // 대사 끝나면 보이기
     }
+    
+    private void TrySwapPostDialogueSprite()
+    {
+        if (spriteSwapped) return; 
+        spriteSwapped = true;
+
+        if (targetUIImage == null)
+        {
+            Debug.LogWarning("[IMG] targetUIImage가 비어있어요. 인스펙터에 UI Image를 넣어주세요.");
+            return;
+        }
+        if (spriteAfterHint == null)
+        {
+            Debug.LogWarning("[IMG] spriteAfterHint가 비어있어요. 교체할 스프라이트를 넣어주세요.");
+            return;
+        }
+
+        // ✅ RectTransform 물리량 백업
+        var rt = targetUIImage.rectTransform;
+        Vector2 sizeDelta   = rt.sizeDelta;
+        Vector2 anchoredPos = rt.anchoredPosition;
+        Vector3 localScale  = rt.localScale;
+        Vector2 anchorMin   = rt.anchorMin;
+        Vector2 anchorMax   = rt.anchorMax;
+        Vector2 pivot       = rt.pivot;
+        Vector3 localRot    = rt.localEulerAngles;
+
+        // (선택) 자동으로 Aspect 유지 – 큰 스프라이트가 들어와도 너비/높이 유지
+        targetUIImage.preserveAspect = true;
+
+        // (선택) 혹시 붙어있을 수 있는 사이즈 관련 컴포넌트들 잠깐 꺼두기
+        var arf = targetUIImage.GetComponent<AspectRatioFitter>();
+        var csf = targetUIImage.GetComponent<ContentSizeFitter>();
+        bool arfEnabled = false, csfEnabled = false;
+        if (arf != null) { arfEnabled = arf.enabled; arf.enabled = false; }
+        if (csf != null) { csfEnabled = csf.enabled; csf.enabled = false; }
+
+        // 교체
+        string beforeName = targetUIImage.sprite ? targetUIImage.sprite.name : "(null)";
+        targetUIImage.sprite = spriteAfterHint;
+
+        // ❌ SetNativeSize는 쓰지 않는 것이 핵심 (크기 튀는 원인)
+        // if (setNativeSize) targetUIImage.SetNativeSize();
+
+        // ✅ RectTransform 물리량 복원
+        rt.anchorMin = anchorMin;
+        rt.anchorMax = anchorMax;
+        rt.pivot     = pivot;
+        rt.sizeDelta = sizeDelta;
+        rt.anchoredPosition = anchoredPos;
+        rt.localScale = localScale;
+        rt.localEulerAngles = localRot;
+
+        // 비활성했던 보조 컴포넌트 복구
+        if (arf != null) arf.enabled = arfEnabled;
+        if (csf != null) csf.enabled = csfEnabled;
+
+        Debug.Log($"[IMG] 스프라이트 교체 완료: {beforeName} → {spriteAfterHint.name} | " +
+                  $"pos={rt.anchoredPosition}, size={rt.sizeDelta}, scale={rt.localScale}");
+    }
+
     
     public void OnCarrotClicked()
     {
@@ -174,7 +252,8 @@ public class PuzzleGameFirstManagerScript : MonoBehaviour
         if (IsPanelBlocking()) return;
 
         timeRemaining -= Time.deltaTime;
-        timeRemaining = Mathf.Clamp(timeRemaining, 0f, 15f);
+        // ✅ 상한/하한을 totalTimeSeconds 기준으로
+        timeRemaining = Mathf.Clamp(timeRemaining, 0f, totalTimeSeconds);
 
         UpdateTimerDisplay();
 
@@ -189,11 +268,17 @@ public class PuzzleGameFirstManagerScript : MonoBehaviour
 
     void UpdateTimerDisplay()
     {
-        int seconds = Mathf.CeilToInt(timeRemaining);
-        float t = 1f - (timeRemaining / 15f);
+        // ✅ MM:SS 표기 (원하면 그대로 00:SS도 가능)
+        int secondsTotal = Mathf.CeilToInt(timeRemaining);
+        int minutes = secondsTotal / 60;
+        int seconds = secondsTotal % 60;
+
+        // ✅ 색상 보간도 총 시간 기준
+        float t = 1f - (timeRemaining / totalTimeSeconds);
         Color newColor = Color.Lerp(Color.white, Color.red, t);
         timerText.color = newColor;
-        timerText.text = $"00:{seconds:00}";
+
+        timerText.text = $"{minutes:00}:{seconds:00}";
     }
 
     bool CheckClearCondition()
@@ -280,4 +365,11 @@ public class PuzzleGameFirstManagerScript : MonoBehaviour
         }
         blackPanel.alpha = 0f;
     }
+    // PuzzleGameFirstManagerScript 내부 아무데나(예: EndDialogue() 아래)에 추가
+    public bool IsDialogueComplete()
+    {
+        // 대사가 끝났다면 true
+        return !isDialoguePlaying;
+    }
+
 }
