@@ -57,11 +57,7 @@ public class DialogueManager3_5 : MonoBehaviour
     private GameObject[] characterObjs;
     private GameObject[] backgroundObjs;
 
-    private Vector3 panJumpTargetScale = Vector3.one;
-    private bool isPanJumping = false;
-    private float panJumpTimer = 0f;
-    private float panJumpDuration = 1f;
-
+    
     private void Awake()
     {
         nextButton.onClick.RemoveAllListeners();
@@ -101,7 +97,7 @@ public class DialogueManager3_5 : MonoBehaviour
         ApplyBackground(index);
         ApplyCharacter(index);
 
-        // aboveline 처리
+        // aboveline 처리 + index==9 즉시 리턴
         if (index == 9)
         {
             aboveText.text = "";
@@ -124,40 +120,35 @@ public class DialogueManager3_5 : MonoBehaviour
             aboveText.text = "";
         }
 
-        // 대사 텍스트 설정
+        // 대사 텍스트 설정 (이름 제거)
         string rawLine = lines[index];
         string displayLine = rawLine;
+        int colonIdx = rawLine.IndexOf(':');
+        if (colonIdx >= 0 && colonIdx < rawLine.Length - 1)
+            displayLine = rawLine.Substring(colonIdx + 1).Trim();
 
-        if (rawLine.Contains(":"))
-        {
-            string[] parts = rawLine.Split(':');
-            displayLine = parts[1].Trim();  // 이름 무시하고 내용만
-        }
-        else
-        {
-            displayLine = rawLine;
-        }
-
+        // 타이핑 코루틴 (한 번만)
         if (typingCoroutine != null)
             StopCoroutine(typingCoroutine);
         typingCoroutine = StartCoroutine(TypeText(displayLine));
 
+        // 사운드/연출
+        if (index == 3) DoorGoriSource?.Play();
 
-
-        if (index == 3 && DoorGoriSource != null)
-            DoorGoriSource.Play();
-
-        if (index == 10 && FluteSource != null)
+        if (index == 10)
         {
-            FluteSource.Play();
+            FluteSource?.Play();
             nextButton.gameObject.SetActive(false);
             StartCoroutine(PlayFluteThenFall());
         }
 
-        if (index == 11 && FestivalSource != null)
+        if (index == 11)
         {
-            FestivalSource.loop = false;
-            FestivalSource.Play();
+            if (FestivalSource != null)
+            {
+                FestivalSource.loop = false;
+                FestivalSource.Play();
+            }
         }
 
         if ((index == 11 || index == 12) && BirdSource != null && !BirdSource.isPlaying)
@@ -165,23 +156,7 @@ public class DialogueManager3_5 : MonoBehaviour
             BirdSource.loop = true;
             BirdSource.Play();
         }
-
-
-        // 케이스 9일 때: 텍스트 완전 제거 및 텍스트 UI 숨기기 (또는 유지)
-        if (index == 9)
-        {
-            aboveText.text = "";
-            storyText.text = "";
-            nextButton.gameObject.SetActive(true);
-            return;
-        }
-
-        if (typingCoroutine != null)
-            StopCoroutine(typingCoroutine);
-        typingCoroutine = StartCoroutine(TypeText(lines[index]));
     }
-
-
 
 
     private void ApplyBackground(int idx)
@@ -236,11 +211,9 @@ public class DialogueManager3_5 : MonoBehaviour
                 if (Pan_realObj != null)
                 {
                     Pan_realObj.SetActive(true);
-                    Pan_realObj.transform.localScale = Vector3.zero;
-                    panJumpTimer = 0f;
-                    isPanJumping = true;
                 }
                 break;
+
             case 11:
             case 12:
                 break;
@@ -268,6 +241,12 @@ public class DialogueManager3_5 : MonoBehaviour
         }
         else if (index == 12)
         {
+            // 4가지 오브젝트 비활성화
+            CarrotButton?.SetActive(false);
+            DialogueImage?.SetActive(false);
+            FirstPanel?.SetActive(false);
+            SettingPanel?.SetActive(false);
+
             // 대사 출력 완료 후 WhiteImageObj 페이드인
             yield return StartCoroutine(FadeToImage(WhiteImageObj, 3f));
 
@@ -277,6 +256,7 @@ public class DialogueManager3_5 : MonoBehaviour
             // 동영상 재생
             PlayEndingVideo();
         }
+
 
         if (index != 10)
         {
@@ -476,28 +456,5 @@ public class DialogueManager3_5 : MonoBehaviour
                 break;
         }
 
-        if (isPanJumping && Pan_realObj != null)
-        {
-            panJumpTimer += Time.deltaTime;
-            float t = Mathf.Clamp01(panJumpTimer / panJumpDuration);
-
-            if (t < 0.5f)
-            {
-                float scaleT = t / 0.5f;  // 0 ~ 1
-                Pan_realObj.transform.localScale = Vector3.Lerp(Vector3.zero, panJumpTargetScale, scaleT);
-            }
-            else
-            {
-                float scaleT = (t - 0.5f) / 0.5f;  // 0 ~ 1
-                Pan_realObj.transform.localScale = Vector3.Lerp(panJumpTargetScale, Vector3.zero, scaleT);
-            }
-
-            if (t >= 1f)
-            {
-                isPanJumping = false;
-                Pan_realObj.transform.localScale = Vector3.zero;
-                Pan_realObj.SetActive(false);  // 애니메이션 끝나면 판 이미지 숨기기
-            }
-        }
     }
 }
