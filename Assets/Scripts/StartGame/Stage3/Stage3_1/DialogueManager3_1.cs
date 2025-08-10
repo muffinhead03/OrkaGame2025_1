@@ -6,29 +6,29 @@ using UnityEngine.SceneManagement;
 
 public class DialogueManager3_1 : MonoBehaviour
 {
-    [Header("¾ğ¾î ¿ÀºêÁ§Æ®")]
+    [Header("ì–¸ì–´ë³„ RectTransform")]
     public RectTransform Korean_Above, Korean_Story;
     public RectTransform English_Above, English_Story;
     public RectTransform Japanese_Above, Japanese_Story;
     public RectTransform Chinese_Above, Chinese_Story;
     public RectTransform Kaza_Above, Kaza_Story;
 
-    [Header("±âº» À§Ä¡°ª")]
+    [Header("ê¸°ë³¸ ìœ„ì¹˜ê°’")]
     public Vector2 AboPo = new Vector2(-750f, 160f);
     public Vector2 StoPo = new Vector2(-250f, -20f);
 
-    [Header("UI ¿ä¼Ò")]
+    [Header("UI")]
     public TextMeshProUGUI aboveText;
     public TextMeshProUGUI storyText;
     public Button nextButton;
 
-    [Header("Å¸ÀÌÇÎ ¼Óµµ")]
+    [Header("íƒ€ì´í•‘ ì†ë„")]
     public float typingSpeed = 0.04f;
 
-    [Header("¿Àµğ¿À")]
+    [Header("BGM")]
     public AudioSource bgmSource;
 
-    [Header("Ç¥Á¤ ¿ÀºêÁ§Æ®")]
+    [Header("í‘œì • ì˜¤ë¸Œì íŠ¸")]
     public GameObject Eco_eyeclosedObj;
     public GameObject Eco_defaultObj;
     public GameObject Eco_readyObj;
@@ -37,16 +37,30 @@ public class DialogueManager3_1 : MonoBehaviour
     public GameObject Pan_defaultObj;
     public GameObject Pan_4eyeclosedObj;
 
-    [Header("¹è°æ ÀÌ¹ÌÁö")]
+    [Header("ë°°ê²½ ì´ë¯¸ì§€")]
     public Image backgroundImage;
     public Sprite backGroundSprite;
 
-    [Header("´ë»ç ½ºÅ©¸³Æ®")]
+    [Header("ëŒ€ì‚¬/ì´ë¦„ ì†ŒìŠ¤")]
     public LanguageCollector3_1 languageCollector;
 
     private string[] lines;
     private int index;
     private Coroutine typingCoroutine;
+
+    // === ì–¸ì–´ í—¬í¼ ===
+    private string CurrentLanguage => NormalizeLang(LanguageManager.GetLanguage());
+
+    private string NormalizeLang(string raw)
+    {
+        string s = (raw ?? "korean").Trim().ToLowerInvariant();
+        if (s.StartsWith("en")) return "english";
+        if (s.StartsWith("ko")) return "korean";
+        if (s.StartsWith("ja")) return "japanese";
+        if (s.StartsWith("zh")) return "chinese";
+        if (s.StartsWith("ka") || s.Contains("kaza") || s.Contains("kazah")) return "kaza"; // kazakh ë³€í˜• í¬í•¨
+        return s;
+    }
 
     private void Awake()
     {
@@ -64,9 +78,6 @@ public class DialogueManager3_1 : MonoBehaviour
     {
         SetupLanguageUI();
 
-        if (aboveText != null)
-            aboveText.text = "¿¡ÄÚ";
-
         if (backgroundImage != null && backGroundSprite != null)
             backgroundImage.sprite = backGroundSprite;
 
@@ -83,15 +94,14 @@ public class DialogueManager3_1 : MonoBehaviour
 
     private void LoadLinesForCurrentLanguage()
     {
-        string lang = LanguageManager.GetLanguage()?.Trim().ToLower();
+        string lang = CurrentLanguage;
         switch (lang)
         {
-            case "korean": lines = languageCollector.KoreanLines3_1; break;
-            case "english": lines = languageCollector.EnglishLines3_1; break;
+            case "korean":   lines = languageCollector.KoreanLines3_1; break;
+            case "english":  lines = languageCollector.EnglishLines3_1; break;
             case "japanese": lines = languageCollector.JapaneseLines3_1; break;
-            case "chinese": lines = languageCollector.ChineseLines3_1; break;
-            case "kazahustan":
-            case "kaza": lines = languageCollector.KazaLines3_1; break;
+            case "chinese":  lines = languageCollector.ChineseLines3_1; break;
+            case "kaza":     lines = languageCollector.KazaLines3_1; break;
             default:
                 Debug.LogWarning($"Unknown language '{lang}', default to Korean.");
                 lines = languageCollector.KoreanLines3_1;
@@ -112,14 +122,17 @@ public class DialogueManager3_1 : MonoBehaviour
 
         if (typingCoroutine != null)
             StopCoroutine(typingCoroutine);
+
         typingCoroutine = StartCoroutine(TypeText(lines[index]));
         yield return typingCoroutine;
 
         nextButton?.gameObject.SetActive(true);
     }
 
+    // ===== í™”ìëª…: ì–¸ì–´ë³„ AboveLine[0/1] ì‚¬ìš© =====
     private void UpdateCharacterFace(int idx)
     {
+        // í‘œì • ì´ˆê¸°í™”
         Eco_eyeclosedObj?.SetActive(false);
         Eco_defaultObj?.SetActive(false);
         Eco_readyObj?.SetActive(false);
@@ -127,27 +140,27 @@ public class DialogueManager3_1 : MonoBehaviour
         Eco_surprisedObj?.SetActive(false);
         Pan_defaultObj?.SetActive(false);
         Pan_4eyeclosedObj?.SetActive(false);
-        // ±âº»°ª: ¿¡ÄÚ
-        string characterName = "¿¡ÄÚ";
 
+        // ê¸°ì¡´ ì—°ì¶œ ìœ ì§€
         switch (idx)
         {
             case 0:
                 Eco_surprisedObj?.SetActive(true);
                 break;
+
             case 1:
             case 7:
             case 8:
             case 11:
             case 19:
                 Pan_defaultObj?.SetActive(true);
-                characterName = "ÆÇ"; // Pan ÀÌ¹ÌÁöÀÏ ¶§´Â "ÆÇ"
                 break;
+
             case 9:
             case 17:
                 Pan_4eyeclosedObj?.SetActive(true);
-                characterName = "ÆÇ"; // Pan ÀÌ¹ÌÁöÀÏ ¶§´Â "ÆÇ"
                 break;
+
             case 2:
             case 3:
             case 6:
@@ -156,24 +169,69 @@ public class DialogueManager3_1 : MonoBehaviour
             case 15:
                 Eco_readyObj?.SetActive(true);
                 break;
+
             case 4:
             case 18:
                 Eco_defaultObj?.SetActive(true);
                 break;
+
             case 5:
             case 10:
             case 16:
                 Eco_eyeclosedObj?.SetActive(true);
                 break;
+
             case 14:
                 Eco_smiledObj?.SetActive(true);
                 break;
         }
 
+        bool isPan = IsPanLine(idx);
+        string speakerName = GetSpeakerName(isPan);
         if (aboveText != null)
-            aboveText.text = characterName;
+            aboveText.text = speakerName;
     }
 
+    // ì´ ì¸ë±ìŠ¤ê°€ íŒì˜ ëŒ€ì‚¬ì¸ê°€?
+    private bool IsPanLine(int idx)
+    {
+        switch (idx)
+        {
+            case 1:
+            case 7:
+            case 8:
+            case 9:
+            case 11:
+            case 17:
+            case 19:
+                return true;
+            default:
+                return false; // ë‚˜ë¨¸ì§€ëŠ” ì—ì½”
+        }
+    }
+
+    // í˜„ì¬ ì–¸ì–´ì˜ í™”ìëª…: [0]=ì—ì½”, [1]=íŒ
+    private string GetSpeakerName(bool isPan)
+    {
+        if (languageCollector == null)
+            return isPan ? "Pan" : "Echo";
+
+        string[] names;
+        switch (CurrentLanguage)
+        {
+            case "korean":   names = languageCollector.KoreanAbove1_2;   break;
+            case "english":  names = languageCollector.EnglishAbove1_2;  break;
+            case "japanese": names = languageCollector.JapaneseAbove1_2; break;
+            case "chinese":  names = languageCollector.ChineseAbove1_2;  break;
+            case "kaza":     names = languageCollector.KazaAbove1_2;     break;
+            default:         names = languageCollector.EnglishAbove1_2;  break;
+        }
+
+        if (names == null || names.Length < 2)
+            return isPan ? "Pan" : "Echo";
+
+        return isPan ? (names[1] ?? "Pan") : (names[0] ?? "Echo");
+    }
 
     private IEnumerator TypeText(string fullText)
     {
@@ -207,31 +265,49 @@ public class DialogueManager3_1 : MonoBehaviour
             Chinese_Above, Chinese_Story,
             Kaza_Above, Kaza_Story
         };
-        foreach (var rt in all)
-            rt?.gameObject.SetActive(false);
+        foreach (var rt in all) rt?.gameObject.SetActive(false);
 
-        string lang = LanguageManager.GetLanguage()?.Trim().ToLower();
+        string lang = CurrentLanguage;
         RectTransform above = Korean_Above, story = Korean_Story;
         switch (lang)
         {
-            case "english": above = English_Above; story = English_Story; break;
-            case "japanese": above = Japanese_Above; story = Japanese_Story; break;
-            case "chinese": above = Chinese_Above; story = Chinese_Story; break;
-            case "kazahustan":
-            case "kaza": above = Kaza_Above; story = Kaza_Story; break;
+            case "english":   above = English_Above;   story = English_Story;   break;
+            case "japanese":  above = Japanese_Above;  story = Japanese_Story;  break;
+            case "chinese":   above = Chinese_Above;   story = Chinese_Story;   break;
+            case "kaza":      above = Kaza_Above;      story = Kaza_Story;      break;
+            // default: korean
         }
+
         if (above != null && story != null)
         {
             above.gameObject.SetActive(true);
             story.gameObject.SetActive(true);
             above.anchoredPosition = AboPo;
             story.anchoredPosition = StoPo;
+
+            // ì–¸ì–´ë³„ TMP ì¬ë°”ì¸ë”© (ì˜ì–´ ë¯¸ì¶œë ¥ ì´ìŠˆ í•´ê²°)
+            aboveText = FindTMP(above);
+            storyText = FindTMP(story);
+
+            if (aboveText == null || storyText == null)
+                Debug.LogWarning("[DialogueManager3_1] Active language TMP not found. Check children TextMeshProUGUI.");
         }
+    }
+
+    private TextMeshProUGUI FindTMP(RectTransform root)
+    {
+        if (root == null) return null;
+        var tmp = root.GetComponent<TextMeshProUGUI>();
+        if (tmp != null) return tmp;
+        return root.GetComponentInChildren<TextMeshProUGUI>(true);
     }
 
     private void OnLanguageChanged(string newLang)
     {
+        // ì–¸ì–´ ë°”ë€Œë©´ ë¨¼ì € UI íŒ¨ë„ êµì²´/ì¬ë°”ì¸ë”© í›„ ë¼ì¸ ë¡œë“œ
+        SetupLanguageUI();
         LoadLinesForCurrentLanguage();
+
         StopAllCoroutines();
         StartCoroutine(ShowLineSequence());
     }

@@ -11,11 +11,10 @@ public class DialogueManager3_2 : MonoBehaviour
     public void ChangeCase(int caseNumber)
     {
         currentCase = caseNumber;
-        index = caseNumber; // ´ë»ç ÀÎµ¦½ºµµ ¸ÂÃçÁÜ (ÇÊ¿ä½Ã ¼öÁ¤)
+        index = caseNumber;
 
-        Debug.Log($"ÄÉÀÌ½º {caseNumber}·Î º¯°æ");
+        Debug.Log($"[Dialogue3_2] ì¼€ì´ìŠ¤ {caseNumber}ë¡œ ì´ë™");
 
-        // ÄÉÀÌ½º º¯°æ ÈÄ ´ë»ç ÁøÇà Àç½ÃÀÛ
         StopAllCoroutines();
         StartCoroutine(ShowLineSequence());
     }
@@ -27,36 +26,35 @@ public class DialogueManager3_2 : MonoBehaviour
             DialogueManager3_2 dm = FindObjectOfType<DialogueManager3_2>();
             if (dm != null)
             {
-                dm.ChangeCase(15);  // ÄÉÀÌ½º 15·Î ¹Ù·Î ½ÃÀÛ
+                dm.ChangeCase(15);  // ì¼€ì´ìŠ¤ 15ë¶€í„° ì‹œì‘
             }
         }
     }
 
-
-    [Header("¾ğ¾î ¿ÀºêÁ§Æ®")]
+    [Header("ì–¸ì–´ë³„ RectTransform")]
     public RectTransform Korean_Above, Korean_Story;
     public RectTransform English_Above, English_Story;
     public RectTransform Japanese_Above, Japanese_Story;
     public RectTransform Chinese_Above, Chinese_Story;
     public RectTransform Kaza_Above, Kaza_Story;
 
-    [Header("±âº» À§Ä¡°ª")]
+    [Header("ê¸°ë³¸ ìœ„ì¹˜ê°’")]
     public Vector2 AboPo = new Vector2(-750f, 160f);
     public Vector2 StoPo = new Vector2(-250f, -20f);
 
-    [Header("UI ¿ä¼Ò")]
+    [Header("UI")]
     public TextMeshProUGUI aboveText;
     public TextMeshProUGUI storyText;
     public Button nextButton;
 
-    [Header("Å¸ÀÌÇÎ ¼Óµµ")]
+    [Header("íƒ€ì´í•‘ ì†ë„")]
     public float typingSpeed = 0.04f;
 
-    [Header("¿Àµğ¿À")]
+    [Header("ì˜¤ë””ì˜¤")]
     public AudioSource bgmSource;
     public AudioSource kwangSound;
 
-    [Header("Ç¥Á¤ ¿ÀºêÁ§Æ®")]
+    [Header("í‘œì • ì˜¤ë¸Œì íŠ¸")]
     public GameObject Eco_smiledObj;
     public GameObject Eco_eyeclosedObj;
     public GameObject Eco_readyObj;
@@ -68,14 +66,14 @@ public class DialogueManager3_2 : MonoBehaviour
     public GameObject Narke_defaultObj;
     public GameObject Narke_2Obj;
 
-    [Header("¹è°æ ÀÌ¹ÌÁö")]
+    [Header("ë°°ê²½ ì´ë¯¸ì§€")]
     public Image backgroundImage;
     public Sprite backGroundSprite;
 
-    [Header("´ë»ç ½ºÅ©¸³Æ®")]
+    [Header("ëŒ€ì‚¬/ì´ë¦„ ì†ŒìŠ¤")]
     public LanguageCollector3_2 languageCollector;
 
-    [Header("¾ğ¾îº°·Î ³ªÅ¸³¯ ¿ÀºêÁ§Æ®µé")]
+    [Header("ì–¸ì–´ë³„ ì „ìš© ì˜¤ë¸Œì íŠ¸ ë£¨íŠ¸ë“¤")]
     public GameObject[] koreanObjects;
     public GameObject[] englishObjects;
     public GameObject[] japaneseObjects;
@@ -86,6 +84,20 @@ public class DialogueManager3_2 : MonoBehaviour
     private int index;
     private Coroutine typingCoroutine;
     private bool kwangPlayed = false;
+
+    // === ì–¸ì–´ í—¬í¼ ===
+    private string CurrentLanguage => NormalizeLang(LanguageManager.GetLanguage());
+
+    private string NormalizeLang(string raw)
+    {
+        string s = (raw ?? "korean").Trim().ToLowerInvariant();
+        if (s.StartsWith("en")) return "english";
+        if (s.StartsWith("ko")) return "korean";
+        if (s.StartsWith("ja")) return "japanese";
+        if (s.StartsWith("zh")) return "chinese";
+        if (s.StartsWith("ka") || s.Contains("kaza") || s.Contains("kazah")) return "kaza";
+        return s;
+    }
 
     private void Awake()
     {
@@ -98,7 +110,7 @@ public class DialogueManager3_2 : MonoBehaviour
 
         LanguageManager.Initialize();
         LanguageManager.OnLanguageChanged += OnLanguageChanged;
-        SceneManager.sceneLoaded += OnSceneLoaded; // ¾À ·Îµå ÀÌº¥Æ® µî·Ï
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void Start()
@@ -114,23 +126,21 @@ public class DialogueManager3_2 : MonoBehaviour
 
         if (lines == null || lines.Length == 0)
         {
-            Debug.LogError("[DialogueManager3_2] ´ë»ç°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogError("[DialogueManager3_2] ëŒ€ì‚¬ê°€ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
-
     }
 
     private void LoadLinesForCurrentLanguage()
     {
-        string lang = LanguageManager.GetLanguage()?.Trim().ToLower();
+        string lang = CurrentLanguage;
         switch (lang)
         {
-            case "korean": lines = languageCollector.KoreanLines3_2; break;
-            case "english": lines = languageCollector.EnglishLines3_2; break;
+            case "korean":   lines = languageCollector.KoreanLines3_2; break;
+            case "english":  lines = languageCollector.EnglishLines3_2; break;
             case "japanese": lines = languageCollector.JapaneseLines3_2; break;
-            case "chinese": lines = languageCollector.ChineseLines3_2; break;
-            case "kazahustan":
-            case "kaza": lines = languageCollector.KazaLines3_2; break;
+            case "chinese":  lines = languageCollector.ChineseLines3_2; break;
+            case "kaza":     lines = languageCollector.KazaLines3_2; break;
             default:
                 Debug.LogWarning($"Unknown language '{lang}', default to Korean.");
                 lines = languageCollector.KoreanLines3_2;
@@ -142,10 +152,11 @@ public class DialogueManager3_2 : MonoBehaviour
     {
         if (lines == null || index >= lines.Length)
         {
-            Debug.LogError("[ShowLineSequence] À¯È¿ÇÏÁö ¾ÊÀº ´ë»ç ÀÎµ¦½º.");
+            Debug.LogError("[ShowLineSequence] ìœ íš¨í•˜ì§€ ì•Šì€ ëŒ€ì‚¬ ì¸ë±ìŠ¤.");
             yield break;
         }
 
+        // íš¨ê³¼ìŒ/ë°°ê²½ìŒ
         if (index == 1 && !kwangPlayed)
         {
             kwangSound?.Play();
@@ -160,7 +171,10 @@ public class DialogueManager3_2 : MonoBehaviour
             bgmSource.Play();
         }
 
+        // í‘œì • ë° í™”ìëª… ì²˜ë¦¬
         UpdateCharacterFace(index);
+
+        // ì–¸ì–´ë³„ ì „ìš© UI ì´ˆê¸°í™”
         DisableAllLanguageObjects();
 
         yield return new WaitForSeconds(0.5f);
@@ -172,55 +186,54 @@ public class DialogueManager3_2 : MonoBehaviour
 
         nextButton?.gameObject.SetActive(true);
 
+        // ë§ˆì§€ë§‰ ì¤„ì´ë©´ ì–¸ì–´ë³„ ì„ íƒì§€ UI í™œì„±í™” ë° ë²„íŠ¼ ë°”ì¸ë”©
         if (index == lines.Length - 1)
         {
-            string lang = LanguageManager.GetLanguage()?.Trim().ToLower();
+            string lang = CurrentLanguage;
             GameObject[] targetObjects = null;
 
             switch (lang)
             {
-                case "korean": targetObjects = koreanObjects; break;
+                case "korean":  targetObjects = koreanObjects;  break;
                 case "english": targetObjects = englishObjects; break;
-                case "japanese": targetObjects = japaneseObjects; break;
+                case "japanese":targetObjects = japaneseObjects;break;
                 case "chinese": targetObjects = chineseObjects; break;
-                case "kazahustan":
-                case "kaza": targetObjects = kazaObjects; break;
+                case "kaza":    targetObjects = kazaObjects;    break;
             }
 
             if (targetObjects != null)
             {
                 foreach (var parentObj in targetObjects)
                 {
-                    if (parentObj != null && !parentObj.name.ToLower().Trim().StartsWith("2"))
+                    if (parentObj == null) continue;
+
+                    // ì´ë¦„ì´ "2"ë¡œ ì‹œì‘í•˜ëŠ” ë£¨íŠ¸ëŠ” ê±´ë“œë¦¬ì§€ ì•ŠìŒ (ê¸°ì¡´ ë¡œì§ ìœ ì§€)
+                    if (!parentObj.name.ToLower().Trim().StartsWith("2"))
                         parentObj.SetActive(true);
 
                     Button[] buttons = parentObj.GetComponentsInChildren<Button>(true);
                     foreach (var btn in buttons)
                     {
                         string btnName = btn.gameObject.name.ToLower().Trim();
-                        Debug.Log($"[¼±ÅÃÁö ¹öÆ° Ã£À½] {btnName}");
+                        Debug.Log($"[ì„ íƒì§€ ë²„íŠ¼ íƒìƒ‰] {btnName}");
 
                         if (btnName.StartsWith("ss"))
                         {
+                            btn.onClick.RemoveAllListeners();
                             if (btnName.Contains("2_1"))
-                            {
-                                btn.onClick.RemoveAllListeners();
                                 btn.onClick.AddListener(() => LoadScene("Stage3_3"));
-                            }
                             else if (btnName.Contains("2_2"))
-                            {
-                                btn.onClick.RemoveAllListeners();
                                 btn.onClick.AddListener(() => LoadScene("Stage3_4"));
-                            }
                         }
                     }
                 }
             }
         }
-    } // ¡ç ¿©±â Áß°ıÈ£ Ãß°¡µÊ
+    }
 
     private void UpdateCharacterFace(int idx)
     {
+        // í‘œì • ì´ˆê¸°í™”
         Eco_smiledObj?.SetActive(false);
         Eco_eyeclosedObj?.SetActive(false);
         Eco_readyObj?.SetActive(false);
@@ -230,6 +243,7 @@ public class DialogueManager3_2 : MonoBehaviour
         Narke_defaultObj?.SetActive(false);
         Narke_2Obj?.SetActive(false);
 
+        // ê¸°ì¡´ ì—°ì¶œ ìœ ì§€
         switch (idx)
         {
             case 0: Eco_smiledObj?.SetActive(true); break;
@@ -240,7 +254,7 @@ public class DialogueManager3_2 : MonoBehaviour
             case 8:
             case 10:
             case 15: Pan_defaultObj?.SetActive(true); break;
-            case 5: Pan_4eyeclosedObj?.SetActive(true);break;
+            case 5: Pan_4eyeclosedObj?.SetActive(true); break;
             case 2:
             case 9: Eco_eyeclosedObj?.SetActive(true); break;
             case 7: Eco_readyObj?.SetActive(true); break;
@@ -250,30 +264,63 @@ public class DialogueManager3_2 : MonoBehaviour
             case 14: Eco_surprisedObj?.SetActive(true); break;
         }
 
+        // === í™”ìëª…(AboveLine) ì–¸ì–´ë³„ ì¶œë ¥ ===
+        bool isNarke = ( (Narke_defaultObj != null && Narke_defaultObj.activeSelf) ||
+                         (Narke_2Obj != null && Narke_2Obj.activeSelf) );
+        bool isPan   = ( (Pan_defaultObj != null && Pan_defaultObj.activeSelf) ||
+                         (Pan_4eyeclosedObj != null && Pan_4eyeclosedObj.activeSelf) );
+        bool isEcho  = !isNarke && !isPan; // ë‚˜ë¨¸ì§€
+
         if (aboveText != null)
         {
-            if ((Narke_defaultObj != null && Narke_defaultObj.activeSelf) ||
-                (Narke_2Obj != null && Narke_2Obj.activeSelf))
-            {
-                aboveText.text = "³ª¸£ÄÉ";
-            }
-            else if ((Eco_smiledObj != null && Eco_smiledObj.activeSelf) ||
-                     (Eco_readyObj != null && Eco_readyObj.activeSelf) ||
-                     (Eco_eyeclosedObj != null && Eco_eyeclosedObj.activeSelf) ||
-                     (Eco_surprisedObj != null && Eco_surprisedObj.activeSelf))
-            {
-                aboveText.text = "¿¡ÄÚ";
-            }
-            else if ((Pan_defaultObj != null && Pan_defaultObj.activeSelf) ||
-                     (Pan_4eyeclosedObj != null && Pan_4eyeclosedObj.activeSelf)) // ¿©±â Ãß°¡µÊ
-            {
-                aboveText.text = "ÆÇ";
-            }
-            else
-            {
-                aboveText.text = "";
-            }
+            if (isNarke)      aboveText.text = GetSpeakerNameNarke();
+            else if (isPan)   aboveText.text = GetSpeakerNamePan();
+            else              aboveText.text = GetSpeakerNameEcho();
         }
+    }
+
+    // === í™”ìëª…(ì–¸ì–´ë³„) ===
+    private string GetSpeakerNameEcho()
+    {
+        switch (CurrentLanguage)
+        {
+            case "korean":   return SafeName(languageCollector?.KoreanAbove1_2, 0, "ì—ì½”");
+            case "english":  return SafeName(languageCollector?.EnglishAbove1_2, 0, "Echo");
+            case "japanese": return SafeName(languageCollector?.JapaneseAbove1_2, 0, "ã‚¨ã‚³ãƒ¼");
+            case "chinese":  return SafeName(languageCollector?.ChineseAbove1_2, 0, "è‰¾å¯");
+            case "kaza":     return SafeName(languageCollector?.KazaAbove1_2,    0, "Ğ­ĞºĞ¾");
+            default:         return "Echo";
+        }
+    }
+    private string GetSpeakerNamePan()
+    {
+        switch (CurrentLanguage)
+        {
+            case "korean":   return SafeName(languageCollector?.KoreanAbove1_2, 1, "íŒ");
+            case "english":  return SafeName(languageCollector?.EnglishAbove1_2,1, "Pan");
+            case "japanese": return SafeName(languageCollector?.JapaneseAbove1_2,1, "ãƒ‘ãƒ¼ãƒ³");
+            case "chinese":  return SafeName(languageCollector?.ChineseAbove1_2, 1, "æ½˜");
+            case "kaza":     return SafeName(languageCollector?.KazaAbove1_2,    1, "ĞŸĞ°Ğ½");
+            default:         return "Pan";
+        }
+    }
+    private string GetSpeakerNameNarke()
+    {
+        // ì»¬ë ‰í„°ì— ë‚˜ë¥´ì¼€ ì „ìš© ë°°ì—´ì´ ì—†ìœ¼ë¯€ë¡œ ê°„ë‹¨í•œ ê¸°ë³¸ê°’ ì œê³µ
+        switch (CurrentLanguage)
+        {
+            case "korean":   return "ë‚˜ë¥´ì¼€";
+            case "english":  return "Narke";
+            case "japanese": return "ãƒŠãƒ«ã‚±";
+            case "chinese":  return "çº³å°”å…‹";
+            case "kaza":     return "ĞĞ°Ñ€Ñ‹ĞºĞµ";
+            default:         return "Narke";
+        }
+    }
+    private string SafeName(string[] arr, int idx, string fallback)
+    {
+        if (arr != null && arr.Length > idx && !string.IsNullOrEmpty(arr[idx])) return arr[idx];
+        return fallback;
     }
 
     private IEnumerator TypeText(string fullText)
@@ -305,18 +352,17 @@ public class DialogueManager3_2 : MonoBehaviour
             Chinese_Above, Chinese_Story,
             Kaza_Above, Kaza_Story
         };
-        foreach (var rt in all)
-            rt?.gameObject.SetActive(false);
+        foreach (var rt in all) rt?.gameObject.SetActive(false);
 
-        string lang = LanguageManager.GetLanguage()?.Trim().ToLower();
+        string lang = CurrentLanguage;
         RectTransform above = Korean_Above, story = Korean_Story;
         switch (lang)
         {
-            case "english": above = English_Above; story = English_Story; break;
-            case "japanese": above = Japanese_Above; story = Japanese_Story; break;
-            case "chinese": above = Chinese_Above; story = Chinese_Story; break;
-            case "kazahustan":
-            case "kaza": above = Kaza_Above; story = Kaza_Story; break;
+            case "english":   above = English_Above;   story = English_Story;   break;
+            case "japanese":  above = Japanese_Above;  story = Japanese_Story;  break;
+            case "chinese":   above = Chinese_Above;   story = Chinese_Story;   break;
+            case "kaza":      above = Kaza_Above;      story = Kaza_Story;      break;
+            // default: korean
         }
 
         if (above != null && story != null)
@@ -325,16 +371,34 @@ public class DialogueManager3_2 : MonoBehaviour
             story.gameObject.SetActive(true);
             above.anchoredPosition = AboPo;
             story.anchoredPosition = StoPo;
+
+            // ì–¸ì–´ë³„ TMP ì¬ë°”ì¸ë”© (ì–¸ì–´ ë³€ê²½ ì‹œ ë¯¸ì¶œë ¥ ì´ìŠˆ ë°©ì§€)
+            aboveText = FindTMP(above);
+            storyText = FindTMP(story);
+
+            if (aboveText == null || storyText == null)
+                Debug.LogWarning("[DialogueManager3_2] Active language TMP not found. Check children TextMeshProUGUI.");
         }
+    }
+
+    private TextMeshProUGUI FindTMP(RectTransform root)
+    {
+        if (root == null) return null;
+        var tmp = root.GetComponent<TextMeshProUGUI>();
+        if (tmp != null) return tmp;
+        return root.GetComponentInChildren<TextMeshProUGUI>(true);
     }
 
     private void OnLanguageChanged(string newLang)
     {
+        // ë¨¼ì € UI ì¬ë°”ì¸ë”© â†’ ëŒ€ì‚¬ ë¡œë“œ â†’ ì‹œí€€ìŠ¤ ì¬ì‹œì‘
+        SetupLanguageUI();
         LoadLinesForCurrentLanguage();
+
         StopAllCoroutines();
         StartCoroutine(ShowLineSequence());
 
-        UpdateLanguageSpecificObjects(newLang);
+        UpdateLanguageSpecificObjects(CurrentLanguage);
     }
 
     private void UpdateLanguageSpecificObjects(string lang)
@@ -342,14 +406,13 @@ public class DialogueManager3_2 : MonoBehaviour
         DisableAllLanguageObjects();
 
         GameObject[] target = null;
-        switch (lang.Trim().ToLower())
+        switch (NormalizeLang(lang))
         {
-            case "korean": target = koreanObjects; break;
+            case "korean":  target = koreanObjects;  break;
             case "english": target = englishObjects; break;
-            case "japanese": target = japaneseObjects; break;
+            case "japanese":target = japaneseObjects;break;
             case "chinese": target = chineseObjects; break;
-            case "kaza":
-            case "kazahustan": target = kazaObjects; break;
+            case "kaza":    target = kazaObjects;    break;
         }
 
         if (target != null)
@@ -359,11 +422,10 @@ public class DialogueManager3_2 : MonoBehaviour
         }
     }
 
-
     private void OnDestroy()
     {
         LanguageManager.OnLanguageChanged -= OnLanguageChanged;
-        SceneManager.sceneLoaded -= OnSceneLoaded; // ¾À ·Îµå ÀÌº¥Æ® ÇØÁ¦
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     private void Update()
@@ -376,11 +438,11 @@ public class DialogueManager3_2 : MonoBehaviour
 
     private void DisableAllLanguageObjects()
     {
-        foreach (var obj in koreanObjects) if (obj != null) obj.SetActive(false);
+        foreach (var obj in koreanObjects)  if (obj != null) obj.SetActive(false);
         foreach (var obj in englishObjects) if (obj != null) obj.SetActive(false);
-        foreach (var obj in japaneseObjects) if (obj != null) obj.SetActive(false);
+        foreach (var obj in japaneseObjects)if (obj != null) obj.SetActive(false);
         foreach (var obj in chineseObjects) if (obj != null) obj.SetActive(false);
-        foreach (var obj in kazaObjects) if (obj != null) obj.SetActive(false);
+        foreach (var obj in kazaObjects)    if (obj != null) obj.SetActive(false);
     }
 
     private void LoadScene(string sceneName)

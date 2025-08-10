@@ -794,7 +794,11 @@ PrefabInstance:
       value: OnArrowLeft
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 8706653880837387962, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
+    - {fileID: 4951012486792874416, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
+    - {fileID: 6965542387678462331, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
+    - {fileID: 5659580173602651900, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
@@ -1224,6 +1228,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06ad93ef826081e428065df37d1324d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  KoreanAbove1_2:
+  - "\uC5D0\uCF54"
+  - "\uD310"
+  EnglishAbove1_2:
+  - Echo
+  - Pan
+  JapaneseAbove1_2:
+  - j
+  - j
+  ChineseAbove1_2:
+  - "\u827E\u53EF"
+  - "\u6F58"
+  KazaAbove1_2:
+  - "\u042D\u043A\u043E"
+  - "\u041F\u0430\u043D"
 --- !u!224 &1259520381 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4995920051087956217, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}

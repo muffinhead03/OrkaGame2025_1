@@ -1620,7 +1620,11 @@ PrefabInstance:
       value: OnArrowLeft
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 4951012486792874416, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
+    - {fileID: 6965542387678462331, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
+    - {fileID: 5659580173602651900, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
+    - {fileID: 8706653880837387962, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
@@ -3259,6 +3263,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43c17afd4fe439a4283fb711bc94c0ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  KoreanAbove1_2:
+  - "\uC5D0\uCF54"
+  - "\uD310"
+  EnglishAbove1_2:
+  - Echo
+  - Pan
+  JapaneseAbove1_2:
+  - "\u30A8\u30B3\u30FC"
+  - "\u30D1\u30FC\u30F3"
+  ChineseAbove1_2:
+  - "\u827E\u53EF"
+  - "\u6F58"
+  KazaAbove1_2:
+  - "\u042D\u043A\u043E"
+  - "\u041F\u0430\u043D"
 --- !u!1 &1221785868
 GameObject:
   m_ObjectHideFlags: 0
