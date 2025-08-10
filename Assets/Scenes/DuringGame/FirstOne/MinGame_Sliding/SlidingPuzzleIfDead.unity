@@ -554,7 +554,6 @@ RectTransform:
   - {fileID: 1941332766}
   - {fileID: 763332085}
   - {fileID: 1165898951}
-  - {fileID: 700164771}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1274,81 +1273,6 @@ MonoBehaviour:
   puzzleNumber: 4
   currentPositionIndex: 5
   positions: []
---- !u!1 &700164770
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 700164771}
-  - component: {fileID: 700164773}
-  - component: {fileID: 700164772}
-  m_Layer: 5
-  m_Name: Image
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &700164771
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 700164770}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 304338736}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -1834.5392, y: 111.286316}
-  m_SizeDelta: {x: 607.0784, y: 322.5727}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &700164772
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 700164770}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 776c60e492823f04a8dfafb638a2fb3a, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &700164773
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 700164770}
-  m_CullTransparentMesh: 1
 --- !u!1 &745072015
 GameObject:
   m_ObjectHideFlags: 0
@@ -1497,6 +1421,7 @@ GameObject:
   - component: {fileID: 763332088}
   - component: {fileID: 763332087}
   - component: {fileID: 763332086}
+  - component: {fileID: 763332089}
   m_Layer: 5
   m_Name: Coffee
   m_TagString: Untagged
@@ -1513,14 +1438,14 @@ RectTransform:
   m_GameObject: {fileID: 763332084}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.7407018, y: 0.7407018, z: 0.7407018}
+  m_LocalScale: {x: 1, y: 1, z: 0.7407018}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 304338736}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -784, y: -339}
+  m_AnchoredPosition: {x: -816, y: -248}
   m_SizeDelta: {x: 386, y: 314}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &763332086
@@ -1579,6 +1504,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 924741413}
+        m_TargetAssemblyTypeName: SlidingGameManager1ScriptAfterDeath, Assembly-CSharp
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &763332087
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1599,7 +1536,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 4469230173143076309, guid: ccba16b1fc5c2b749821014e3042bf62, type: 3}
+  m_Sprite: {fileID: 4469230173143076309, guid: 204431b927519b04d9e6f7df5f68596a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1617,6 +1554,30 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 763332084}
   m_CullTransparentMesh: 1
+--- !u!114 &763332089
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 763332084}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 907c8847e07d35e4eaf9f8738f9c31b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseSprite: {fileID: 4469230173143076309, guid: 204431b927519b04d9e6f7df5f68596a, type: 3}
+  hoverKorean: {fileID: 21300000, guid: 6a1fe6a3412f4844ba6b5c3d03c98b80, type: 3}
+  hoverEnglish: {fileID: 21300000, guid: db1b1525a201ca44ca212488f9e644d0, type: 3}
+  hoverChinese: {fileID: 21300000, guid: 776c60e492823f04a8dfafb638a2fb3a, type: 3}
+  hoverJapanese: {fileID: 21300000, guid: 4d7b0f0f9687d7546b1ad51934a3031c, type: 3}
+  hoverKazakh: {fileID: 21300000, guid: 4f917d7a980cf9142996ae0e75c06706, type: 3}
+  scaleOnHover: 1
+  hoverScale: 1.5
+  scaleLerpSpeed: 12
+  widenOnHover: 1
+  widthExtraMultiplier: 1
+  widthLerpSpeed: 12
 --- !u!1 &805229733
 GameObject:
   m_ObjectHideFlags: 0
@@ -2404,6 +2365,7 @@ GameObject:
   - component: {fileID: 1058248133}
   - component: {fileID: 1058248132}
   - component: {fileID: 1058248131}
+  - component: {fileID: 1058248134}
   m_Layer: 5
   m_Name: DrugBag
   m_TagString: Untagged
@@ -2427,7 +2389,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: -0.09, y: 0.351, z: 14.318}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 759, y: 262}
+  m_AnchoredPosition: {x: 808, y: 381}
   m_SizeDelta: {x: 395, y: 314}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1058248131
@@ -2506,7 +2468,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 83509873967779595, guid: 42b956192f995844584bf53215154890, type: 3}
+  m_Sprite: {fileID: 83509873967779595, guid: c52ac6558ce171646a54922d5e809a0c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2524,6 +2486,30 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1058248129}
   m_CullTransparentMesh: 1
+--- !u!114 &1058248134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1058248129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 907c8847e07d35e4eaf9f8738f9c31b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseSprite: {fileID: 83509873967779595, guid: c52ac6558ce171646a54922d5e809a0c, type: 3}
+  hoverKorean: {fileID: 21300000, guid: 67645083dabf19b44a5870a10adff1d0, type: 3}
+  hoverEnglish: {fileID: 21300000, guid: 47040b3f05d82f34780c756eef883a6e, type: 3}
+  hoverChinese: {fileID: 21300000, guid: 574920a2444a8ed4bb2f571f2e20c1c7, type: 3}
+  hoverJapanese: {fileID: 21300000, guid: 44756c80158e9ce4c88b3efc30e185fb, type: 3}
+  hoverKazakh: {fileID: 21300000, guid: 97fe02a1d4d7f5249954f73c90a3031d, type: 3}
+  scaleOnHover: 1
+  hoverScale: 1.5
+  scaleLerpSpeed: 12
+  widenOnHover: 0
+  widthExtraMultiplier: 1
+  widthLerpSpeed: 12
 --- !u!1 &1110932509
 GameObject:
   m_ObjectHideFlags: 0
@@ -2848,6 +2834,7 @@ GameObject:
   - component: {fileID: 1165898953}
   - component: {fileID: 1165898952}
   - component: {fileID: 1165898954}
+  - component: {fileID: 1165898955}
   m_Layer: 5
   m_Name: Piri
   m_TagString: Untagged
@@ -2894,7 +2881,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -7347277767829423379, guid: 4578fd835cab0e34c9f8ee7fdba4cf85, type: 3}
+  m_Sprite: {fileID: -7347277767829423379, guid: 94720dac9542a214980b5af6ef357c77, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2968,6 +2955,30 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1165898955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1165898950}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 907c8847e07d35e4eaf9f8738f9c31b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseSprite: {fileID: -7347277767829423379, guid: 94720dac9542a214980b5af6ef357c77, type: 3}
+  hoverKorean: {fileID: 21300000, guid: f81b43b36c3ca674b8812713a27e5596, type: 3}
+  hoverEnglish: {fileID: 21300000, guid: e67487555505de746b42a78556ee586a, type: 3}
+  hoverChinese: {fileID: 21300000, guid: af1b7a99cfde21a4898b512d5447d4c2, type: 3}
+  hoverJapanese: {fileID: 21300000, guid: 00899953ce4936f419ca8c13c0a77990, type: 3}
+  hoverKazakh: {fileID: 21300000, guid: 710982a511efb554e9d4ba5c360e657c, type: 3}
+  scaleOnHover: 1
+  hoverScale: 1.5
+  scaleLerpSpeed: 12
+  widenOnHover: 1
+  widthExtraMultiplier: 1
+  widthLerpSpeed: 12
 --- !u!1 &1235856463
 GameObject:
   m_ObjectHideFlags: 0
@@ -3883,6 +3894,7 @@ GameObject:
   - component: {fileID: 1941332769}
   - component: {fileID: 1941332768}
   - component: {fileID: 1941332767}
+  - component: {fileID: 1941332770}
   m_Layer: 5
   m_Name: Jusa
   m_TagString: Untagged
@@ -3897,16 +3909,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1941332765}
-  m_LocalRotation: {x: -0, y: -0, z: 0.25814402, w: 0.9661065}
+  m_LocalRotation: {x: -0, y: -0, z: 0.18101609, w: 0.98348016}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.3576165, y: 1.3576165, z: 1.3576165}
+  m_LocalScale: {x: 0.6896261, y: 0.6896261, z: 0.6896261}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 304338736}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 29.92}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 20.858}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 892, y: -328}
+  m_AnchoredPosition: {x: 743, y: -154}
   m_SizeDelta: {x: 131, y: 562}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1941332767
@@ -3985,7 +3997,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 557593631739483107, guid: 2b88370faec8e334e91f4325f5587929, type: 3}
+  m_Sprite: {fileID: 557593631739483107, guid: 6d4b65c565bdf4749bd07fc221755465, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4003,6 +4015,30 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1941332765}
   m_CullTransparentMesh: 1
+--- !u!114 &1941332770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1941332765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 907c8847e07d35e4eaf9f8738f9c31b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseSprite: {fileID: 557593631739483107, guid: 6d4b65c565bdf4749bd07fc221755465, type: 3}
+  hoverKorean: {fileID: 21300000, guid: 86cdb09ba7387204ba7115cec869579f, type: 3}
+  hoverEnglish: {fileID: 21300000, guid: 91a7434a57f59af41a8c0947084dfb00, type: 3}
+  hoverChinese: {fileID: 21300000, guid: e6a061b43ceda9140bb445cccd154e6b, type: 3}
+  hoverJapanese: {fileID: 21300000, guid: 395e81c9d0b1123419dba7bebc22e339, type: 3}
+  hoverKazakh: {fileID: 21300000, guid: bc7d7b0532db6054b9ca44987ce2a329, type: 3}
+  scaleOnHover: 1
+  hoverScale: 1.5
+  scaleLerpSpeed: 12
+  widenOnHover: 1
+  widthExtraMultiplier: 1
+  widthLerpSpeed: 12
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

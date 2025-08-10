@@ -1307,6 +1307,8 @@ MonoBehaviour:
   secondLockCanvas: {fileID: 1789978134}
   goatCanvas: {fileID: 2065379325}
   timerText: {fileID: 456915911}
+  totalDurationSeconds: 660
+  goatHideSeconds: 60
 --- !u!4 &652879554
 Transform:
   m_ObjectHideFlags: 0
@@ -2813,7 +2815,11 @@ PrefabInstance:
       value: OnArrowLeft
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 4951012486792874416, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
+    - {fileID: 6965542387678462331, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
+    - {fileID: 5659580173602651900, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
+    - {fileID: 8706653880837387962, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
@@ -2822,17 +2828,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6766957906663910168, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
   m_PrefabInstance: {fileID: 1545919937}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1545919939 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2480297795490964998, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
-  m_PrefabInstance: {fileID: 1545919937}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1545919940 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4490010343191142561, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
@@ -2897,7 +2892,7 @@ PrefabInstance:
     - target: {fileID: 6154545345429330569, guid: 4f19e881b9c030446b2d9e11ff1e3680, type: 3}
       propertyPath: whatLanguage
       value: 
-      objectReference: {fileID: 1545919939}
+      objectReference: {fileID: 0}
     - target: {fileID: 6561090297092179721, guid: 4f19e881b9c030446b2d9e11ff1e3680, type: 3}
       propertyPath: m_Name
       value: SettingPanelController

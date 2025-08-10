@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems; // 클릭 오브젝트 비활성화용
 using TMPro;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,12 +19,18 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
     public CanvasGroup goatCanvasAfterDeath;
 
     public TextMeshProUGUI timerTextAfterDeath;
-    private float timer = 600f;
 
-    private Dictionary<int, int> puzzlePositionMapAfterDeath = new();
-    private Dictionary<int, SlidingPuzzle1ScriptAfterDeath> positionToPuzzleAfterDeath = new();
+    private float timer = 600f;
+    private float goatElapsed = 0f; // 염소 전용 경과 시간
+
+    private readonly Dictionary<CanvasGroup, float> _lockedAlpha = new(); // 알파 고정
+    private readonly Dictionary<int, int> puzzlePositionMapAfterDeath = new();
+    private readonly Dictionary<int, SlidingPuzzle1ScriptAfterDeath> positionToPuzzleAfterDeath = new();
 
     private bool hairpinCleared = false, firstLockCleared = false, finalCleared = false;
+
+    // 허용 세트(정답) 캐시
+    private HashSet<string> _hairpinAllowed, _firstLockAllowed, _finalAllowed;
 
     private readonly Dictionary<int, List<int>> moveRulesAfterDeath = new()
     {
@@ -36,16 +43,38 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
     void Awake()
     {
         Instance = this;
-    
-        // 초기 CanvasGroup들 전부 불투명하게 설정
+
         SetAlphaAfterDeath(hairpinCanvasAfterDeath, 1f);
         SetAlphaAfterDeath(firstLockCanvasAfterDeath, 1f);
         SetAlphaAfterDeath(doorLockCanvasAfterDeath, 1f);
         SetAlphaAfterDeath(secondLockCanvasAfterDeath, 1f);
 
         InitializeBoardAfterDeath();
-    }
 
+        // 정답 세트 키 캐싱(정렬된 문자열 키)
+        _hairpinAllowed = new HashSet<string>(new[]
+        {
+            MakeKey(new[]{2,3,5,6}),
+            MakeKey(new[]{3,4,6,7}),
+            MakeKey(new[]{5,6,8,9}),
+            MakeKey(new[]{6,7,9,10}),
+            MakeKey(new[]{8,9,11,12}),
+            MakeKey(new[]{9,10,12,13})
+        });
+
+        _firstLockAllowed = new HashSet<string>(new[]
+        {
+            MakeKey(new[]{2,3,4,5,6,7}),
+            MakeKey(new[]{5,6,7,8,9,10}),
+            MakeKey(new[]{8,9,10,11,12,13})
+        });
+
+        _finalAllowed = new HashSet<string>(new[]
+        {
+            MakeKey(new[]{2,3,4,5,6,7,10}),
+            MakeKey(new[]{5,6,7,8,9,10,13})
+        });
+    }
 
     void InitializeBoardAfterDeath()
     {
@@ -54,7 +83,7 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
         {
             var posIndex = puzzle.currentPositionIndex;
             puzzle.SetPosition(posIndex, boardPositionsAfterDeath[posIndex - 1]);
-            puzzlePositionMapAfterDeath[puzzle.puzzleNumber] = posIndex;
+            puzzlePositionMapAfterDeath[puzzle.puzzleNumber] = posIndex; // ★ 0(빈칸) 포함돼야 함
             positionToPuzzleAfterDeath[posIndex] = puzzle;
         }
     }
@@ -91,6 +120,8 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
         if (finalCleared) return;
 
         timer -= Time.deltaTime;
+        goatElapsed += Time.deltaTime; // 타이머와 무관
+
         int min = Mathf.FloorToInt(timer / 60);
         int sec = Mathf.FloorToInt(timer % 60);
         timerTextAfterDeath.text = $"{min:00}:{sec:00}";
@@ -100,140 +131,167 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
         if (timer <= 0)
         {
             if (!hairpinCleared || !firstLockCleared || !finalCleared)
-            {
                 UnityEngine.SceneManagement.SceneManager.LoadScene("EtInArcadiaEgoAfterSecondSlidingDeath");
+            else
+                UnityEngine.SceneManagement.SceneManager.LoadScene("Et in Arcadia ego_SlidingGameFirst");
+        }
+    }
+
+    // ---- 안정적인 클리어 판정 + 디버그 로그 ----
+    void CheckClearConditionsAfterDeath()
+    {
+        // Hairpin
+        if (!hairpinCleared)
+        {
+            var hairpinTiles = new[] { 3, 5, 8, 9 };
+            if (TryGetPositionsKeyForTiles(hairpinTiles, out var key))
+            {
+                Debug.Log($"[HAIRPIN] currentKey = {key} | allowed = {string.Join(" / ", _hairpinAllowed)}");
+                if (_hairpinAllowed.Contains(key))
+                {
+                    Debug.Log("Hairpin 조건 충족 → 클리어 처리");
+                    SetAlphaAfterDeath(hairpinCanvasAfterDeath, 0.1f, lockIt: true, raycast:false, interact:false, ignoreParents:true);
+                    hairpinCleared = true;
+                }
             }
             else
             {
-                UnityEngine.SceneManagement.SceneManager.LoadScene("Et in Arcadia ego_SlidingGameFirst");
+                Debug.LogWarning("[HAIRPIN] 키 계산 실패: puzzlePositionMapAfterDeath에 누락된 타일이 있습니다(3,5,8,9 확인).");
             }
         }
-    }
 
-    void CheckClearConditionsAfterDeath()
-    {
-        // hairpin
-        if (!hairpinCleared && MatchConditionAfterDeath(new List<int> {3,5,8,9}, new List<List<int>> {
-                new() {2,3,5,6}, new() {3,4,6,7}, new() {5,6,8,9},
-                new() {6,7,9,10}, new() {8,9,11,12}, new() {9,10,12,13}
-            }))
+        // First lock
+        if (!firstLockCleared)
         {
-            Debug.Log("Hairpin 조건 충족 → 클리어 처리");
-            SetAlphaAfterDeath(hairpinCanvasAfterDeath, 0.1f); // 변경
-            hairpinCleared = true;
-        }
-
-        // first lock
-        if (!firstLockCleared && MatchConditionAfterDeath(new List<int> {5,2,6,1,7,12}, new List<List<int>> {
-                new() {2,3,4,5,6,7}, new() {5,6,7,8,9,10}, new() {8,9,10,11,12,13}
-            }))
-        {
-            Debug.Log("FirstLock 조건 충족 → 클리어 처리");
-            SetAlphaAfterDeath(firstLockCanvasAfterDeath, 0.1f); // 변경
-            firstLockCleared = true;
-        }
-
-        // door lock (final clear)
-        if (hairpinCleared && firstLockCleared && !finalCleared &&
-            MatchConditionAfterDeath(new List<int> {8,6,7,11,12,3,10}, new List<List<int>> {
-                new() {2,3,4,5,6,7,10}, new() {5,6,7,8,9,10,13}
-            }))
-        {
-            Debug.Log("Final 조건 충족 → 문 잠금 클리어 처리");
-            SetAlphaAfterDeath(doorLockCanvasAfterDeath, 0.1f);   // 변경
-            SetAlphaAfterDeath(secondLockCanvasAfterDeath, 0.1f); // 변경
-            finalCleared = true;
-        }
-    }
-
-
-
-    bool MatchConditionAfterDeath(List<int> puzzleNums, List<List<int>> validPosSets)
-    {
-        var current = puzzleNums.Select(p => puzzlePositionMapAfterDeath[p]).OrderBy(x => x).ToList();
-        Debug.Log($"MatchCondition check - 퍼즐 번호들: {string.Join(",", puzzleNums)}");
-        Debug.Log($"현재 위치들: {string.Join(",", current)}");
-
-        foreach (var set in validPosSets)
-        {
-            var orderedSet = set.OrderBy(x => x).ToList();
-            Debug.Log($"비교 대상 위치 세트: {string.Join(",", orderedSet)}");
-
-            if (orderedSet.SequenceEqual(current))
+            var firstLockTiles = new[] { 5, 2, 6, 1, 7, 12 };
+            if (TryGetPositionsKeyForTiles(firstLockTiles, out var key))
             {
-                Debug.Log("일치하는 위치 세트 발견!");
-                return true;
+                Debug.Log($"[FIRST] currentKey = {key}");
+                if (_firstLockAllowed.Contains(key))
+                {
+                    Debug.Log("FirstLock 조건 충족 → 클리어 처리");
+                    SetAlphaAfterDeath(firstLockCanvasAfterDeath, 0.1f, lockIt: true, raycast:false, interact:false, ignoreParents:true);
+                    firstLockCleared = true;
+                }
             }
         }
 
-        Debug.Log("일치하는 위치 세트 없음");
-        return false;
-    }
-
-
-    void SetAlphaAfterDeath(CanvasGroup group, float alpha)
-    {
-        if (group == null)
+        // Final
+        if (hairpinCleared && firstLockCleared && !finalCleared)
         {
-            Debug.LogWarning("SetAlphaAfterDeath: group is null!");
-            return;
+            var finalTiles = new[] { 8, 6, 7, 11, 12, 3, 10 };
+            if (TryGetPositionsKeyForTiles(finalTiles, out var key))
+            {
+                Debug.Log($"[FINAL] currentKey = {key}");
+                if (_finalAllowed.Contains(key))
+                {
+                    Debug.Log("Final 조건 충족 → 문 잠금 클리어 처리");
+                    SetAlphaAfterDeath(doorLockCanvasAfterDeath,   0.1f, lockIt: true, raycast:false, interact:false, ignoreParents:true);
+                    SetAlphaAfterDeath(secondLockCanvasAfterDeath, 0.1f, lockIt: true, raycast:false, interact:false, ignoreParents:true);
+                    finalCleared = true;
+                }
+            }
         }
-
-        Debug.Log($"SetAlphaAfterDeath: {group.gameObject.name} alpha → {alpha}");
-
-        group.alpha = alpha;
-        group.interactable = true;
-        group.blocksRaycasts = true;
     }
 
+    // 현재 타일들 위치 키 만들기(안전 가드)
+    private bool TryGetPositionsKeyForTiles(int[] tileNums, out string key)
+    {
+        key = null;
+        var positions = new List<int>(tileNums.Length);
+        foreach (var t in tileNums)
+        {
+            if (!puzzlePositionMapAfterDeath.TryGetValue(t, out var pos))
+                return false;
+            positions.Add(pos);
+        }
+        key = MakeKey(positions);
+        return true;
+    }
 
+    private static string MakeKey(IEnumerable<int> nums)
+    {
+        var list = nums.ToList();
+        list.Sort();
+        return string.Join(",", list);
+    }
 
+    // (이전 비교 함수는 더 이상 필요 없지만, 원하면 남겨둬도 됨)
+    // bool MatchConditionAfterDeath(...) { ... }
+
+    // ---- 알파 설정(잠금 옵션 지원) ----
+    void SetAlphaAfterDeath(CanvasGroup group, float alpha, bool lockIt = false, bool raycast = true, bool interact = true, bool ignoreParents = false)
+    {
+        if (group == null) return;
+        group.alpha = alpha;
+        group.blocksRaycasts = raycast;
+        group.interactable = interact;
+        group.ignoreParentGroups = ignoreParents;
+
+        if (lockIt) _lockedAlpha[group] = alpha;
+        else _lockedAlpha.Remove(group);
+    }
+
+    // 염소 알파는 goatElapsed만 사용
     void UpdateGoatAlphaAfterDeath()
     {
-        float elapsedTime = 600f - timer;
+        float elapsedTime = goatElapsed;
 
-        if (elapsedTime <= 45f)
-        {
-            goatCanvasAfterDeath.alpha = 0f;
-        }
-        else if (elapsedTime <= 285f)
-        {
-            float progress = (elapsedTime - 45f) / 240f;
-            goatCanvasAfterDeath.alpha = Mathf.Clamp01(progress);
-        }
-        else
-        {
-            goatCanvasAfterDeath.alpha = 1f;
-        }
+        if (elapsedTime <= 45f)       goatCanvasAfterDeath.alpha = 0f;
+        else if (elapsedTime <= 285f) goatCanvasAfterDeath.alpha = Mathf.Clamp01((elapsedTime - 45f) / 240f);
+        else                          goatCanvasAfterDeath.alpha = 1f;
     }
 
-    public void UseDrugBagAfterDeath()
+    // 클릭한 오브젝트 비활성화
+    private void DisableClickedObject(GameObject clicked = null)
+    {
+        var go = clicked != null ? clicked : EventSystem.current?.currentSelectedGameObject;
+        if (go != null) go.SetActive(false);
+    }
+
+    // ===== 아이템: 공개 API (버튼에 그대로 연결) =====
+    public void UseDrugBagAfterDeath()              { DoUseDrugBag(); DisableClickedObject(); }
+    public void UseJusaAfterDeath()                 { DoUseJusa();    DisableClickedObject(); }
+    public void UseCoffeeAfterDeath()               { DoUseCoffee();  DisableClickedObject(); }
+    public void UseFluteAfterDeath()                { DoUseFlute();   DisableClickedObject(); }
+
+    public void UseDrugBagAfterDeath(GameObject go) { DoUseDrugBag(); DisableClickedObject(go); }
+    public void UseJusaAfterDeath(GameObject go)    { DoUseJusa();    DisableClickedObject(go); }
+    public void UseCoffeeAfterDeath(GameObject go)  { DoUseCoffee();  DisableClickedObject(go); }
+    public void UseFluteAfterDeath(GameObject go)   { DoUseFlute();   DisableClickedObject(go); }
+
+    // ===== 실제 동작 =====
+    private void DoUseDrugBag()
     {
         SetAlphaAfterDeath(hairpinCanvasAfterDeath, 1f);
         SetAlphaAfterDeath(firstLockCanvasAfterDeath, 1f);
         SetAlphaAfterDeath(doorLockCanvasAfterDeath, 1f);
         SetAlphaAfterDeath(secondLockCanvasAfterDeath, 1f);
-        hairpinCleared = true;
-        firstLockCleared = true;
-        finalCleared = true;
+        hairpinCleared = true; firstLockCleared = true; finalCleared = true;
         StartCoroutine(DelayLoadSceneAfterDeath("Stage1_3", 2f));
     }
 
-    public void UseJusaAfterDeath()
+    private void DoUseJusa()
     {
         timer += 420f;
     }
 
-    public void UseCoffeeAfterDeath()
+    private void DoUseCoffee()
     {
         if (!hairpinCleared && !firstLockCleared)
         {
-            SetAlphaAfterDeath(hairpinCanvasAfterDeath, 1f);
-            hairpinCleared = true;
+            // SetAlphaAfterDeath(hairpinCanvasAfterDeath, 1f); // 굳이 필요 없음
+            // hairpinCleared = true;  // ❌ 제거! 판정으로 세울 것
+
             ApplyPuzzleLayoutAfterDeath(new List<(int, int)> {
                 (1,0),(2,1),(3,2),(4,6),(5,4),(6,3),(7,5),(8,7),(9,8),(10,9),(11,10),(12,11),(13,13)
             });
+
+            CheckClearConditionsAfterDeath(); // ✔ 퍼즐 배치 후 판정 → 0.1로 내려감
+            // (바로 내리고 싶으면 아래 한 줄을 추가)
+            // SetAlphaAfterDeath(hairpinCanvasAfterDeath, 0.1f);
         }
+
         else if (hairpinCleared && !firstLockCleared)
         {
             ApplyPuzzleLayoutAfterDeath(new List<(int, int)> {
@@ -247,18 +305,15 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
             });
             StartCoroutine(DelayLoadSceneAfterDeath("Stage1_3", 3f));
         }
-        
-        CheckClearConditionsAfterDeath();
 
+        CheckClearConditionsAfterDeath(); // 판정 재확인(로그 출력됨)
     }
 
-    public void UseFluteAfterDeath()
+    private void DoUseFlute()
     {
         timer -= 240f;
         if (timer <= 0)
-        {
             StartCoroutine(DelayLoadSceneAfterDeath("EtInArcadiaEgoAfterSecondSlidingDeath", 3f));
-        }
     }
 
     IEnumerator DelayLoadSceneAfterDeath(string sceneName, float delay)
@@ -278,6 +333,18 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
                 puzzlePositionMapAfterDeath[puzzle.puzzleNumber] = pos;
                 positionToPuzzleAfterDeath[pos] = puzzle;
             }
+        }
+    }
+
+    // 잠금 알파 재적용(외부 덮어쓰기 무력화)
+    void LateUpdate()
+    {
+        if (_lockedAlpha.Count == 0) return;
+        foreach (var kv in _lockedAlpha)
+        {
+            if (kv.Key == null) continue;
+            if (!Mathf.Approximately(kv.Key.alpha, kv.Value))
+                kv.Key.alpha = kv.Value;
         }
     }
 }

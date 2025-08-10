@@ -66,6 +66,7 @@
     <Compile Include="Assets\Scripts\StartGame\Stage1\SlidingGame\SlidingGameManager1BeforeDeath\SlidingPuzzle1Script.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage3\Stage3_1\LanguageCollector3_1.cs" />
     <Compile Include="Assets\Scripts\StartGame\Shared\Scripts\typeWriter\TypewriterEffect.cs" />
+    <Compile Include="Assets\Scripts\StartGame\Stage1\SlidingGame\SlidingGameManager1AfterFirstDeath\LanguageImageHoverClickable.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage2\CardGame2PanelMangager.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage3\Stage3_2\LanguageCollector3_2.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\CarrotShaker.cs" />
