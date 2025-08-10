@@ -8,25 +8,25 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/BeforeGame/mainMenuPanel.unity
     guid: 5ee9e7fed31bf64459535d4b20032429
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/DuringGame/FirstOne/Stage1_1/Stage1_1.unity
     guid: 95d0469344522af4d93a52115e228768
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/DuringGame/FirstOne/Stage1_2/Stage1_2.unity
     guid: cb7cec3abb0fbc34398dd3ac1c2d4cdb
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/DuringGame/FirstOne/MinGame_Sliding/SlidingPuzzle.unity
     guid: 6dca8178a79e8fd4c986c75534e87037
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/DuringGame/FirstOne/MinGame_Sliding/endings/et_in_arcadua_egoAfterfirstSlidingDeath.unity
     guid: d2633fe2141c53649b0083de2b8e0459
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/DuringGame/FirstOne/MinGame_Sliding/endings/EtInArcadiaEgoAfterSecondSlidingDeath.unity
     guid: 7e53e5164f1da9e4d816d78a42001f59
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/DuringGame/FirstOne/MinGame_Sliding/SlidingPuzzleIfDead.unity
     guid: 456c257a77541b547889d21de468e1e9
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/DuringGame/FirstOne/Stage1_3/Stage1_3.unity
     guid: 9b723f47133c7c44289482694ce2e36d
   - enabled: 0
@@ -68,15 +68,18 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/DuringGame/FirstOne/MinGame_Sliding/Stage1_1/Stage1_1.unity
     guid: 452c9941fcd3e394bae4172616856f9b
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/DuringGame/Second/MiniGame_Card/Endings/EtInArcadiaEgoAfterSecondCardGame.unity
     guid: 9273f91120ba388499ba9db464e515c6
   - enabled: 0
-    path: Assets/Scenes/DuringGame/Third/Stage3_2/Stage3_2.unity
-    guid: 499ffd23d25d4ba4088e723c68302f9f
-  - enabled: 0
     path: Assets/Scenes/DuringGame/Third/Stage3_1/Stage3_1.unity
     guid: 36172275a297b8b438ff302abd0da351
+  - enabled: 1
+    path: Assets/Scenes/DuringGame/Third/SlidingGameSecond/SlidingGameSecond.unity
+    guid: 34f9d6c8e784c9347a431fed163de140
+  - enabled: 1
+    path: Assets/Scenes/DuringGame/Third/Stage3_2/Stage3_2.unity
+    guid: 499ffd23d25d4ba4088e723c68302f9f
   - enabled: 0
     path: Assets/Scenes/DuringGame/Third/Stage3_3/Stage3_3.unity
     guid: e89a666e96df1fe48a03744b46321b9d
