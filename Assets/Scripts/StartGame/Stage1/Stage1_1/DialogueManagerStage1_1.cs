@@ -265,11 +265,12 @@ public class DialogueManagerStage1_1 : MonoBehaviour
 
         switch (lang)
         {
-            case "english": above = English_Above; story = English_Story; break;
-            case "japanese": above = Japanese_Above; story = Japanese_Story; break;
-            case "chinese": above = Chinese_Above; story = Chinese_Story; break;
-            case "kazahustan":
-            case "kaza": above = Kaza_Above; story = Kaza_Story; break;
+            case "english":    above = English_Above;   story = English_Story;   break;
+            case "japanese":   above = Japanese_Above;  story = Japanese_Story;  break;
+            case "chinese":    above = Chinese_Above;   story = Chinese_Story;   break;
+            case "kazakhstan": // <- 오탈자 수정 권장: "kazahustan" -> "kazakhstan"
+            case "kaza":       above = Kaza_Above;      story = Kaza_Story;      break;
+            // default: Korean
         }
 
         if (above != null && story != null)
@@ -278,15 +279,23 @@ public class DialogueManagerStage1_1 : MonoBehaviour
             story.gameObject.SetActive(true);
             above.anchoredPosition = AboPo;
             story.anchoredPosition = StoPo;
+
+            // 핵심: 현재 활성화된 언어 블록에서 TMP 텍스트를 다시 물려줌
+            aboveText = above.GetComponentInChildren<TextMeshProUGUI>(true);
+            storyText = story.GetComponentInChildren<TextMeshProUGUI>(true);
         }
     }
+
 
     private void OnLanguageChanged(string newLang)
     {
         LoadLinesForCurrentLanguage();
+        SetupLanguageUI();            // <- 추가: 레퍼런스 재바인딩
         StopAllCoroutines();
+        index = 0;                    // 선택사항: 처음부터 다시 보여주고 싶다면 리셋
         StartCoroutine(ShowLineSequence());
     }
+
 
     private void OnDestroy()
     {

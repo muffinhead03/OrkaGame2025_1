@@ -285,6 +285,8 @@ MonoBehaviour:
   - ka4
   - ka5
   - ka6
+  useFixedIndex: 1
+  fixedIndex: -1
   useFallback: 1
   clampClickIndex: 1
 --- !u!4 &55086138
@@ -804,6 +806,8 @@ MonoBehaviour:
   - ka4
   - ka5
   - ka6
+  useFixedIndex: 1
+  fixedIndex: -1
   useFallback: 1
   clampClickIndex: 1
 --- !u!4 &200605491
@@ -989,6 +993,8 @@ MonoBehaviour:
   - ka4
   - ka5
   - ka6
+  useFixedIndex: 1
+  fixedIndex: -1
   useFallback: 1
   clampClickIndex: 1
 --- !u!4 &259002879
@@ -1199,6 +1205,8 @@ MonoBehaviour:
   - ka4
   - ka5
   - ka6
+  useFixedIndex: 1
+  fixedIndex: -1
   useFallback: 1
   clampClickIndex: 1
 --- !u!4 &347452276
@@ -1946,6 +1954,8 @@ MonoBehaviour:
   - ka4
   - ka5
   - ka6
+  useFixedIndex: 1
+  fixedIndex: -1
   useFallback: 1
   clampClickIndex: 1
 --- !u!4 &718468329
@@ -3043,6 +3053,7 @@ GameObject:
   - component: {fileID: 942565540}
   - component: {fileID: 942565541}
   - component: {fileID: 942565542}
+  - component: {fileID: 942565543}
   m_Layer: 5
   m_Name: AnswerCard2_ (10)
   m_TagString: Untagged
@@ -3145,6 +3156,57 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   manager: {fileID: 642485690}
   slotIndex: 9
+--- !u!114 &942565543
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 942565536}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aefc30b138dfb5249bade4733391bfd2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  koreanLines:
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  japaneseLines:
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  englishLines:
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  chineseLines:
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  kazakhLines:
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  useFixedIndex: 1
+  fixedIndex: -1
+  useFallback: 1
+  clampClickIndex: 1
 --- !u!1 &971230855
 GameObject:
   m_ObjectHideFlags: 0
@@ -3676,6 +3738,8 @@ MonoBehaviour:
   - ka4
   - ka5
   - ka6
+  useFixedIndex: 1
+  fixedIndex: -1
   useFallback: 1
   clampClickIndex: 1
 --- !u!4 &1267310563
@@ -4225,6 +4289,8 @@ MonoBehaviour:
   - ka4
   - ka5
   - ka6
+  useFixedIndex: 1
+  fixedIndex: -1
   useFallback: 1
   clampClickIndex: 1
 --- !u!4 &1394374901
@@ -4488,6 +4554,8 @@ MonoBehaviour:
   - ka4
   - ka5
   - ka6
+  useFixedIndex: 1
+  fixedIndex: -1
   useFallback: 1
   clampClickIndex: 1
 --- !u!4 &1464060706
@@ -5612,6 +5680,8 @@ MonoBehaviour:
   - ka4
   - ka5
   - ka6
+  useFixedIndex: 1
+  fixedIndex: -1
   useFallback: 1
   clampClickIndex: 1
 --- !u!4 &1851050941
@@ -6199,6 +6269,8 @@ MonoBehaviour:
   - ka4
   - ka5
   - ka6
+  useFixedIndex: 1
+  fixedIndex: -1
   useFallback: 1
   clampClickIndex: 1
 --- !u!4 &2078456720
