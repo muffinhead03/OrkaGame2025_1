@@ -55,6 +55,7 @@
     <Compile Include="Assets\Scripts\StartGame\Stage2\Stage2_5\DialogueManager2_5.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage1\SlidingGame\SlidingGameManager1AfterFirstDeath\SlidingPuzzleAfterDeathImageChangePiri.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage1\250802Update\FirstCardLanguageScript.cs" />
+    <Compile Include="Assets\Scripts\StartGame\Stage1\SlidingGame\SlidingGameManager1BeforeDeath\SlidingGameRuleExplain.cs" />
     <Compile Include="Assets\Scripts\BeforeGame\LanguageManager.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage1\FirstCardLanguage.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\Stage2_3_1\HoverObjectSwitcher.cs" />
@@ -83,6 +84,7 @@
     <Compile Include="Assets\Scripts\StartGame\Stage1\Stage1_3\DialogueManager1_3.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage1\SlidingGame\SlidingGameManager1AfterFirstDeath\SlidingPuzzle1ScriptAfterDeath.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Endings\CardGameSecondEnding.cs" />
+    <Compile Include="Assets\Scripts\StartGame\Stage1\SlidingGame\SlidingGameManager1BeforeDeath\AutoLoadSceneAfterDelay.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage1\250802Update\FirstCardClickHandler.cs" />
     <Compile Include="Assets\Scripts\StartGame\Shared\Scripts\FitToScreen\FitToScreen.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage3\Stage3_5\LanguageDialogue3_5.cs" />
@@ -90,6 +92,7 @@
     <Compile Include="Assets\Scripts\StartGame\Stage3\Stage3_2\DialogueManager3_2.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage3\NarkeBurstEffect.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage3\FullScreenGlitchEffect.cs" />
+    <Compile Include="Assets\Scripts\StartGame\Stage1\SlidingGame\SlidingGameManager1BeforeDeath\SlidingGameRuleExplainLines.cs" />
     <Compile Include="Assets\BGMPlayer.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\Stage2_5\LanguageDialogue2_5.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage1\SlidingGame\SlidingGameManager1AfterFirstDeath\SlidingGameManager1ScriptAfterDeath.cs" />

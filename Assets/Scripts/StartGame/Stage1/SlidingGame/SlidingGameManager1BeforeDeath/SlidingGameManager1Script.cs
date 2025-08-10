@@ -17,8 +17,14 @@ public class SlidingGameManager1BeforeDeathScript : MonoBehaviour
     public CanvasGroup goatCanvas;
     public TextMeshProUGUI timerText;
 
-    private float timer = 10f;
+    // ✅ 총 11분
+    [SerializeField] private float totalDurationSeconds = 11f * 60f;
+    // ✅ 염소 페이드 인은 처음 7분(420초) 동안 0→1
+    [SerializeField] private float goatFadeDurationSeconds = 7f * 60f;
+
+    private float timer;
     private bool isPaused = false;
+    private bool sceneLoading = false;    // ⬅ 중복 로딩 방지
 
     private Dictionary<int, int> puzzlePositionMap = new();
     private Dictionary<int, SlidingPuzzle1Script> positionToPuzzle = new();
@@ -37,10 +43,14 @@ public class SlidingGameManager1BeforeDeathScript : MonoBehaviour
     {
         Instance = this;
 
+        timer = totalDurationSeconds;
+
         SetAlpha(hairpinCanvas, 1f);
         SetAlpha(firstLockCanvas, 1f);
         SetAlpha(doorLockCanvas, 1f);
         SetAlpha(secondLockCanvas, 1f);
+
+        if (goatCanvas != null) goatCanvas.alpha = 0f;
 
         InitializeBoard();
     }
@@ -52,14 +62,14 @@ public class SlidingGameManager1BeforeDeathScript : MonoBehaviour
         {
             var posIndex = puzzle.currentPositionIndex;
             puzzle.SetPosition(posIndex, boardPositions[posIndex - 1]);
-            puzzlePositionMap[puzzle.puzzleNumber] = posIndex;
+            puzzlePositionMap[puzzle.puzzleNumber] = posIndex; // 0(빈칸) 포함
             positionToPuzzle[posIndex] = puzzle;
         }
     }
 
     public void TryMovePuzzle(SlidingPuzzle1Script clicked)
     {
-        if (isPaused) return;
+        if (isPaused || sceneLoading) return;
 
         int emptyPos = puzzlePositionMap[0];
         int clickedPos = clicked.currentPositionIndex;
@@ -83,27 +93,23 @@ public class SlidingGameManager1BeforeDeathScript : MonoBehaviour
 
     void Update()
     {
-        Debug.Log($"🔁 Update 실행 중 | isPaused: {isPaused} | timer: {timer:F2}");
+        if (isPaused || sceneLoading) return;
 
-        if (isPaused || finalCleared)
-        {
-            Debug.Log("⏸ Update 멈춤: 일시정지 또는 완료됨");
-            return;
-        }
-
+        // 타이머 감소
         timer -= Time.deltaTime;
-        int min = Mathf.FloorToInt(timer / 60);
-        int sec = Mathf.FloorToInt(timer % 60);
-        timerText.text = $"{min:00}:{sec:00}";
 
+        // 염소 페이드
         UpdateGoatAlpha();
 
+        // UI 타이머 표시(음수 방지)
+        float display = Mathf.Max(0f, timer);
+        int min = Mathf.FloorToInt(display / 60f);
+        int sec = Mathf.FloorToInt(display % 60f);
+        if (timerText != null) timerText.text = $"{min:00}:{sec:00}";
+
+        // 시간 초과 → 실패 씬
         if (timer <= 0f)
-        {
-            bool allCleared = hairpinCleared && firstLockCleared && finalCleared;
-            Debug.Log($"⏱ 타이머 종료 → 씬 이동: {(allCleared ? "Stage1_3" : "et_in_arcadua_egoAfterfirstSlidingDeath")}");
-            SceneManager.LoadScene(allCleared ? "Stage1_3" : "et_in_arcadua_egoAfterfirstSlidingDeath");
-        }
+            LoadFailScene();
     }
 
     void CheckClearConditions()
@@ -115,7 +121,6 @@ public class SlidingGameManager1BeforeDeathScript : MonoBehaviour
         {
             SetAlpha(hairpinCanvas, 0.1f);
             hairpinCleared = true;
-            Debug.Log("🔓 hairpin 클리어됨");
         }
 
         if (!firstLockCleared && MatchCondition(new List<int> { 5, 2, 6, 1, 7, 12 }, new List<List<int>> {
@@ -124,7 +129,6 @@ public class SlidingGameManager1BeforeDeathScript : MonoBehaviour
         {
             SetAlpha(firstLockCanvas, 0.1f);
             firstLockCleared = true;
-            Debug.Log("🔓 firstLock 클리어됨");
         }
 
         if (hairpinCleared && firstLockCleared && !finalCleared &&
@@ -135,7 +139,9 @@ public class SlidingGameManager1BeforeDeathScript : MonoBehaviour
             SetAlpha(doorLockCanvas, 0.1f);
             SetAlpha(secondLockCanvas, 0.1f);
             finalCleared = true;
-            Debug.Log("🔓 모든 퍼즐 클리어됨 (finalCleared = true)");
+
+            // ✅ 시간 안에 전부 클리어 → 즉시 성공 씬 로딩
+            LoadSuccessScene();
         }
     }
 
@@ -147,25 +153,36 @@ public class SlidingGameManager1BeforeDeathScript : MonoBehaviour
 
     void SetAlpha(CanvasGroup group, float alpha)
     {
+        if (group == null) return;
         group.alpha = alpha;
     }
 
+    // ✅ 염소: 처음 7분 동안 서서히 0→1, 이후 1 유지
     void UpdateGoatAlpha()
     {
-        float elapsedTime = 10f - timer;
-        if (elapsedTime <= 1f) goatCanvas.alpha = 0f;
-        else goatCanvas.alpha = Mathf.Clamp01((elapsedTime - 1f) / 9f);
+        if (goatCanvas == null) return;
+        float clamped = Mathf.Clamp(timer, 0f, totalDurationSeconds);
+        float elapsed = totalDurationSeconds - clamped; // 0에서 증가
+        float t = (goatFadeDurationSeconds > 0f) ? Mathf.Clamp01(elapsed / goatFadeDurationSeconds) : 1f;
+        goatCanvas.alpha = t;
     }
 
-    public void PauseGame()
+    // ==== 씬 전환 유틸 ====
+    private void LoadSuccessScene()
     {
-        isPaused = true;
-        Debug.Log("✅ PauseGame() 호출됨: isPaused = true");
+        if (sceneLoading) return;
+        sceneLoading = true;
+        SceneManager.LoadScene("Stage1_3");
     }
 
-    public void ResumeGame()
+    private void LoadFailScene()
     {
-        isPaused = false;
-        Debug.Log("▶️ ResumeGame() 호출됨: isPaused = false");
+        if (sceneLoading) return;
+        sceneLoading = true;
+        SceneManager.LoadScene("et_in_arcadua_egoAfterfirstSlidingDeath");
     }
+
+    // 외부에서 일시정지/재개
+    public void PauseGame()  { isPaused = true;  }
+    public void ResumeGame() { isPaused = false; }
 }

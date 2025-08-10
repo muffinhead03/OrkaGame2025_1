@@ -14,6 +14,7 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
 
     public GameObject hairpinAfterDeath, firstLockAfterDeath, doorLockAfterDeath, secondLockAfterDeath;
     public GameObject DrugBagAfterDeath, JusaAfterDeath, coffeeAfterDeath, fluteAfterDeath;
+    private bool sceneLoading = false;   // 씬 중복 로딩 방지
 
     public CanvasGroup hairpinCanvasAfterDeath, firstLockCanvasAfterDeath, doorLockCanvasAfterDeath, secondLockCanvasAfterDeath;
     public CanvasGroup goatCanvasAfterDeath;
@@ -40,6 +41,33 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
         {10, new() {7,9,13}}, {11, new() {8,12}}, {12, new() {9,11,13}}, {13, new() {10,12}}
     };
 
+    #region ⏸ UI 패널 원점일 때 일시정지
+    [Header("일시정지 트리거 패널(원점(0,0,0)일 때 타이머/염소 멈춤)")]
+    [SerializeField] private RectTransform firstPanel;   // FirstPanel
+    [SerializeField] private RectTransform settingPanel; // SettingPanel
+    [Tooltip("패널이 활성(ActiveInHierarchy)일 때만 일시정지 판정할지 여부")]
+    [SerializeField] private bool requireActiveForPause = true;
+
+    private bool IsRectAtOrigin(RectTransform rt)
+    {
+        if (rt == null) return false;
+        if (requireActiveForPause && !rt.gameObject.activeInHierarchy) return false;
+
+        // anchoredPosition(캔버스) / localPosition(예외) 둘 다 체크, 오차 허용
+        const float eps = 0.01f;
+        Vector2 ap = rt.anchoredPosition;
+        Vector3 lp = rt.localPosition;
+        bool apZero = Mathf.Abs(ap.x) <= eps && Mathf.Abs(ap.y) <= eps;
+        bool lpZero = Mathf.Abs(lp.x) <= eps && Mathf.Abs(lp.y) <= eps && Mathf.Abs(lp.z) <= eps;
+        return apZero || lpZero;
+    }
+
+    private bool IsUIPaused()
+    {
+        return IsRectAtOrigin(firstPanel) || IsRectAtOrigin(settingPanel);
+    }
+    #endregion
+
     void Awake()
     {
         Instance = this;
@@ -51,7 +79,7 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
 
         InitializeBoardAfterDeath();
 
-        // 정답 세트 키 캐싱(정렬된 문자열 키)
+        // 정답 세트 키 캐싱
         _hairpinAllowed = new HashSet<string>(new[]
         {
             MakeKey(new[]{2,3,5,6}),
@@ -83,7 +111,7 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
         {
             var posIndex = puzzle.currentPositionIndex;
             puzzle.SetPosition(posIndex, boardPositionsAfterDeath[posIndex - 1]);
-            puzzlePositionMapAfterDeath[puzzle.puzzleNumber] = posIndex; // ★ 0(빈칸) 포함돼야 함
+            puzzlePositionMapAfterDeath[puzzle.puzzleNumber] = posIndex; // 0(빈칸) 포함
             positionToPuzzleAfterDeath[posIndex] = puzzle;
         }
     }
@@ -117,24 +145,45 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
 
     void Update()
     {
-        if (finalCleared) return;
+        if (finalCleared || sceneLoading) return;
 
-        timer -= Time.deltaTime;
-        goatElapsed += Time.deltaTime; // 타이머와 무관
+        // 🔒 패널이 (0,0,0)에 있으면 시간/염소 경과를 멈춤
+        bool uiPaused = IsUIPaused();
 
-        int min = Mathf.FloorToInt(timer / 60);
-        int sec = Mathf.FloorToInt(timer % 60);
-        timerTextAfterDeath.text = $"{min:00}:{sec:00}";
+        if (!uiPaused)
+        {
+            timer -= Time.deltaTime;
+            goatElapsed += Time.deltaTime; // 염소는 타이머와 무관하지만 같은 조건으로 일시정지
+        }
+
+        // 타이머 텍스트(정지 중이면 값 유지)
+        int min = Mathf.FloorToInt(Mathf.Max(0f, timer) / 60f);
+        int sec = Mathf.FloorToInt(Mathf.Max(0f, timer) % 60f);
+        if (timerTextAfterDeath != null)
+            timerTextAfterDeath.text = $"{min:00}:{sec:00}";
 
         UpdateGoatAlphaAfterDeath();
 
-        if (timer <= 0)
+        // 시간 초과(단, UI에 의해 일시정지였다면 timer가 줄지 않으니 여기 안 들어옴)
+        if (timer <= 0f && !sceneLoading)
         {
-            if (!hairpinCleared || !firstLockCleared || !finalCleared)
-                UnityEngine.SceneManagement.SceneManager.LoadScene("EtInArcadiaEgoAfterSecondSlidingDeath");
-            else
-                UnityEngine.SceneManagement.SceneManager.LoadScene("Et in Arcadia ego_SlidingGameFirst");
+            if (!finalCleared)
+                TransitionToFail(0.5f);
         }
+    }
+
+    private void TransitionToSuccess(float delay = 1.5f)
+    {
+        if (sceneLoading) return;
+        sceneLoading = true;
+        StartCoroutine(DelayLoadSceneAfterDeath("Stage1_3", delay));
+    }
+
+    private void TransitionToFail(float delay = 0.5f)
+    {
+        if (sceneLoading) return;
+        sceneLoading = true;
+        StartCoroutine(DelayLoadSceneAfterDeath("EtInArcadiaEgoAfterSecondSlidingDeath", delay));
     }
 
     // ---- 안정적인 클리어 판정 + 디버그 로그 ----
@@ -146,11 +195,11 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
             var hairpinTiles = new[] { 3, 5, 8, 9 };
             if (TryGetPositionsKeyForTiles(hairpinTiles, out var key))
             {
-                Debug.Log($"[HAIRPIN] currentKey = {key} | allowed = {string.Join(" / ", _hairpinAllowed)}");
+                Debug.Log($"[HAIRPIN] currentKey = {key}");
                 if (_hairpinAllowed.Contains(key))
                 {
                     Debug.Log("Hairpin 조건 충족 → 클리어 처리");
-                    SetAlphaAfterDeath(hairpinCanvasAfterDeath, 0.1f, lockIt: true, raycast:false, interact:false, ignoreParents:true);
+                    SetAlphaAfterDeath(hairpinCanvasAfterDeath, 0.1f, lockIt: true, raycast: false, interact: false, ignoreParents: true);
                     hairpinCleared = true;
                 }
             }
@@ -170,9 +219,13 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
                 if (_firstLockAllowed.Contains(key))
                 {
                     Debug.Log("FirstLock 조건 충족 → 클리어 처리");
-                    SetAlphaAfterDeath(firstLockCanvasAfterDeath, 0.1f, lockIt: true, raycast:false, interact:false, ignoreParents:true);
+                    SetAlphaAfterDeath(firstLockCanvasAfterDeath, 0.1f, lockIt: true, raycast: false, interact: false, ignoreParents: true);
                     firstLockCleared = true;
                 }
+            }
+            else
+            {
+                Debug.LogWarning("[FIRST] 키 계산 실패: (5,2,6,1,7,12) 중 누락 존재.");
             }
         }
 
@@ -186,10 +239,17 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
                 if (_finalAllowed.Contains(key))
                 {
                     Debug.Log("Final 조건 충족 → 문 잠금 클리어 처리");
-                    SetAlphaAfterDeath(doorLockCanvasAfterDeath,   0.1f, lockIt: true, raycast:false, interact:false, ignoreParents:true);
-                    SetAlphaAfterDeath(secondLockCanvasAfterDeath, 0.1f, lockIt: true, raycast:false, interact:false, ignoreParents:true);
+                    SetAlphaAfterDeath(doorLockCanvasAfterDeath,   0.1f, lockIt: true, raycast: false, interact: false, ignoreParents: true);
+                    SetAlphaAfterDeath(secondLockCanvasAfterDeath, 0.1f, lockIt: true, raycast: false, interact: false, ignoreParents: true);
                     finalCleared = true;
+
+                    // ✅ 최종 성공 → 성공 씬으로 전환
+                    TransitionToSuccess(1.5f);
                 }
+            }
+            else
+            {
+                Debug.LogWarning("[FINAL] 키 계산 실패: (8,6,7,11,12,3,10) 중 누락 존재.");
             }
         }
     }
@@ -215,9 +275,6 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
         list.Sort();
         return string.Join(",", list);
     }
-
-    // (이전 비교 함수는 더 이상 필요 없지만, 원하면 남겨둬도 됨)
-    // bool MatchConditionAfterDeath(...) { ... }
 
     // ---- 알파 설정(잠금 옵션 지원) ----
     void SetAlphaAfterDeath(CanvasGroup group, float alpha, bool lockIt = false, bool raycast = true, bool interact = true, bool ignoreParents = false)
@@ -268,7 +325,7 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
         SetAlphaAfterDeath(doorLockCanvasAfterDeath, 1f);
         SetAlphaAfterDeath(secondLockCanvasAfterDeath, 1f);
         hairpinCleared = true; firstLockCleared = true; finalCleared = true;
-        StartCoroutine(DelayLoadSceneAfterDeath("Stage1_3", 2f));
+        TransitionToSuccess(2f);
     }
 
     private void DoUseJusa()
@@ -280,33 +337,25 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
     {
         if (!hairpinCleared && !firstLockCleared)
         {
-            // SetAlphaAfterDeath(hairpinCanvasAfterDeath, 1f); // 굳이 필요 없음
-            // hairpinCleared = true;  // ❌ 제거! 판정으로 세울 것
-
-            ApplyPuzzleLayoutAfterDeath(new List<(int, int)> {
+            ApplyPuzzleLayoutAfterDeath(new List<(int pos, int puzzle)> {
                 (1,0),(2,1),(3,2),(4,6),(5,4),(6,3),(7,5),(8,7),(9,8),(10,9),(11,10),(12,11),(13,13)
             });
-
-            CheckClearConditionsAfterDeath(); // ✔ 퍼즐 배치 후 판정 → 0.1로 내려감
-            // (바로 내리고 싶으면 아래 한 줄을 추가)
-            // SetAlphaAfterDeath(hairpinCanvasAfterDeath, 0.1f);
         }
-
         else if (hairpinCleared && !firstLockCleared)
         {
-            ApplyPuzzleLayoutAfterDeath(new List<(int, int)> {
+            ApplyPuzzleLayoutAfterDeath(new List<(int pos, int puzzle)> {
                 (1,0),(2,5),(3,2),(4,6),(5,1),(6,7),(7,12),(8,4),(9,11),(10,3),(11,9),(12,8),(13,10)
             });
         }
         else if (hairpinCleared && firstLockCleared)
         {
-            ApplyPuzzleLayoutAfterDeath(new List<(int, int)> {
+            ApplyPuzzleLayoutAfterDeath(new List<(int pos, int puzzle)> {
                 (1,0),(2,9),(3,2),(4,5),(5,8),(6,6),(7,7),(8,11),(9,12),(10,3),(11,1),(12,4),(13,10)
             });
-            StartCoroutine(DelayLoadSceneAfterDeath("Stage1_3", 3f));
+            TransitionToSuccess(3f);
         }
 
-        CheckClearConditionsAfterDeath(); // 판정 재확인(로그 출력됨)
+        CheckClearConditionsAfterDeath();
     }
 
     private void DoUseFlute()

@@ -22,7 +22,7 @@ public class LanguageCollector1_1 : MonoBehaviour
     };
 
     public readonly string[] JapaneseLines1_1 = {
-        "l", "l", "l", "l"
+        " (うぅん…朝…？)", "今日は何日…？", "（この音は……？\u3000あっ、今日って村で音楽祭がある日なのよね）", "(行かなきゃ……今日じゃなきゃダメなの)"
     };
 
     public readonly string[] ChineseLines1_1 = {
