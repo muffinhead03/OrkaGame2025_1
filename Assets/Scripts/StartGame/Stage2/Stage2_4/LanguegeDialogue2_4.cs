@@ -1,32 +1,37 @@
 using UnityEngine;
 
 public class LanguageCollector2_4 : MonoBehaviour
-{
-    // ¾ğ¾îº° ´ë»ç ¹è¿­
+{    [TextArea] public string[] KoreanAbove2_4 = {"ì—ì½”", "íŒ", "ë‚˜ë¥´ì¼€"};
+    [TextArea] public string[] EnglishAbove2_4 = {"Echo", "Pan", "Narke"} ;
+    [TextArea] public string[] JapaneseAbove2_4 = {"ã‚¨ã‚³ãƒ¼", "ãƒ‘ãƒ¼ãƒ³","ãƒŠãƒ«ã‚±" };
+    [TextArea] public string[] ChineseAbove2_4 = {"è‰¾å¯","æ½˜","çº³å°”å…‹"};
+    [TextArea] public string[] KazaAbove2_4 = {"Ğ­ĞºĞ¾", "ĞŸĞ°Ğ½", "ĞĞ°Ñ€Ñ‹ĞºĞµ"};
+
+    // ï¿½ï¿½îº° ï¿½ï¿½ï¿½ ï¿½è¿­
     public readonly string[] KoreanLines2_4 = {
-        "È÷È÷ ÁÁ¾Æ~ "
+        "íˆíˆ ì¢‹ì•„~"
     };
     public readonly string[] EnglishLines2_4 = {
         "Hehe, Alright~"
 
     };
     public readonly string[] KazaLines2_4 = {
-        "k"
+        "Ñ…Ğ¸Ñ…Ğ¸ Ğ¶Ğ°Ò›ÑÑ‹~ "
 
     };
 
     public readonly string[] JapaneseLines2_4 = {
-        "k"
+        "ãµãµã€ã„ã„ã­ã€œ"
 
     };
 
     public readonly string[] ChineseLines2_4 = {
-        "k"
+        "å˜»å˜»ï¼Œå¥½å•Š~"
 
     };
 
     /// <summary>
-    /// ÇöÀç ¼³Á¤µÈ ¾ğ¾î¿¡ µû¶ó ÇØ´ç ´ë»ç ¹è¿­À» ¹İÈ¯ÇÕ´Ï´Ù.
+    /// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½î¿¡ ï¿½ï¿½ï¿½ï¿½ ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ ï¿½è¿­ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Õ´Ï´ï¿½.
     /// </summary>
     public string[] GetLines()
     {

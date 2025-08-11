@@ -19,8 +19,8 @@ public class DialogueManager2_3 : MonoBehaviour
     public Vector2 StoPo = new Vector2(-250f, -20f);
 
     [Header("UI 참조")]
-    public TextMeshProUGUI aboveText;
-    public TextMeshProUGUI storyText;
+    public TextMeshProUGUI aboveText;   // 언어 컨테이너 안의 TMP로 재바인딩됨
+    public TextMeshProUGUI storyText;   // 언어 컨테이너 안의 TMP로 재바인딩됨
     public Button nextButton;
     public Image fadeImage;
 
@@ -48,6 +48,22 @@ public class DialogueManager2_3 : MonoBehaviour
     private int index;
     private Coroutine typingCoroutine;
 
+    // 효과음 1회 재생 가드
+    private bool screamedOnce = false;
+
+    // ===== 언어 헬퍼 =====
+    private string CurrentLanguage => NormalizeLang(LanguageManager.GetLanguage());
+    private string NormalizeLang(string raw)
+    {
+        string s = (raw ?? "korean").Trim().ToLowerInvariant();
+        if (s.StartsWith("en")) return "english";
+        if (s.StartsWith("ko")) return "korean";
+        if (s.StartsWith("ja")) return "japanese";
+        if (s.StartsWith("zh")) return "chinese";
+        if (s.StartsWith("ka") || s.Contains("kaza") || s.Contains("kazah")) return "kaza";
+        return s;
+    }
+
     private void Awake()
     {
         if (nextButton != null)
@@ -56,7 +72,6 @@ public class DialogueManager2_3 : MonoBehaviour
             nextButton.onClick.AddListener(OnNext);
             nextButton.gameObject.SetActive(false);
         }
-
         LanguageManager.Initialize();
         LanguageManager.OnLanguageChanged += OnLanguageChanged;
     }
@@ -78,48 +93,88 @@ public class DialogueManager2_3 : MonoBehaviour
         }
 
         index = 0;
-        StartCoroutine(ShowLineSequence());
 
+        // 페이드 이미지 초기화
         if (fadeImage != null)
         {
             fadeImage.gameObject.SetActive(false);
-            Color c = fadeImage.color;
-            c.a = 0f;
-            fadeImage.color = c;
+            var c = fadeImage.color; c.a = 0f; fadeImage.color = c;
         }
+
+        StartCoroutine(ShowLineSequence());
     }
 
+    // ====== 이름(AboveLine) 언어별로 꺼내기 ======
+    private string GetNameEcho()
+    {
+        if (languageCollector == null) return "Echo";
+        return CurrentLanguage switch
+        {
+            "korean"   => SafeName(languageCollector.KoreanAbove2_2,   0, "에코"),
+            "english"  => SafeName(languageCollector.EnglishAbove2_2,  0, "Echo"),
+            "japanese" => SafeName(languageCollector.JapaneseAbove2_2, 0, "エコー"),
+            "chinese"  => SafeName(languageCollector.ChineseAbove2_2,  0, "艾可"),
+            "kaza"     => SafeName(languageCollector.KazaAbove2_2,     0, "Эко"),
+            _          => "Echo"
+        };
+    }
+    private string GetNameNarke()
+    {
+        if (languageCollector == null) return "Narke";
+        return CurrentLanguage switch
+        {
+            "korean"   => SafeName(languageCollector.KoreanAbove2_2,   2, "나르케"),
+            "english"  => SafeName(languageCollector.EnglishAbove2_2,  2, "Narke"),
+            "japanese" => SafeName(languageCollector.JapaneseAbove2_2, 2, "ナルケ"),
+            "chinese"  => SafeName(languageCollector.ChineseAbove2_2,  2, "纳尔克"),
+            "kaza"     => SafeName(languageCollector.KazaAbove2_2,     2, "Нарыке"),
+            _          => "Narke"
+        };
+    }
+    private string SafeName(string[] arr, int idx, string fallback)
+    {
+        if (arr != null && arr.Length > idx && !string.IsNullOrEmpty(arr[idx])) return arr[idx];
+        return fallback;
+    }
+
+    // ===== 대사 로드 =====
     private void LoadLinesForCurrentLanguage()
     {
         if (languageCollector == null)
         {
-            Debug.LogError("[DialogueManager2_3] languageCollector가 할당되지 않았습니다.");
+            Debug.LogError("[DialogueManager2_3] languageCollector가 비어있습니다.");
             lines = new string[0];
             return;
         }
-
         lines = languageCollector.GetLines();
-
         if (lines == null || lines.Length == 0)
-            Debug.LogWarning("[DialogueManager2_3] 선택된 언어 대사가 비어있습니다. 인스펙터에서 채워주세요.");
+            lines = new[] { " " };
     }
 
+    // ===== 한 줄 표시 시퀀스 =====
     private IEnumerator ShowLineSequence()
     {
-        if (lines == null || index >= lines.Length)
+        if (lines == null || index < 0 || index >= lines.Length)
         {
             Debug.LogError("[ShowLineSequence] 유효하지 않은 대사 인덱스.");
             yield break;
         }
 
         UpdateCharacterFace(index);
+
+        // 화자명: 인덱스 기반(2,3은 나르케, 나머지는 에코)
+        if (aboveText != null)
+            aboveText.text = IsNarkeIndex(index) ? GetNameNarke() : GetNameEcho();
+
         yield return new WaitForSeconds(0.5f);
 
-        if (typingCoroutine != null)
-            StopCoroutine(typingCoroutine);
-        typingCoroutine = StartCoroutine(TypeText(lines[index]));
+        if (typingCoroutine != null) StopCoroutine(typingCoroutine);
+        string line = lines[index] ?? "";
+        Debug_LogLine("BEGIN", index, line);
+        typingCoroutine = StartCoroutine(TypeText(line));
         yield return typingCoroutine;
 
+        // 마지막 줄 → 페이드 아웃 후 다음 씬
         if (index == lines.Length - 1)
         {
             yield return new WaitForSeconds(0.5f);
@@ -131,62 +186,48 @@ public class DialogueManager2_3 : MonoBehaviour
         }
     }
 
+    private bool IsNarkeIndex(int idx) => (idx == 2 || idx == 3);
+
     private void UpdateCharacterFace(int idx)
     {
-        if (Narke_2Obj) Narke_2Obj.SetActive(false);
-        if (Narke_defaultObj) Narke_defaultObj.SetActive(false);
-        if (Eco_surprisedObj) Eco_surprisedObj.SetActive(false);
-        if (Eco_smiledObj) Eco_smiledObj.SetActive(false);
+        if (Narke_2Obj)        Narke_2Obj.SetActive(false);
+        if (Narke_defaultObj)  Narke_defaultObj.SetActive(false);
+        if (Eco_surprisedObj)  Eco_surprisedObj.SetActive(false);
+        if (Eco_smiledObj)     Eco_smiledObj.SetActive(false);
 
         switch (idx)
         {
             case 0:
                 if (Eco_smiledObj) Eco_smiledObj.SetActive(true);
-                ScreamingSound?.Play();
-                if (bgmSource != null && !bgmSource.isPlaying)
-                {
-                    bgmSource.loop = true;
-                    bgmSource.Play();
-                }
+                if (!screamedOnce) { ScreamingSound?.Play(); screamedOnce = true; }
+                if (bgmSource != null && !bgmSource.isPlaying) { bgmSource.loop = true; bgmSource.Play(); }
                 break;
+
             case 1:
                 if (Eco_surprisedObj) Eco_surprisedObj.SetActive(true);
                 if (bgmSource != null && bgmSource.isPlaying) bgmSource.Stop();
                 break;
+
             case 2:
                 if (Narke_defaultObj) Narke_defaultObj.SetActive(true);
                 if (bgmSource != null && bgmSource.isPlaying) bgmSource.Stop();
                 break;
+
             case 3:
                 if (Narke_2Obj) Narke_2Obj.SetActive(true);
                 if (bgmSource != null && bgmSource.isPlaying) bgmSource.Stop();
                 break;
+
             case 4:
                 if (Eco_smiledObj) Eco_smiledObj.SetActive(true);
                 if (bgmSource != null && bgmSource.isPlaying) bgmSource.Stop();
                 break;
+
             default:
                 if (Eco_smiledObj) Eco_smiledObj.SetActive(true);
                 if (bgmSource != null && bgmSource.isPlaying) bgmSource.Stop();
                 break;
         }
-
-        if (aboveText != null)
-        {
-            bool isNarke = (Narke_2Obj && Narke_2Obj.activeSelf) || (Narke_defaultObj && Narke_defaultObj.activeSelf);
-            aboveText.text = GetSpeakerName(isNarke);
-        }
-    }
-
-    private string GetSpeakerName(bool isNarke)
-    {
-        string lang = LanguageManager.GetLanguage()?.Trim().ToLower() ?? "korean";
-        if (lang.StartsWith("en"))     return isNarke ? "Narke" : "Echo";
-        if (lang.StartsWith("ja"))     return isNarke ? "ナルケ" : "エコー";
-        if (lang.StartsWith("zh"))     return isNarke ? "纳尔克" : "艾可";
-        if (lang.Contains("kaza") || lang == "kazahustan") return isNarke ? "Нарке" : "Эхо";
-        // default: korean
-        return isNarke ? "나르케" : "에코";
     }
 
     private IEnumerator TypeText(string fullText)
@@ -198,6 +239,7 @@ public class DialogueManager2_3 : MonoBehaviour
             storyText.text += c;
             yield return new WaitForSeconds(typingSpeed);
         }
+        Debug_LogLine("END", index, fullText);
     }
 
     private void OnNext()
@@ -223,15 +265,14 @@ public class DialogueManager2_3 : MonoBehaviour
         };
         foreach (var rt in all) rt?.gameObject.SetActive(false);
 
-        string lang = LanguageManager.GetLanguage()?.Trim().ToLower();
         RectTransform above = Korean_Above, story = Korean_Story;
-        switch (lang)
+        switch (CurrentLanguage)
         {
-            case "english":      above = English_Above;  story = English_Story;  break;
-            case "japanese":     above = Japanese_Above; story = Japanese_Story; break;
-            case "chinese":      above = Chinese_Above;  story = Chinese_Story;  break;
-            case "kazahustan":
-            case "kaza":         above = Kaza_Above;     story = Kaza_Story;     break;
+            case "english":  above = English_Above;  story = English_Story;  break;
+            case "japanese": above = Japanese_Above; story = Japanese_Story; break;
+            case "chinese":  above = Chinese_Above;  story = Chinese_Story;  break;
+            case "kaza":     above = Kaza_Above;     story = Kaza_Story;     break;
+            // default: korean
         }
 
         if (above != null && story != null)
@@ -244,20 +285,25 @@ public class DialogueManager2_3 : MonoBehaviour
             // 활성화된 컨테이너 안의 TMP를 안전하게 재바인딩
             var newAbove = above.GetComponentsInChildren<TextMeshProUGUI>(true).FirstOrDefault();
             var newStory = story.GetComponentsInChildren<TextMeshProUGUI>(true).FirstOrDefault();
-            if (newAbove != null) aboveText = newAbove; else Debug.LogError("[DialogueManager2_3] aboveText 바인딩 실패");
-            if (newStory != null) storyText = newStory; else Debug.LogError("[DialogueManager2_3] storyText 바인딩 실패");
+            if (newAbove != null) aboveText = newAbove; else Debug.LogWarning("[DialogueManager2_3] aboveText 바인딩 실패");
+            if (newStory != null) storyText = newStory; else Debug.LogWarning("[DialogueManager2_3] storyText 바인딩 실패");
         }
         else
         {
             Debug.LogError("[DialogueManager2_3] 언어 UI 컨테이너가 설정되지 않았습니다.");
         }
+
+        // 언어 바뀌면 화자명도 즉시 갱신
+        if (aboveText != null)
+            aboveText.text = IsNarkeIndex(index) ? GetNameNarke() : GetNameEcho();
     }
 
     private void OnLanguageChanged(string newLang)
     {
-        // 언어 변경 시: UI 재바인딩 → 대사 재로드 → 진행 리셋 → 다시 시작
         SetupLanguageUI();
         LoadLinesForCurrentLanguage();
+
+        screamedOnce = (index > 0); // 0에서만 비명 SFX, 언어 바꿨다고 또 안 나오게
         StopAllCoroutines();
         index = 0;
         StartCoroutine(ShowLineSequence());
@@ -268,8 +314,7 @@ public class DialogueManager2_3 : MonoBehaviour
         if (fadeImage != null)
         {
             fadeImage.gameObject.SetActive(true);
-            float duration = 1f;
-            float elapsed = 0f;
+            float duration = 1f, elapsed = 0f;
             Color c = fadeImage.color;
 
             while (elapsed < duration)
@@ -279,9 +324,7 @@ public class DialogueManager2_3 : MonoBehaviour
                 fadeImage.color = c;
                 yield return null;
             }
-
-            c.a = 1f;
-            fadeImage.color = c;
+            c.a = 1f; fadeImage.color = c;
         }
 
         yield return new WaitForSeconds(0.3f);
@@ -291,5 +334,11 @@ public class DialogueManager2_3 : MonoBehaviour
     private void OnDestroy()
     {
         LanguageManager.OnLanguageChanged -= OnLanguageChanged;
+    }
+
+    // ===== 디버깅 로그 =====
+    private void Debug_LogLine(string phase, int idx, string text)
+    {
+        Debug.Log($"[Stage2_3:{phase}] lang={CurrentLanguage}, idx={idx}, text={(text ?? "").Replace('\n',' ')}");
     }
 }

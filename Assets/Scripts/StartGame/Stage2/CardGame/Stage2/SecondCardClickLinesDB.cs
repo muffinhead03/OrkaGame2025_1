@@ -8,9 +8,10 @@ public class CardClickEntry
     [Tooltip("이 슬롯(또는 카드)의 식별용 이름. 정답 이름과 맞추면 찾기 편해요.")]
     public string cardName;
 
-    [Tooltip("이 카드의 언어별 6줄 대사(SecondCardClickKeyedLinesMB 컴포넌트).")]
-    public SecondCardClickKeyedLinesMB keyedLines; // ← 실제 사용하는 MB 타입으로 맞춰주세요
+    [Tooltip("이 카드의 언어별 6줄 대사(FirstCardClickKeyedLinesMB 컴포넌트).")]
+    public FirstCardClickKeyedLinesMB keyedLines; // ← 실제 존재하는 MB로 교체
 }
+
 
 public class SecondCardClickLinesDB : MonoBehaviour
 {

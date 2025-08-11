@@ -99,7 +99,7 @@ public class CardGameSecondManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         yield return StartCoroutine(FlashBlack());
 
-        SceneManager.LoadScene("Stage2_4");
+        SceneManager.LoadScene("Stage2_3_1");
     }
 
     IEnumerator RotateZ(Transform target, float relativeAngle, float duration)

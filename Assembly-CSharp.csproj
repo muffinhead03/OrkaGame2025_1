@@ -52,7 +52,9 @@
     <Compile Include="Assets\Scripts\StartGame\Stage2\Stage2_3_1\LanguageCollector2_3_1.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage1\Stage1_3\LanguageCollector1_3.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage2\CardGame2Manager.cs" />
+    <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage2\최종\SecondCardClickKeyedLinesMB.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\Stage2_5\DialogueManager2_5.cs" />
+    <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage2\최종\SecondCardClickManager.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage1\SlidingGame\SlidingGameManager1AfterFirstDeath\SlidingPuzzleAfterDeathImageChangePiri.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage1\SlidingGame\SlidingGameManager1BeforeDeath\SlidingGameRuleExplain.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage1\250802Update\FirstCardLanguageScript.cs" />
@@ -84,12 +86,15 @@
     <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage2\SecondCardClickLinesDB.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\Stage2_4\DialogueManager2_4.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage1\Stage1_3\DialogueManager1_3.cs" />
+    <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage2\최종\CardClickTarget.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage3\SlidingSecond\SlidingGame2RuleExplainManger.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage1\SlidingGame\SlidingGameManager1AfterFirstDeath\SlidingPuzzle1ScriptAfterDeath.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Endings\CardGameSecondEnding.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage1\SlidingGame\SlidingGameManager1BeforeDeath\AutoLoadSceneAfterDelay.cs" />
+    <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage2\최종\CardGameSecondLanguageLines.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage1\250802Update\FirstCardClickHandler.cs" />
     <Compile Include="Assets\Scripts\StartGame\Shared\Scripts\FitToScreen\FitToScreen.cs" />
+    <Compile Include="Assets\Scripts\StartGame\Shared\Scripts\SettingPanel\VOlume\GameAudioSettings.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage3\Stage3_5\LanguageDialogue3_5.cs" />
     <Compile Include="Assets\Scripts\BeforeGame\MainScreen.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage3\Stage3_2\DialogueManager3_2.cs" />
@@ -106,7 +111,6 @@
     <Compile Include="Assets\Scripts\StartGame\Stage1\Stage1_1\LanguageCollector1_1.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage1\Stage1_1\DialogueManagerStage1_1.cs" />
     <Compile Include="Assets\Scripts\StartGame\Shared\Scripts\GameController\GameControllerScript.cs" />
-    <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage2\SecondCardClickKeyedLinesMB.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage3\Stage3_4\LanguageCollector3_4.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage2\CardGameSecondManager.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\Stage2_3_1\Dialogue Manager2_3_1.cs" />
@@ -122,7 +126,6 @@
     <Compile Include="Assets\Scripts\StartGame\Stage2\Stage2_3\DialogueManager2_3.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage1\Stage1_3\FadeController.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage1\Stage1_2\DiologueManager2.cs" />
-    <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage2\SecondCardClickManager.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\Stage2_2\LanguageCollector2_2.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage1\SlidingGame\SlidingGameManager1AfterFirstDeath\SlidingPuzzleAfterDeathImageChangeCoffee.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage1\250802Update\FirstCardLanguageManager.cs" />

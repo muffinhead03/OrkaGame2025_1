@@ -7,29 +7,29 @@ using System.Linq;
 
 public class DialogueManagerStage2_2 : MonoBehaviour
 {
-    [Header("��� ������Ʈ")]
+    [Header("언어 패널들")]
     public RectTransform Korean_Above, Korean_Story;
     public RectTransform English_Above, English_Story;
     public RectTransform Japanese_Above, Japanese_Story;
     public RectTransform Chinese_Above, Chinese_Story;
     public RectTransform Kaza_Above, Kaza_Story;
 
-    [Header("�⺻ ��ġ��")]
+    [Header("기본 위치값")]
     public Vector2 AboPo = new Vector2(-750f, 160f);
     public Vector2 StoPo = new Vector2(-250f, -20f);
 
-    [Header("UI ���")]
-    public TextMeshProUGUI aboveText;    // �̸� ���̺�
-    public TextMeshProUGUI storyText;    // ��� �ؽ�Ʈ
-    public Button nextButton;            // Next ��ư
+    [Header("UI 참조")]
+    public TextMeshProUGUI aboveText;    // 이름 라벨
+    public TextMeshProUGUI storyText;    // 본문 텍스트
+    public Button nextButton;            // Next 버튼
 
-    [Header("Ÿ���� �ӵ�")]
+    [Header("타이핑 속도")]
     public float typingSpeed = 0.04f;
 
-    [Header("�����")]
+    [Header("사운드")]
     public AudioSource bgmSource;
 
-    [Header("ǥ�� ������Ʈ")]
+    [Header("표정 오브젝트")]
     public GameObject Eco_eyeclosedObj;
     public GameObject Eco_defaultObj;
     public GameObject Eco_surprisedObj;
@@ -38,16 +38,18 @@ public class DialogueManagerStage2_2 : MonoBehaviour
     public GameObject Narke_2Obj;
     public GameObject Narke_defaultObj;
 
-    [Header("��� �̹���")]
+    [Header("배경 이미지")]
     public Image backgroundImage;
     public Sprite backGroundSprite;
 
-    [Header("��� ��ũ��Ʈ")]
+    [Header("언어 스크립트")]
     public LanguageCollector2_2 languageCollector;
 
     private string[] lines;
     private int index;
     private Coroutine typingCoroutine;
+    private bool isTyping;
+    private string currentFullLine;
 
     private void Awake()
     {
@@ -63,13 +65,11 @@ public class DialogueManagerStage2_2 : MonoBehaviour
 
     private void Start()
     {
-        // 1) UI ��� ������Ʈ ����
+        // 1) UI 패널 세팅
         SetupLanguageUI();
         if (nextButton != null) nextButton.transform.SetAsLastSibling();
 
-        // (���� ���̺� ���� ����)
-
-        // 3) ��� & BGM
+        // 2) 배경 & BGM
         if (backgroundImage != null && backGroundSprite != null)
             backgroundImage.sprite = backGroundSprite;
         if (bgmSource != null && !bgmSource.isPlaying)
@@ -78,10 +78,10 @@ public class DialogueManagerStage2_2 : MonoBehaviour
             bgmSource.Play();
         }
 
-        // 4) ��� �迭 �ε�
+        // 3) 대사 로드
         LoadLinesForCurrentLanguage();
 
-        // 5) �ε��� �ʱ�ȭ �� ù ��� ������ ����
+        // 4) 인덱스 초기화 후 첫 줄 재생
         index = 0;
         StartCoroutine(ShowLineSequence());
     }
@@ -91,12 +91,12 @@ public class DialogueManagerStage2_2 : MonoBehaviour
         string lang = LanguageManager.GetLanguage()?.Trim().ToLower();
         switch (lang)
         {
-            case "korean": lines = languageCollector.KoreanLines2_2; break;
-            case "english": lines = languageCollector.EnglishLines2_2; break;
-            case "japanese": lines = languageCollector.JapaneseLines2_2; break;
-            case "chinese": lines = languageCollector.ChineseLines2_2; break;
+            case "korean":      lines = languageCollector.KoreanLines2_2; break;
+            case "english":     lines = languageCollector.EnglishLines2_2; break;
+            case "japanese":    lines = languageCollector.JapaneseLines2_2; break;
+            case "chinese":     lines = languageCollector.ChineseLines2_2; break;
             case "kazahustan":
-            case "kaza": lines = languageCollector.KazaLines2_2; break;
+            case "kaza":        lines = languageCollector.KazaLines2_2; break;
             default:
                 Debug.LogWarning($"Unknown language '{lang}', default to Korean.");
                 lines = languageCollector.KoreanLines2_2;
@@ -111,7 +111,9 @@ public class DialogueManagerStage2_2 : MonoBehaviour
 
         if (typingCoroutine != null)
             StopCoroutine(typingCoroutine);
-        typingCoroutine = StartCoroutine(TypeText(lines[index]));
+
+        currentFullLine = lines[index];
+        typingCoroutine = StartCoroutine(TypeText(currentFullLine));
         yield return typingCoroutine;
 
         nextButton?.gameObject.SetActive(true);
@@ -119,7 +121,7 @@ public class DialogueManagerStage2_2 : MonoBehaviour
 
     private void UpdateCharacterFace(int idx)
     {
-        // ��� ǥ�� ��Ȱ��ȭ
+        // 모든 표정 비활성화
         Eco_eyeclosedObj?.SetActive(false);
         Eco_defaultObj?.SetActive(false);
         Eco_surprisedObj?.SetActive(false);
@@ -128,7 +130,7 @@ public class DialogueManagerStage2_2 : MonoBehaviour
         Narke_2Obj?.SetActive(false);
         Narke_defaultObj?.SetActive(false);
 
-        // �ʿ��� ǥ���� Ȱ��ȭ
+        // 필요한 표정만 활성화
         switch (idx)
         {
             case 0:
@@ -139,14 +141,14 @@ public class DialogueManagerStage2_2 : MonoBehaviour
             case 20:
             case 23:
             case 29:
-                Narke_2Obj.SetActive(true);
+                Narke_2Obj?.SetActive(true);
                 break;
             case 1:
             case 11:
             case 14:
             case 25:
             case 28:
-                Eco_defaultObj.SetActive(true);
+                Eco_defaultObj?.SetActive(true);
                 break;
             case 2:
             case 4:
@@ -157,51 +159,67 @@ public class DialogueManagerStage2_2 : MonoBehaviour
             case 16:
             case 19:
             case 27:
-                Narke_defaultObj.SetActive(true);
+                Narke_defaultObj?.SetActive(true);
                 break;
             case 3:
             case 18:
             case 30:
-                Eco_smiledObj.SetActive(true);
+                Eco_smiledObj?.SetActive(true);
                 break;
             case 5:
             case 21:
             case 22:
-                Eco_surprisedObj.SetActive(true);
+                Eco_surprisedObj?.SetActive(true);
                 break;
             case 8:
             case 26:
-                Eco_readyObj.SetActive(true);
+                Eco_readyObj?.SetActive(true);
                 break;
             case 24:
-                Eco_eyeclosedObj.SetActive(true);
+                Eco_eyeclosedObj?.SetActive(true);
                 break;
             default:
-                Eco_defaultObj.SetActive(true);
+                Eco_defaultObj?.SetActive(true);
                 break;
         }
 
+        // 이름 라벨(언어별로 현지화)
         if (aboveText != null)
         {
-            string lang = LanguageManager.GetLanguage();
-            string speakerKo = (Narke_2Obj.activeSelf || Narke_defaultObj.activeSelf) ? "나르케" : "에코";
-            aboveText.text = LocalizeSpeakerName(speakerKo, lang);
+            bool isNarke = (Narke_2Obj != null && Narke_2Obj.activeSelf) ||
+                           (Narke_defaultObj != null && Narke_defaultObj.activeSelf);
+            string speakerKo = isNarke ? "나르케" : "에코";
+            aboveText.text = GetLocalizedSpeakerName(speakerKo);
         }
     }
 
     private IEnumerator TypeText(string fullText)
     {
         if (storyText == null) yield break;
+        isTyping = true;
         storyText.text = string.Empty;
+
         foreach (char c in fullText)
         {
             storyText.text += c;
             yield return new WaitForSeconds(typingSpeed);
         }
+
+        isTyping = false;
     }
 
     private void OnNext()
     {
+        // 타이핑 중이면 스킵(한 번 더 눌러야 다음 줄)
+        if (isTyping)
+        {
+            if (typingCoroutine != null) StopCoroutine(typingCoroutine);
+            storyText.text = currentFullLine;
+            isTyping = false;
+            nextButton?.gameObject.SetActive(true);
+            return;
+        }
+
         nextButton?.gameObject.SetActive(false);
 
         index++;
@@ -229,11 +247,11 @@ public class DialogueManagerStage2_2 : MonoBehaviour
         RectTransform above = Korean_Above, story = Korean_Story;
         switch (lang)
         {
-            case "english": above = English_Above; story = English_Story; break;
-            case "japanese": above = Japanese_Above; story = Japanese_Story; break;
-            case "chinese": above = Chinese_Above; story = Chinese_Story; break;
+            case "english":   above = English_Above;  story = English_Story; break;
+            case "japanese":  above = Japanese_Above; story = Japanese_Story; break;
+            case "chinese":   above = Chinese_Above;  story = Chinese_Story; break;
             case "kazahustan":
-            case "kaza": above = Kaza_Above; story = Kaza_Story; break;
+            case "kaza":      above = Kaza_Above;     story = Kaza_Story; break;
         }
         if (above != null && story != null)
         {
@@ -247,14 +265,14 @@ public class DialogueManagerStage2_2 : MonoBehaviour
             if (newAbove != null) aboveText = newAbove;
             if (newStory != null) storyText = newStory;
         }
-
     }
 
     private void OnLanguageChanged(string newLang)
     {
         SetupLanguageUI();             // 패널 전환 + TMP 재바인딩
-        LoadLinesForCurrentLanguage();
+        LoadLinesForCurrentLanguage(); // 대사 교체
         StopAllCoroutines();
+        index = 0;                     // 언어 변경 시 처음부터
         StartCoroutine(ShowLineSequence());
     }
 
@@ -262,30 +280,51 @@ public class DialogueManagerStage2_2 : MonoBehaviour
     {
         LanguageManager.OnLanguageChanged -= OnLanguageChanged;
     }
+
     private void Update()
     {
         if (bgmSource != null && !bgmSource.isPlaying)
-        {
             bgmSource.Play();
-        }
-
-       
     }
 
-    private string LocalizeSpeakerName(string speakerKo, string lang)
+    /// <summary>
+    /// 한국어 기준 이름(에코/판/나르케)을 현재 언어의 표시명으로 변환
+    /// LanguageCollector2_2 의 Above2_2 배열을 사용
+    /// </summary>
+    private string GetLocalizedSpeakerName(string speakerKo)
     {
-        lang = (lang ?? "").Trim().ToLower();
+        if (languageCollector == null) return speakerKo;
 
-        // 영어일 때만 영어 이름으로 매핑
-        if (lang == "english")
+        // 인덱스 결정: 0=에코, 1=판, 2=나르케
+        int idx = 0;
+        if (speakerKo == "판") idx = 1;
+        else if (speakerKo == "나르케") idx = 2;
+
+        string lang = (LanguageManager.GetLanguage() ?? "").Trim().ToLower();
+
+        string[][] nameTables = new string[][]
         {
-            if (speakerKo == "에코") return "Echo";
-            if (speakerKo == "나르케") return "Narke";
+            languageCollector.KoreanAbove2_2,
+            languageCollector.EnglishAbove2_2,
+            languageCollector.JapaneseAbove2_2,
+            languageCollector.ChineseAbove2_2,
+            languageCollector.KazaAbove2_2
+        };
+
+        string[] chosen = languageCollector.KoreanAbove2_2;
+        switch (lang)
+        {
+            case "english":   chosen = languageCollector.EnglishAbove2_2; break;
+            case "japanese":  chosen = languageCollector.JapaneseAbove2_2; break;
+            case "chinese":   chosen = languageCollector.ChineseAbove2_2; break;
+            case "kazahustan":
+            case "kaza":      chosen = languageCollector.KazaAbove2_2; break;
         }
 
-        // 그 외(한국어 등)는 원래 이름 유지
+        // 안전하게 범위 체크
+        if (chosen != null && idx >= 0 && idx < chosen.Length && !string.IsNullOrEmpty(chosen[idx]))
+            return chosen[idx];
+
         return speakerKo;
     }
-
-
 }

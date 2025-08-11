@@ -2,6 +2,12 @@
 
 public class LanguageCollector2_1 : MonoBehaviour
 {
+    [TextArea] public string[] KoreanAbove2_1 = {"에코"};
+    [TextArea] public string[] EnglishAbove2_1 = {"Echo"} ;
+    [TextArea] public string[] JapaneseAbove2_1 = {"エコー" };
+    [TextArea] public string[] ChineseAbove2_1 = {"艾可"};
+    [TextArea] public string[] KazaAbove2_1 = {"Эко"};
+
     // 언어별 대사 배열
     public readonly string[] KoreanLines2_1 = {
         "으음... ",
@@ -29,11 +35,29 @@ public class LanguageCollector2_1 : MonoBehaviour
         "Oh, There’s someone by the water"
     };
     public readonly string[] KazaLines2_1 = {
-        "k","k","k","k","k","k","k","k","k","k"
+        "Ыыым..",
+        " Кенеттен демім тарылып кетті… А… Қайтадан есімнен талып қалған сияқтымын…",
+        "Соңғы кезде демім жиірек тарылатын болған көрінеді",
+        "Тоқта, мен қазір қайдамын… ! Киімім де өзгерген…! Мен өз бөлмемде құлап едім ғой…",
+        "Киімім де өзгерген…! Мен өз бөлмемде құлап едім ғой…",
+        "ыым, жан жағыма қарасам да қайда екенімді білмеймін",
+        "Бұл əлемде жоқ сондай əдемі орын ғой",
+        " …түсім болып шықпаса екен",
+        "егер өліп кетсем, жəннəтқа барамын ба екен?",
+        "А? Судың жағасында біреу бар"
     };
 
     public readonly string[] JapaneseLines2_1 = {
-        "k","k","k","k","k","k","k","k","k","k"
+        "んー…… ",
+        "急に息が苦しくなって……あぁ……また倒れちゃったみたい……",
+        "最近、息が詰まることが増えた気がする",
+        "ちょっと……ここはどこなの……！",
+        "この服も一体……！アタシ、確か自分の部屋で倒れたはずなのに……",
+        "うーん……周りを見ても、ここがどこなのか全然わからない",
+        "まるで、この世に存在しないみたいに美しい場所なの",
+        "……こんなこと、考えたくないけど",
+        "結局、アタシは死んで天国に来たのかな……？",
+        "あれ？あの水辺に誰かいる"
     };
 
     public readonly string[] ChineseLines2_1 = {

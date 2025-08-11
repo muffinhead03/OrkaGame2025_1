@@ -2,6 +2,12 @@ using UnityEngine;
 
 public class LanguageCollector2_3 : MonoBehaviour
 {
+    [TextArea] public string[] KoreanAbove2_2 = {"에코", "판", "나르케"};
+    [TextArea] public string[] EnglishAbove2_2 = {"Echo", "Pan", "Narke"} ;
+    [TextArea] public string[] JapaneseAbove2_2 = {"エコー", "パーン","ナルケ" };
+    [TextArea] public string[] ChineseAbove2_2 = {"艾可","潘","纳尔克"};
+    [TextArea] public string[] KazaAbove2_2 = {"Эко", "Пан", "Нарыке"};
+
     // 기본 한글 대사 (필요 시 인스펙터에서 수정 가능)
     [TextArea(2, 5)]
     public string[] KoreanLines2_3 = {
@@ -17,15 +23,36 @@ public class LanguageCollector2_3 : MonoBehaviour
     public string[] EnglishLines2_3 = {
         "I did it...!",
         "Wait... did you hear that noise?",
-        "What? That can't be right - I didn't hear a thing",
+        "What? That can't be right ~ I didn't hear a thing",
         "Never mind that, let's just start the next round",
         "(Well... there's no way a place this peaceful would have such a noise like that...) Okay...!"
     };
 
     // 다른 언어는 인스펙터에서 채우도록 공개
-    [TextArea(2, 5)] public string[] JapaneseLines2_3;
-    [TextArea(2, 5)] public string[] ChineseLines2_3;
-    [TextArea(2, 5)] public string[] KazaLines2_3;
+    [TextArea(2, 5)] public string[] JapaneseLines2_3 =
+    {
+        "やった! アタシの勝ちよ！",
+        "あれ？今、何か音が聞こえなかった？",
+        "なに言ってるんだい？聞き間違いだろう〜ボクは聞こえてないよ",
+        "それよりさ、次のゲームを始めよう",
+        "(まあ、こんな平和な場所でそんな音がするなんて……) いいよ！"
+    };
+    [TextArea(2, 5)] public string[] ChineseLines2_3 =
+    {
+        "我赢了！",
+        "咦？刚才是不是听到了什么声音？",
+        "什么声音？你听错了吧~我可没听见",
+        "比起那个，快开始下一局吧",
+        "（也是，在这样和平的地方，不可能有什么怪声吧……）好吧！"
+    };
+    [TextArea(2, 5)] public string[] KazaLines2_3 =
+    {
+        "Мен жеңдім!",
+        "Жаңа бір дыбыс естімедің бе?",
+        "Қандай дыбыс? Дұрыс естімедім~ Мен ести алмайтын сияқтымын",
+        "Бола берсін, келесі кезеңді бастайық",
+        "(Осындай бейбіт жерде бұндай дыбыстар…) Жарайды!"
+    };
 
     // 언어 문자열 정규화
     private static string Normalize(string lang)

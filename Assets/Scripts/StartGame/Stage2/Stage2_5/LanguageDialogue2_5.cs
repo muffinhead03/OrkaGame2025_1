@@ -2,29 +2,38 @@ using UnityEngine;
 
 public class LanguageCollector2_5 : MonoBehaviour
 {
-    // �� ��� �迭
+    [TextArea] public string[] KoreanAbove2_5 = {"에코", "판", "나르케"};
+    [TextArea] public string[] EnglishAbove2_5 = {"Echo", "Pan", "Narke"} ;
+    [TextArea] public string[] JapaneseAbove2_5 = {"エコー", "パーン","ナルケ" };
+    [TextArea] public string[] ChineseAbove2_5 = {"艾可","潘","纳尔克"};
+    [TextArea] public string[] KazaAbove2_5 = {"Эко", "Пан", "Нарыке"};
+
+    // �� ��� �迭
     public readonly string[] KoreanLines2_5 = {
-        "��?",
-        "�ʴ� ���� �־�߸� ��",
+        "뭐?",
+        "너는 여기 있어야만 해"
     };
     public readonly string[] EnglishLines2_5 = {
     "WHAT?",
     "YOU MUST STAY HERE",
 };
     public readonly string[] KazaLines2_5 = {
-
+        "Не?",
+        "Сен осында болу керексің"
     };
 
     public readonly string[] JapaneseLines2_5 = {
-
+        "は?",
+        "キミはここにいなければならない"
     };
 
     public readonly string[] ChineseLines2_5 = {
-
+        "什么？",
+        "你必须待在这里"
     };
 
     /// <summary>
-    /// ���� ������ �� ���� �ش� ��� �迭�� ��ȯ�մϴ�.
+    /// ���� ������ �� ���� �ش� ��� �迭�� ��ȯ�մϴ�.
     /// </summary>
     public string[] GetLines()
     {

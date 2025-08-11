@@ -3,70 +3,172 @@ using TMPro;
 
 public class SettingPanelController : MonoBehaviour
 {
+    [Header("Panels")]
     public GameObject settingPanel;
     public GameObject firstPanel;
 
     public Vector3 settingPanelOrigin = new Vector3(-3100, 727, 0);
     public Vector3 center = Vector3.zero;
 
-    public TextMeshProUGUI whatLanguage;    // 현재 언어 표시용 TMP
+    [Header("Display (TMP)")]
+    public TextMeshProUGUI bgmValueText;  // "BGM: 50" 같은 표시
+    public TextMeshProUGUI sfxValueText;  // "SFX: 50" 같은 표시
 
-    private Vector2[] laPosition = new Vector2[]
+    [Header("Audio Groups (배열에 AudioSource들 넣기)")]
+    public AudioSource[] backgroundMusicSources;
+    public AudioSource[] soundEffectSources;
+
+    [Header("Hold Adjust Options")]
+    [Tooltip("마우스를 누른 채 유지 시 초당 변화량")]
+    public float unitsPerSecond = 7f;
+
+    // 내부 상태 (홀드 여부)
+    private bool holdBgmLeft,  holdBgmRight;
+    private bool holdSfxLeft,  holdSfxRight;
+
+    // 각 소스의 '기본(베이스) 볼륨' 저장해서 스케일링
+    private float[] bgmBaseVolumes;
+    private float[] sfxBaseVolumes;
+
+    void Awake()
     {
-        new Vector2(23, -275),
-        new Vector2(700, -1000)
-    };
+        // 기본값 보정(최초 실행 시 50으로)
+        GameAudioSettings.CurrentBackgroundMusic = Mathf.Clamp(GameAudioSettings.CurrentBackgroundMusic, 0, 100);
+        GameAudioSettings.CurrentSoundEffect     = Mathf.Clamp(GameAudioSettings.CurrentSoundEffect,     0, 100);
 
-    private readonly string[] laKind = { "Korean", "English", "Chinese", "Japanese", "Kazahustan" };
-    private int currentIndex = 0;
-
-    private void Start()
-    {
-        // LanguageManager에서 현재 언어 읽기
-        string currentLang = LanguageManager.GetLanguage();
-        currentIndex = System.Array.IndexOf(laKind, currentLang);
-        if (currentIndex == -1) currentIndex = 0;
-
-        UpdateLanguageDisplay();
-    }
-
-    public void OnArrowLeft()
-    {
-        currentIndex = (currentIndex - 1 + laKind.Length) % laKind.Length;
-        LanguageManager.SetLanguage(laKind[currentIndex]);
-        UpdateLanguageDisplay();
-    }
-
-    public void OnArrowRight()
-    {
-        currentIndex = (currentIndex + 1) % laKind.Length;
-        LanguageManager.SetLanguage(laKind[currentIndex]);
-        UpdateLanguageDisplay();
-    }
-
-    private void UpdateLanguageDisplay()
-    {
-        // 모든 언어 텍스트 비활성화
-        
-
-        // LanguageManager에서 현재 언어 "읽기"
-// 기존에는 languageTexts[i]를 다루는 시각 요소도 같이 보여주고 있었지만
-// now, 단순히 글자 "Korean" 같은 것만 출력하면 됩니다.
-
-// 이 부분만 정리하면 됨:
-        if (whatLanguage != null)
+        // 베이스 볼륨 백업
+        if (backgroundMusicSources != null && backgroundMusicSources.Length > 0)
         {
-            whatLanguage.text = $" {LanguageManager.GetLanguage()}";
+            bgmBaseVolumes = new float[backgroundMusicSources.Length];
+            for (int i = 0; i < backgroundMusicSources.Length; i++)
+                bgmBaseVolumes[i] = backgroundMusicSources[i] ? backgroundMusicSources[i].volume : 1f;
+        }
+        if (soundEffectSources != null && soundEffectSources.Length > 0)
+        {
+            sfxBaseVolumes = new float[soundEffectSources.Length];
+            for (int i = 0; i < soundEffectSources.Length; i++)
+                sfxBaseVolumes[i] = soundEffectSources[i] ? soundEffectSources[i].volume : 1f;
         }
 
+        // 첫 반영
+        ApplyVolumes();
+        RefreshTexts();
     }
 
+    void Update()
+    {
+        float delta = unitsPerSecond * Time.unscaledDeltaTime; // 일시정지 무시
+
+        bool changed = false;
+
+        // BGM 조절
+        if (holdBgmLeft || holdBgmRight)
+        {
+            int v = GameAudioSettings.CurrentBackgroundMusic;
+            if (holdBgmLeft)  v -= Mathf.CeilToInt(delta);
+            if (holdBgmRight) v += Mathf.CeilToInt(delta);
+            int clamped = Mathf.Clamp(v, 0, 100);
+            if (clamped != GameAudioSettings.CurrentBackgroundMusic)
+            {
+                GameAudioSettings.CurrentBackgroundMusic = clamped;
+                changed = true;
+            }
+        }
+
+        // SFX 조절
+        if (holdSfxLeft || holdSfxRight)
+        {
+            int v = GameAudioSettings.CurrentSoundEffect;
+            if (holdSfxLeft)  v -= Mathf.CeilToInt(delta);
+            if (holdSfxRight) v += Mathf.CeilToInt(delta);
+            int clamped = Mathf.Clamp(v, 0, 100);
+            if (clamped != GameAudioSettings.CurrentSoundEffect)
+            {
+                GameAudioSettings.CurrentSoundEffect = clamped;
+                changed = true;
+            }
+        }
+
+        if (changed)
+        {
+            ApplyVolumes();
+            RefreshTexts();
+        }
+    }
+
+    // ===== UI Hook: 버튼/이벤트 트리거에서 호출 =====
+    // --- BGM ---
+    public void OnBgmArrowLeftDown()  { holdBgmLeft  = true;  }
+    public void OnBgmArrowLeftUp()    { holdBgmLeft  = false; }
+    public void OnBgmArrowRightDown() { holdBgmRight = true;  }
+    public void OnBgmArrowRightUp()   { holdBgmRight = false; }
+
+    // --- SFX ---
+    public void OnSfxArrowLeftDown()  { holdSfxLeft  = true;  }
+    public void OnSfxArrowLeftUp()    { holdSfxLeft  = false; }
+    public void OnSfxArrowRightDown() { holdSfxRight = true;  }
+    public void OnSfxArrowRightUp()   { holdSfxRight = false; }
+
+    // 단발 클릭(+/- 1씩)도 원하면 아래 두 함수 쓰면 됨
+    public void NudgeBgm(int delta)
+    {
+        GameAudioSettings.CurrentBackgroundMusic = Mathf.Clamp(GameAudioSettings.CurrentBackgroundMusic + delta, 0, 100);
+        ApplyVolumes(); RefreshTexts();
+    }
+    public void NudgeSfx(int delta)
+    {
+        GameAudioSettings.CurrentSoundEffect = Mathf.Clamp(GameAudioSettings.CurrentSoundEffect + delta, 0, 100);
+        ApplyVolumes(); RefreshTexts();
+    }
+
+    // ===== 볼륨 적용/표시 =====
+    private void ApplyVolumes()
+    {
+        float b = GameAudioSettings.Bgm01;
+        float s = GameAudioSettings.Sfx01;
+
+        if (backgroundMusicSources != null)
+        {
+            for (int i = 0; i < backgroundMusicSources.Length; i++)
+            {
+                var src = backgroundMusicSources[i];
+                if (!src) continue;
+                float baseVol = (bgmBaseVolumes != null && i < bgmBaseVolumes.Length) ? bgmBaseVolumes[i] : 1f;
+                src.volume = baseVol * b;
+            }
+        }
+        if (soundEffectSources != null)
+        {
+            for (int i = 0; i < soundEffectSources.Length; i++)
+            {
+                var src = soundEffectSources[i];
+                if (!src) continue;
+                float baseVol = (sfxBaseVolumes != null && i < sfxBaseVolumes.Length) ? sfxBaseVolumes[i] : 1f;
+                src.volume = baseVol * s;
+            }
+        }
+    }
+
+    private void RefreshTexts()
+    {
+        if (bgmValueText)
+            bgmValueText.text = $"BGM: {GameAudioSettings.CurrentBackgroundMusic:0}";
+        if (sfxValueText)
+            sfxValueText.text = $"SFX: {GameAudioSettings.CurrentSoundEffect:0}";
+    }
+
+    // ===== 패널 닫기 =====
     public void OnCloseSetting()
     {
-        settingPanel.transform.localPosition = settingPanelOrigin;
-        settingPanel.SetActive(false);
-
-        firstPanel.SetActive(true);
-        firstPanel.transform.localPosition = center;
+        if (settingPanel)
+        {
+            settingPanel.transform.localPosition = settingPanelOrigin;
+            settingPanel.SetActive(false);
+        }
+        if (firstPanel)
+        {
+            firstPanel.SetActive(true);
+            firstPanel.transform.localPosition = center;
+        }
     }
 }

@@ -5,7 +5,10 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class FirstCardLanguageManager : MonoBehaviour
-{
+{// ▶ 당근 클릭 차단용
+    private bool carrotHeld = false;                 // 누르고 있는 동안 true
+    private bool suppressNextDialogueClick = false;  // 이번 프레임(또는 다음 프레임) 첫 클릭 1회 무시
+
     private float blockByCarrotUntil = 0f;
     [SerializeField] private RectTransform[] neverAdvanceButtons; 
     [SerializeField] private RectTransform carrotButton;
@@ -45,6 +48,19 @@ public class FirstCardLanguageManager : MonoBehaviour
 
     // (선택) 언어별 버튼 활성화용
     [SerializeField] private FirstCardClickManager firstCardClickManager;
+// UI EventTrigger → PointerDown 에 연결
+    public void OnCarrotPointerDown()
+    {
+        carrotHeld = true;
+        suppressNextDialogueClick = true;               // 바로 다음 대화 클릭 1회 무시
+        blockByCarrotUntil = Time.unscaledTime + 0.3f;  // 여유 버퍼
+    }
+
+// UI EventTrigger → PointerUp 에 연결
+    public void OnCarrotPointerUp()
+    {
+        carrotHeld = false;
+    }
 
     void Start()
     {
@@ -75,14 +91,23 @@ public class FirstCardLanguageManager : MonoBehaviour
     {
         if (isDialogueEnded) return;
 
+        // ★ 당근으로 소비 지정된 클릭은 1회 무조건 무시
+        if (Input.GetMouseButtonDown(0) && suppressNextDialogueClick)
+        {
+            suppressNextDialogueClick = false;
+            return;
+        }
+
         if (Input.GetMouseButtonDown(0))
         {
             if (Time.unscaledTime < blockByCarrotUntil) return;
             if (IsPointerOverBlockedUI()) return;
-            if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow)) return;
-            if (ClickedCarrotThisFrame()) return;
 
-            Debug.Log($"[DEBUG][FirstCard] 클릭 수신. isTyping={isTyping}, isFullyShown={isFullyShown}, isLastLineShown={isLastLineShown}, idx={currentLineIndex}/{(dialogueLines!=null?dialogueLines.Length:0)}");
+            // ★ 당근을 누르고 있거나, 이번 프레임 포인터가 당근 위면 무시
+            if (carrotHeld || ClickedCarrotThisFrame()) return;
+
+            if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow)) return;
+
             OnDialogueClick();
         }
 
@@ -376,10 +401,25 @@ public class FirstCardLanguageManager : MonoBehaviour
     {
         if (carrotButton == null || !carrotButton.gameObject.activeInHierarchy) return false;
 
-        Vector2 screenPos = Input.mousePosition;
-        bool inside = RectTransformUtility.RectangleContainsScreenPoint(carrotButton, screenPos, uiCamera);
-        return inside;
+        // GraphicRaycaster로 실제 UI 히트 검사(투명 이미지 등 포착)
+        if (uiRaycaster != null && eventSystem != null)
+        {
+            var eventData = new PointerEventData(eventSystem) { position = Input.mousePosition };
+            var results = new System.Collections.Generic.List<RaycastResult>();
+            uiRaycaster.Raycast(eventData, results);
+
+            foreach (var r in results)
+            {
+                var tr = r.gameObject ? r.gameObject.transform : null;
+                if (tr != null && tr.IsChildOf(carrotButton.transform))
+                    return true;
+            }
+        }
+
+        // 보조: 영역 포함 체크(캔버스 카메라 필요 시 uiCamera 할당)
+        return RectTransformUtility.RectangleContainsScreenPoint(carrotButton, Input.mousePosition, uiCamera);
     }
+
 
     // ====== DEBUG HELPER ======
     bool SafeActivate(GameObject go)
