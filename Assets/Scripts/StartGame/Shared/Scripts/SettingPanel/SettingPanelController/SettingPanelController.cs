@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class SettingPanelController : MonoBehaviour
@@ -7,35 +8,43 @@ public class SettingPanelController : MonoBehaviour
     public GameObject settingPanel;
     public GameObject firstPanel;
 
+    [Header("Hold Options")]
+    public float unitsPerSecond = 7f;
+
+    [Tooltip("길게 누른 것으로 판정되는 시간(초)")]
+    public float longPressThreshold = 0.5f;
+
     public Vector3 settingPanelOrigin = new Vector3(-3100, 727, 0);
     public Vector3 center = Vector3.zero;
 
     [Header("Display (TMP)")]
-    public TextMeshProUGUI bgmValueText;  // "BGM: 50" 같은 표시
-    public TextMeshProUGUI sfxValueText;  // "SFX: 50" 같은 표시
+    public TextMeshProUGUI bgmValueText;  // "BGM: 50"
+    public TextMeshProUGUI sfxValueText;  // "SFX: 50"
 
-    [Header("Audio Groups (배열에 AudioSource들 넣기)")]
+    [Header("Audio Groups")]
     public AudioSource[] backgroundMusicSources;
     public AudioSource[] soundEffectSources;
 
-    [Header("Hold Adjust Options")]
-    [Tooltip("마우스를 누른 채 유지 시 초당 변화량")]
-    public float unitsPerSecond = 7f;
-
-    // 내부 상태 (홀드 여부)
-    private bool holdBgmLeft,  holdBgmRight;
-    private bool holdSfxLeft,  holdSfxRight;
-
-    // 각 소스의 '기본(베이스) 볼륨' 저장해서 스케일링
+    // 내부(베이스 볼륨)
     private float[] bgmBaseVolumes;
     private float[] sfxBaseVolumes;
 
+    // -------- BGM 상태 --------
+    private bool  holdingBgm = false;
+    private int   dirBgm = 0;              // -1=Left(감소), +1=Right(증가)
+    private float bgmHoldStartTime = 0f;   // 누른 시각
+    private bool  bgmThreshold = false;    // 임계(초) 경과 여부
+    private float bgmAccum = 0f;           // 연속 변화 누적(임계 통과 후만)
+
+    // -------- SFX 상태 --------
+    private bool  holdingSfx = false;
+    private int   dirSfx = 0;
+    private float sfxHoldStartTime = 0f;
+    private bool  sfxThreshold = false;
+    private float sfxAccum = 0f;
+
     void Awake()
     {
-        // 기본값 보정(최초 실행 시 50으로)
-        GameAudioSettings.CurrentBackgroundMusic = Mathf.Clamp(GameAudioSettings.CurrentBackgroundMusic, 0, 100);
-        GameAudioSettings.CurrentSoundEffect     = Mathf.Clamp(GameAudioSettings.CurrentSoundEffect,     0, 100);
-
         // 베이스 볼륨 백업
         if (backgroundMusicSources != null && backgroundMusicSources.Length > 0)
         {
@@ -50,42 +59,74 @@ public class SettingPanelController : MonoBehaviour
                 sfxBaseVolumes[i] = soundEffectSources[i] ? soundEffectSources[i].volume : 1f;
         }
 
-        // 첫 반영
+        // 범위 보정
+        MusicVolumeManager.SetBackgroundVolume(MusicVolumeManager.currentBackgroundVolume);
+        MusicVolumeManager.SetSoundEffectVolume(MusicVolumeManager.currentSoundEffectVolume);
+
         ApplyVolumes();
         RefreshTexts();
     }
 
     void Update()
     {
-        float delta = unitsPerSecond * Time.unscaledDeltaTime; // 일시정지 무시
-
         bool changed = false;
+        float dt = Time.unscaledDeltaTime;
 
-        // BGM 조절
-        if (holdBgmLeft || holdBgmRight)
+        // ---------- BGM ----------
+        if (holdingBgm)
         {
-            int v = GameAudioSettings.CurrentBackgroundMusic;
-            if (holdBgmLeft)  v -= Mathf.CeilToInt(delta);
-            if (holdBgmRight) v += Mathf.CeilToInt(delta);
-            int clamped = Mathf.Clamp(v, 0, 100);
-            if (clamped != GameAudioSettings.CurrentBackgroundMusic)
+            float elapsed = Time.unscaledTime - bgmHoldStartTime;
+
+            if (!bgmThreshold && elapsed >= longPressThreshold)
             {
-                GameAudioSettings.CurrentBackgroundMusic = clamped;
-                changed = true;
+                bgmThreshold = true;   // 임계 넘김 → 연속 변화 시작
+                bgmAccum = 0f;
+            }
+
+            if (bgmThreshold)
+            {
+                bgmAccum += unitsPerSecond * dt;          // 초당 unitsPerSecond 만큼
+                int steps = Mathf.FloorToInt(bgmAccum);   // 정수 스텝만 적용
+                if (steps > 0)
+                {
+                    int v = MusicVolumeManager.currentBackgroundVolume + dirBgm * steps;
+                    v = Mathf.Clamp(v, 0, 100);
+                    if (v != MusicVolumeManager.currentBackgroundVolume)
+                    {
+                        MusicVolumeManager.SetBackgroundVolume(v);
+                        changed = true;
+                    }
+                    bgmAccum -= steps; // 소수 누적 유지
+                }
             }
         }
 
-        // SFX 조절
-        if (holdSfxLeft || holdSfxRight)
+        // ---------- SFX ----------
+        if (holdingSfx)
         {
-            int v = GameAudioSettings.CurrentSoundEffect;
-            if (holdSfxLeft)  v -= Mathf.CeilToInt(delta);
-            if (holdSfxRight) v += Mathf.CeilToInt(delta);
-            int clamped = Mathf.Clamp(v, 0, 100);
-            if (clamped != GameAudioSettings.CurrentSoundEffect)
+            float elapsed = Time.unscaledTime - sfxHoldStartTime;
+
+            if (!sfxThreshold && elapsed >= longPressThreshold)
             {
-                GameAudioSettings.CurrentSoundEffect = clamped;
-                changed = true;
+                sfxThreshold = true;
+                sfxAccum = 0f;
+            }
+
+            if (sfxThreshold)
+            {
+                sfxAccum += unitsPerSecond * dt;
+                int steps = Mathf.FloorToInt(sfxAccum);
+                if (steps > 0)
+                {
+                    int v = MusicVolumeManager.currentSoundEffectVolume + dirSfx * steps;
+                    v = Mathf.Clamp(v, 0, 100);
+                    if (v != MusicVolumeManager.currentSoundEffectVolume)
+                    {
+                        MusicVolumeManager.SetSoundEffectVolume(v);
+                        changed = true;
+                    }
+                    sfxAccum -= steps;
+                }
             }
         }
 
@@ -96,36 +137,86 @@ public class SettingPanelController : MonoBehaviour
         }
     }
 
-    // ===== UI Hook: 버튼/이벤트 트리거에서 호출 =====
-    // --- BGM ---
-    public void OnBgmArrowLeftDown()  { holdBgmLeft  = true;  }
-    public void OnBgmArrowLeftUp()    { holdBgmLeft  = false; }
-    public void OnBgmArrowRightDown() { holdBgmRight = true;  }
-    public void OnBgmArrowRightUp()   { holdBgmRight = false; }
+    // ====== BGM: 포인터 다운/업 ======
+    public void OnBgmArrowLeftDown()  { StartHoldBgm(-1); }
+    public void OnBgmArrowRightDown() { StartHoldBgm(+1); }
+    public void OnBgmArrowLeftUp()    { EndHoldBgm();     }
+    public void OnBgmArrowRightUp()   { EndHoldBgm();     }
 
-    // --- SFX ---
-    public void OnSfxArrowLeftDown()  { holdSfxLeft  = true;  }
-    public void OnSfxArrowLeftUp()    { holdSfxLeft  = false; }
-    public void OnSfxArrowRightDown() { holdSfxRight = true;  }
-    public void OnSfxArrowRightUp()   { holdSfxRight = false; }
-
-    // 단발 클릭(+/- 1씩)도 원하면 아래 두 함수 쓰면 됨
-    public void NudgeBgm(int delta)
+    private void StartHoldBgm(int dir)
     {
-        GameAudioSettings.CurrentBackgroundMusic = Mathf.Clamp(GameAudioSettings.CurrentBackgroundMusic + delta, 0, 100);
-        ApplyVolumes(); RefreshTexts();
+        holdingBgm = true;
+        dirBgm = dir;
+        bgmHoldStartTime = Time.unscaledTime;
+        bgmThreshold = false;
+        bgmAccum = 0f;
     }
-    public void NudgeSfx(int delta)
+
+    private void EndHoldBgm()
     {
-        GameAudioSettings.CurrentSoundEffect = Mathf.Clamp(GameAudioSettings.CurrentSoundEffect + delta, 0, 100);
-        ApplyVolumes(); RefreshTexts();
+        if (holdingBgm)
+        {
+            float elapsed = Time.unscaledTime - bgmHoldStartTime;
+
+            // 임계 미만이면 떼는 순간 ±1만 적용
+            if (!bgmThreshold && elapsed < longPressThreshold)
+            {
+                int v = MusicVolumeManager.currentBackgroundVolume + dirBgm * 1;
+                v = Mathf.Clamp(v, 0, 100);
+                MusicVolumeManager.SetBackgroundVolume(v);
+                ApplyVolumes();
+                RefreshTexts();
+            }
+        }
+
+        holdingBgm = false;
+        bgmThreshold = false;
+        bgmAccum = 0f;
+        dirBgm = 0;
+    }
+
+    // ====== SFX: 포인터 다운/업 ======
+    public void OnSfxArrowLeftDown()  { StartHoldSfx(-1); }
+    public void OnSfxArrowRightDown() { StartHoldSfx(+1); }
+    public void OnSfxArrowLeftUp()    { EndHoldSfx();     }
+    public void OnSfxArrowRightUp()   { EndHoldSfx();     }
+
+    private void StartHoldSfx(int dir)
+    {
+        holdingSfx = true;
+        dirSfx = dir;
+        sfxHoldStartTime = Time.unscaledTime;
+        sfxThreshold = false;
+        sfxAccum = 0f;
+    }
+
+    private void EndHoldSfx()
+    {
+        if (holdingSfx)
+        {
+            float elapsed = Time.unscaledTime - sfxHoldStartTime;
+
+            if (!sfxThreshold && elapsed < longPressThreshold)
+            {
+                int v = MusicVolumeManager.currentSoundEffectVolume + dirSfx * 1;
+                v = Mathf.Clamp(v, 0, 100);
+                MusicVolumeManager.SetSoundEffectVolume(v);
+                ApplyVolumes();
+                RefreshTexts();
+            }
+        }
+
+        holdingSfx = false;
+        sfxThreshold = false;
+        sfxAccum = 0f;
+        dirSfx = 0;
     }
 
     // ===== 볼륨 적용/표시 =====
     private void ApplyVolumes()
     {
-        float b = GameAudioSettings.Bgm01;
-        float s = GameAudioSettings.Sfx01;
+        float b = MusicVolumeManager.BackgroundVolume01;
+        float s = MusicVolumeManager.SoundEffectVolume01;
 
         if (backgroundMusicSources != null)
         {
@@ -152,10 +243,12 @@ public class SettingPanelController : MonoBehaviour
     private void RefreshTexts()
     {
         if (bgmValueText)
-            bgmValueText.text = $"BGM: {GameAudioSettings.CurrentBackgroundMusic:0}";
+            bgmValueText.text = MusicVolumeManager.currentBackgroundVolume.ToString();
+
         if (sfxValueText)
-            sfxValueText.text = $"SFX: {GameAudioSettings.CurrentSoundEffect:0}";
+            sfxValueText.text = MusicVolumeManager.currentSoundEffectVolume.ToString();
     }
+
 
     // ===== 패널 닫기 =====
     public void OnCloseSetting()

@@ -4,52 +4,50 @@ using TMPro;
 using System.Collections;
 using UnityEngine.Video;
 
-
 public class DialogueManager3_5 : MonoBehaviour
 {
-    [Header("ææÓ ø¿∫Í¡ß∆Æ")]
+    [Header("Ïñ∏Ïñ¥ Ïª®ÌÖåÏù¥ÎÑà")]
     public RectTransform Korean_Above, Korean_Story;
     public RectTransform English_Above, English_Story;
     public RectTransform Japanese_Above, Japanese_Story;
     public RectTransform Chinese_Above, Chinese_Story;
     public RectTransform Kaza_Above, Kaza_Story;
 
-    [Header("∫Òµø¿ ¿Áª˝ Ω√ ∫Ò»∞º∫»≠µ… UI")]
+    [Header("ÏãúÏûë ÌôîÎ©¥ÏóêÏÑú ÎπÑÌôúÏÑ±ÌôîÌï† UI")]
     public GameObject CarrotButton;
     public GameObject DialogueImage;
     public GameObject FirstPanel;
     public GameObject SettingPanel;
 
-
-    [Header("UI ø‰º“")]
+    [Header("UI")]
     public TextMeshProUGUI aboveText;
     public TextMeshProUGUI storyText;
     public Button nextButton;
     public VideoPlayer endingVideoPlayer;
 
-    [Header("πË∞Ê ¿ÃπÃ¡ˆ ø¿∫Í¡ß∆Æ")]
+    [Header("Î∞∞Í≤Ω Ïò§Î∏åÏ†ùÌä∏")]
     public GameObject Real_bg1Obj;
     public GameObject Real_bg2Obj;
     public GameObject BlackImageObj;
     public GameObject WhiteImageObj;
     public GameObject BackGroundObj;
 
-    [Header("ƒ≥∏Ø≈Õ ¿ÃπÃ¡ˆ ø¿∫Í¡ß∆Æ")]
+    [Header("Ï∫êÎ¶≠ÌÑ∞ Ïò§Î∏åÏ†ùÌä∏")]
     public GameObject Eco_real6Obj, Eco_real_defaultObj, Eco_real5Obj, Eco_real2Obj;
     public GameObject Eco_real3Obj, Eco_laughObj, Eco_banjunObj, Eco_real4Obj, Pan_realObj;
     public GameObject Eco_real9Obj;
 
-    [Header("≈∏¿Ã«Œ º”µµ")]
+    [Header("ÌÉÄÏù¥Ìïë")]
     public float typingSpeed = 0.04f;
 
-    [Header("ªÁøÓµÂ")]
+    [Header("Ïò§ÎîîÏò§")]
     public AudioSource BGMSource, BreathSource, BirdSource, FestivalSource;
     public AudioSource DoorGoriSource, DoorOpenSource, FluteSource, FallSoundSource;
 
-    [Header("∆‰¿ÃµÂ ¿ÃπÃ¡ˆ")]
+    [Header("ÌéòÏù¥Îìú Ïù¥ÎØ∏ÏßÄ")]
     public Image whiteImage;
 
-    [Header("¥ÎªÁ")]
+    [Header("ÎåÄÏÇ¨/ÌôîÏûê")]
     public LanguageCollector3_5 languageCollector;
     private string[] lines;
     private int index = 0;
@@ -57,12 +55,27 @@ public class DialogueManager3_5 : MonoBehaviour
     private GameObject[] characterObjs;
     private GameObject[] backgroundObjs;
 
-    
+    // ===== Ìó¨Ìçº: Ïñ∏Ïñ¥ ÌëúÏ§ÄÌôî =====
+    private string Lang => Normalize(LanguageManager.GetLanguage());
+    private static string Normalize(string raw)
+    {
+        string s = (raw ?? "").Trim().ToLowerInvariant();
+        if (s.StartsWith("en")) return "english";
+        if (s.StartsWith("ko")) return "korean";
+        if (s.StartsWith("ja")) return "japanese";
+        if (s.StartsWith("zh")) return "chinese";
+        if (s.StartsWith("kk") || s.Contains("kazakh") || s.Contains("kaza")) return "kazakh";
+        return s;
+    }
+
     private void Awake()
     {
-        nextButton.onClick.RemoveAllListeners();
-        nextButton.onClick.AddListener(OnClickNext);
-        nextButton.gameObject.SetActive(false);
+        if (nextButton)
+        {
+            nextButton.onClick.RemoveAllListeners();
+            nextButton.onClick.AddListener(OnClickNext);
+            nextButton.gameObject.SetActive(false);
+        }
 
         LanguageManager.Initialize();
         LanguageManager.OnLanguageChanged += OnLanguageChanged;
@@ -76,8 +89,7 @@ public class DialogueManager3_5 : MonoBehaviour
         };
 
         backgroundObjs = new[] {
-            BackGroundObj, BlackImageObj, WhiteImageObj,
-            Real_bg1Obj, Real_bg2Obj
+            BackGroundObj, BlackImageObj, WhiteImageObj, Real_bg1Obj, Real_bg2Obj
         };
 
         SetupLanguageUI();
@@ -86,8 +98,81 @@ public class DialogueManager3_5 : MonoBehaviour
         ShowCurrentDialogue();
     }
 
+    private void OnDestroy()
+    {
+        LanguageManager.OnLanguageChanged -= OnLanguageChanged;
+    }
+
+    // ===== Ïñ∏Ïñ¥ Ïª®ÌÖåÏù¥ÎÑà & TMP Î∞îÏù∏Îî© =====
+    private void SetupLanguageUI()
+    {
+        var all = new[] {
+            Korean_Above, Korean_Story,
+            English_Above, English_Story,
+            Japanese_Above, Japanese_Story,
+            Chinese_Above, Chinese_Story,
+            Kaza_Above, Kaza_Story
+        };
+        foreach (var rt in all) rt?.gameObject.SetActive(false);
+
+        RectTransform above = Korean_Above, story = Korean_Story;
+        switch (Lang)
+        {
+            case "english":  above = English_Above;  story = English_Story;  break;
+            case "japanese": above = Japanese_Above; story = Japanese_Story; break;
+            case "chinese":  above = Chinese_Above;  story = Chinese_Story;  break;
+            case "kazakh":   above = Kaza_Above;     story = Kaza_Story;     break;
+            // default: korean
+        }
+
+        if (above != null && story != null)
+        {
+            above.gameObject.SetActive(true);
+            story.gameObject.SetActive(true);
+
+            // ÏûêÏãù Ïù¥Î¶ÑÏù¥ "AboveText"/"StoryText"ÎùºÎ©¥ Ïö∞ÏÑ† ÏÇ¨Ïö©, ÏïÑÎãàÎ©¥ Ï≤´ TMPUGUI
+            var aboveTf = above.Find("AboveText");
+            var storyTf = story.Find("StoryText");
+            aboveText = (aboveTf ? aboveTf.GetComponent<TextMeshProUGUI>() : above.GetComponentInChildren<TextMeshProUGUI>(true));
+            storyText = (storyTf ? storyTf.GetComponent<TextMeshProUGUI>() : story.GetComponentInChildren<TextMeshProUGUI>(true));
+        }
+    }
+
+    private void LoadLinesForCurrentLanguage()
+    {
+        if (languageCollector == null)
+        {
+            lines = new[] { "" };
+            return;
+        }
+
+        switch (Lang)
+        {
+            case "korean":  lines = languageCollector.KoreanLines3_5;  break;
+            case "english": lines = languageCollector.EnglishLines3_5; break;
+            case "japanese":lines = languageCollector.JapaneseLines3_5;break;
+            case "chinese": lines = languageCollector.ChineseLines3_5; break;
+            case "kazakh":  lines = languageCollector.KazaLines3_5;    break;
+            default:        lines = languageCollector.KoreanLines3_5;  break;
+        }
+
+        if (lines == null || lines.Length == 0)
+            lines = new[] { "" };
+    }
+
+    private void OnLanguageChanged(string newLang)
+    {
+        SetupLanguageUI();
+        LoadLinesForCurrentLanguage();
+        StopAllCoroutines();
+        index = 0;
+        ShowCurrentDialogue();
+    }
+
+    // ===== ÌëúÏãú Î£®Ìã¥ =====
     private void ShowCurrentDialogue()
     {
+        // Ìö®Í≥ºÏùå Ï†ïÎ¶¨
         FestivalSource?.Stop();
         DoorGoriSource?.Stop();
         DoorOpenSource?.Stop();
@@ -97,48 +182,38 @@ public class DialogueManager3_5 : MonoBehaviour
         ApplyBackground(index);
         ApplyCharacter(index);
 
-        // aboveline √≥∏Æ + index==9 ¡ÔΩ√ ∏Æ≈œ
+        // ÌôîÏûêÎ™Ö ÌëúÏãú
         if (index == 9)
         {
-            aboveText.text = "";
-            storyText.text = "";
-            nextButton.gameObject.SetActive(true);
+            // Î¨¥Ïùå Ïª∑: Ï†úÎ™©/Î≥∏Î¨∏ ÎπÑÏõÄ
+            if (aboveText) aboveText.text = "";
+            if (storyText) storyText.text = "";
+            nextButton?.gameObject.SetActive(true);
             return;
         }
         else if (index == 11 || index == 12)
         {
-            aboveText.text = "???";
-        }
-        else if (index == 0 || index == 1 || index == 2 || index == 3 ||
-                 index == 4 || index == 5 || index == 6 || index == 7 ||
-                 index == 8 || index == 10)
-        {
-            aboveText.text = "ø°ƒ⁄";
+            if (aboveText) aboveText.text = "???";
         }
         else
         {
-            aboveText.text = "";
+            if (aboveText) aboveText.text = GetSpeakerNameForIndex(index);
         }
 
-        // ¥ÎªÁ ≈ÿΩ∫∆Æ º≥¡§ (¿Ã∏ß ¡¶∞≈)
-        string rawLine = lines[index];
-        string displayLine = rawLine;
-        int colonIdx = rawLine.IndexOf(':');
-        if (colonIdx >= 0 && colonIdx < rawLine.Length - 1)
-            displayLine = rawLine.Substring(colonIdx + 1).Trim();
+        // Î≥∏Î¨∏(ÏΩúÎ°† Î∂ÑÎ¶¨)
+        string rawLine = (lines != null && index >= 0 && index < lines.Length) ? lines[index] : "";
+        string displayLine = StripPrefixBeforeColon(rawLine);
 
-        // ≈∏¿Ã«Œ ƒ⁄∑Á∆æ («— π¯∏∏)
-        if (typingCoroutine != null)
-            StopCoroutine(typingCoroutine);
+        if (typingCoroutine != null) StopCoroutine(typingCoroutine);
         typingCoroutine = StartCoroutine(TypeText(displayLine));
 
-        // ªÁøÓµÂ/ø¨√‚
+        // SFX Ìä∏Î¶¨Í±∞
         if (index == 3) DoorGoriSource?.Play();
 
         if (index == 10)
         {
             FluteSource?.Play();
-            nextButton.gameObject.SetActive(false);
+            nextButton?.gameObject.SetActive(false);
             StartCoroutine(PlayFluteThenFall());
         }
 
@@ -158,70 +233,91 @@ public class DialogueManager3_5 : MonoBehaviour
         }
     }
 
+    private string StripPrefixBeforeColon(string s)
+    {
+        if (string.IsNullOrEmpty(s)) return "";
+        int i = s.IndexOf(':');
+        if (i >= 0 && i < s.Length - 1) return s.Substring(i + 1).Trim();
+        return s;
+    }
+
+    // Ïù∏Îç±Ïä§ ‚Üí ÌôîÏûêÎ™Ö(ÌòÑÏßÄÌôî)
+    private string GetSpeakerNameForIndex(int idx)
+    {
+        // 9: Î¨¥Ïùå Ïª∑(Ïù¥ÎØ∏ Ï≤òÎ¶¨), 11~12: ??? (Ïù¥ÎØ∏ Ï≤òÎ¶¨)
+        // ÎÇòÎ®∏ÏßÄ Í∑úÏπô: ÎåÄÎ∂ÄÎ∂Ñ ÏóêÏΩî, 9Îßå Ìåê
+        if (idx == 9) return GetNamePan();
+        return GetNameEcho();
+    }
+
+    private string GetNameEcho()
+    {
+        var t = languageCollector ? languageCollector.GetAboveTable() : null;
+        if (t != null && t.Length > 0 && !string.IsNullOrEmpty(t[0])) return t[0];
+        return "Echo";
+    }
+
+    private string GetNamePan()
+    {
+        var t = languageCollector ? languageCollector.GetAboveTable() : null;
+        if (t != null && t.Length > 1 && !string.IsNullOrEmpty(t[1])) return t[1];
+        return "Pan";
+    }
+
+    private string GetNameNarke()
+    {
+        var t = languageCollector ? languageCollector.GetAboveTable() : null;
+        if (t != null && t.Length > 2 && !string.IsNullOrEmpty(t[2])) return t[2];
+        return "Narke";
+    }
 
     private void ApplyBackground(int idx)
     {
-        foreach (var bg in backgroundObjs)
-            if (bg != null) bg.SetActive(false);
+        foreach (var bg in backgroundObjs) if (bg) bg.SetActive(false);
 
-        if (idx == 7)
-            BlackImageObj?.SetActive(true);
-        else if (idx == 11 || idx == 12)
-            Real_bg2Obj?.SetActive(true);
-        else if ((idx >= 1 && idx <= 6) || idx == 8 || idx == 9 || idx == 10)
-            Real_bg1Obj?.SetActive(true);
-        else
-            Real_bg1Obj?.SetActive(true);
+        if (idx == 7) BlackImageObj?.SetActive(true);
+        else if (idx == 11 || idx == 12) Real_bg2Obj?.SetActive(true);
+        else if ((idx >= 1 && idx <= 6) || idx == 8 || idx == 9 || idx == 10) Real_bg1Obj?.SetActive(true);
+        else Real_bg1Obj?.SetActive(true);
     }
 
     private void ApplyCharacter(int idx)
     {
-        foreach (var obj in characterObjs)
-            if (obj != null) obj.SetActive(false);
+        foreach (var obj in characterObjs) if (obj) obj.SetActive(false);
 
         switch (idx)
         {
             case 0:
             case 2:
             case 10:
-                Eco_real6Obj?.SetActive(true);
-                break;
+                Eco_real6Obj?.SetActive(true);  break;
             case 1:
-                Eco_real_defaultObj?.SetActive(true);
-                break;
+                Eco_real_defaultObj?.SetActive(true); break;
             case 3:
-                Eco_real5Obj?.SetActive(true);
-                break;
+                Eco_real5Obj?.SetActive(true);  break;
             case 4:
-                Eco_real2Obj?.SetActive(true);
-                break;
+                Eco_real2Obj?.SetActive(true);  break;
             case 5:
-                Eco_real3Obj?.SetActive(true);
-                break;
+                Eco_real3Obj?.SetActive(true);  break;
             case 6:
-                Eco_real9Obj?.SetActive(true);
-                break;
+                Eco_real9Obj?.SetActive(true);  break;
             case 7:
-                Eco_banjunObj?.SetActive(true);
-                break;
+                Eco_banjunObj?.SetActive(true); break;
             case 8:
-                Eco_real4Obj?.SetActive(true);
-                break;
+                Eco_real4Obj?.SetActive(true);  break;
             case 9:
-                if (Pan_realObj != null)
-                {
-                    Pan_realObj.SetActive(true);
-                }
-                break;
-
+                Pan_realObj?.SetActive(true);   break;
             case 11:
             case 12:
+                // none
                 break;
         }
     }
 
     private IEnumerator TypeText(string fullText)
     {
+        if (storyText == null) yield break;
+
         storyText.text = "";
         foreach (char c in fullText)
         {
@@ -229,7 +325,7 @@ public class DialogueManager3_5 : MonoBehaviour
             yield return new WaitForSeconds(typingSpeed);
         }
 
-        // ªÁøÓµÂ ¿Ã∫•∆Æ √≥∏Æ
+        // ÌÉÄÏù¥Ìïë ÏôÑÎ£å Ïù¥Î≤§Ìä∏
         if (index == 1 && FestivalSource != null)
         {
             FestivalSource.loop = false;
@@ -241,34 +337,29 @@ public class DialogueManager3_5 : MonoBehaviour
         }
         else if (index == 12)
         {
-            // 4∞°¡ˆ ø¿∫Í¡ß∆Æ ∫Ò»∞º∫»≠
+            // Ï£ºÏöî UI ÎπÑÌôúÏÑ±Ìôî
             CarrotButton?.SetActive(false);
             DialogueImage?.SetActive(false);
             FirstPanel?.SetActive(false);
             SettingPanel?.SetActive(false);
 
-            // ¥ÎªÁ √‚∑¬ øœ∑· »ƒ WhiteImageObj ∆‰¿ÃµÂ¿Œ
+            // Ìù∞ÏÉâ ÌéòÏù¥Îìú
             yield return StartCoroutine(FadeToImage(WhiteImageObj, 3f));
-
-            // ∆‰¿ÃµÂ¿Œ øœ∑· »ƒ 2√  ¥Î±‚
             yield return new WaitForSeconds(2f);
 
-            // µøøµªÛ ¿Áª˝
+            // ÏóîÎî© ÏòÅÏÉÅ Ïû¨ÏÉù
             PlayEndingVideo();
         }
 
-
         if (index != 10)
-        {
-            nextButton.gameObject.SetActive(true);
-        }
+            nextButton?.gameObject.SetActive(true);
     }
 
     private void PlayEndingVideo()
     {
         if (endingVideoPlayer == null)
         {
-            Debug.LogWarning("endingVideoPlayer∞° º≥¡§µ«æÓ ¿÷¡ˆ æ Ω¿¥œ¥Ÿ!");
+            Debug.LogWarning("endingVideoPlayer Í∞Ä ÏÑ§Ï†ïÎêòÏßÄ ÏïäÏïòÏäµÎãàÎã§!");
             return;
         }
 
@@ -277,28 +368,22 @@ public class DialogueManager3_5 : MonoBehaviour
         FirstPanel?.SetActive(false);
         SettingPanel?.SetActive(false);
 
-
         endingVideoPlayer.gameObject.SetActive(true);
         endingVideoPlayer.Play();
-
-        // « ø‰ Ω√ ∫Òµø¿ ¡æ∑· ƒ›πÈ µÓ∑œ
         endingVideoPlayer.loopPointReached += OnVideoFinished;
     }
 
     private void OnVideoFinished(VideoPlayer vp)
     {
-        Debug.Log("∫Òµø¿ ¿Áª˝¿Ã ¡æ∑·µ«æ˙Ω¿¥œ¥Ÿ.");
-
-        // µøøµªÛ ¡æ∑· »ƒ √≥∏Æ « ø‰ Ω√ ø©±‚ø° ¿€º∫
-        // øπ: ¥Ÿ¿Ω æ¿ ∑ŒµÂ, UI »∞º∫»≠ µÓ
+        Debug.Log("ÏóîÎî© ÏòÅÏÉÅÏù¥ Ï¢ÖÎ£åÎêòÏóàÏäµÎãàÎã§.");
+        // ÌïÑÏöî Ïãú ÌõÑÏÜç Ï≤òÎ¶¨
     }
-
 
     public void OnClickNext()
     {
-        nextButton.gameObject.SetActive(false);
+        nextButton?.gameObject.SetActive(false);
         index++;
-        if (index >= lines.Length) return;
+        if (index >= (lines?.Length ?? 0)) return;
         ShowCurrentDialogue();
     }
 
@@ -316,92 +401,31 @@ public class DialogueManager3_5 : MonoBehaviour
             yield return new WaitWhile(() => FallSoundSource.isPlaying);
         }
 
-        yield return StartCoroutine(FadeToImage(Real_bg2Obj, 3f)); // πË∞Ê ∆‰¿ÃµÂ¿Œ
-
-        index++; // ¿⁄µø ¡¯«‡
-        ShowCurrentDialogue(); // ¥Ÿ¿Ω ¥ÎªÁ √‚∑¬ (case 11)
+        yield return StartCoroutine(FadeToImage(Real_bg2Obj, 3f)); // Îã§Ïùå Ïû•Î©¥ ÌéòÏù¥Îìú
+        index++;
+        ShowCurrentDialogue(); // case 11
     }
 
     private IEnumerator FadeToImage(GameObject targetObj, float duration)
     {
         if (targetObj == null) yield break;
 
-        targetObj.SetActive(true);  // »∞º∫»≠ ∏’¿˙
+        targetObj.SetActive(true);
         var image = targetObj.GetComponent<Image>();
         if (image == null) yield break;
 
-        Color color = image.color;
-        color.a = 0f;
-        image.color = color;
+        Color start = image.color;
+        start.a = 0f;
+        image.color = start;
 
         float t = 0f;
         while (t < duration)
         {
             t += Time.deltaTime;
-            float alpha = Mathf.Lerp(0f, 1f, t / duration);
-            image.color = new Color(color.r, color.g, color.b, alpha);
+            float a = Mathf.Lerp(0f, 1f, t / duration);
+            image.color = new Color(start.r, start.g, start.b, a);
             yield return null;
         }
-    }
-
-
-    private void SetupLanguageUI()
-    {
-        var all = new[] {
-            Korean_Above, Korean_Story,
-            English_Above, English_Story,
-            Japanese_Above, Japanese_Story,
-            Chinese_Above, Chinese_Story,
-            Kaza_Above, Kaza_Story
-        };
-        foreach (var rt in all)
-            rt?.gameObject.SetActive(false);
-
-        string lang = LanguageManager.GetLanguage()?.Trim().ToLower();
-        RectTransform above = Korean_Above, story = Korean_Story;
-        switch (lang)
-        {
-            case "english": above = English_Above; story = English_Story; break;
-            case "japanese": above = Japanese_Above; story = Japanese_Story; break;
-            case "chinese": above = Chinese_Above; story = Chinese_Story; break;
-            case "kazahustan":
-            case "kaza": above = Kaza_Above; story = Kaza_Story; break;
-        }
-        if (above != null && story != null)
-        {
-            above.gameObject.SetActive(true);
-            story.gameObject.SetActive(true);
-            above.anchoredPosition = new Vector2(-750f, 160f);
-            story.anchoredPosition = new Vector2(-250f, -20f);
-        }
-    }
-
-    private void LoadLinesForCurrentLanguage()
-    {
-        string lang = LanguageManager.GetLanguage()?.Trim().ToLower();
-        switch (lang)
-        {
-            case "korean": lines = languageCollector.KoreanLines3_5; break;
-            case "english": lines = languageCollector.EnglishLines3_5; break;
-            case "japanese": lines = languageCollector.JapaneseLines3_5; break;
-            case "chinese": lines = languageCollector.ChineseLines3_5; break;
-            case "kazahustan":
-            case "kaza": lines = languageCollector.KazaLines3_5; break;
-            default: lines = languageCollector.KoreanLines3_5; break;
-        }
-    }
-
-    private void OnLanguageChanged(string newLang)
-    {
-        LoadLinesForCurrentLanguage();
-        StopAllCoroutines();
-        index = 0;
-        ShowCurrentDialogue();
-    }
-
-    private void OnDestroy()
-    {
-        LanguageManager.OnLanguageChanged -= OnLanguageChanged;
     }
 
     private void Update()
@@ -415,30 +439,24 @@ public class DialogueManager3_5 : MonoBehaviour
             case 4:
             case 5:
             case 6:
-                if (BGMSource != null && !BGMSource.isPlaying)
-                    BGMSource.Play();
+                if (BGMSource != null && !BGMSource.isPlaying) BGMSource.Play();
                 break;
 
             case 7:
-                if (BGMSource != null && BGMSource.isPlaying)
-                    BGMSource.Stop(); // 7ø°º≠¥¬ BGM ¡ﬂ¡ˆ
+                if (BGMSource != null && BGMSource.isPlaying) BGMSource.Stop();
                 break;
 
             case 8:
-                if (BreathSource != null && !BreathSource.isPlaying)
-                    BreathSource.Play();
+                if (BreathSource != null && !BreathSource.isPlaying) BreathSource.Play();
                 break;
 
             case 9:
-                if (BGMSource != null && BGMSource.isPlaying)
-                    BGMSource.Stop();
-                if (BreathSource != null && BreathSource.isPlaying)
-                    BreathSource.Stop();
+                if (BGMSource != null && BGMSource.isPlaying) BGMSource.Stop();
+                if (BreathSource != null && BreathSource.isPlaying) BreathSource.Stop();
                 break;
 
             case 10:
-                if (BreathSource != null && !BreathSource.isPlaying)
-                    BreathSource.Play();
+                if (BreathSource != null && !BreathSource.isPlaying) BreathSource.Play();
                 break;
 
             case 11:
@@ -448,13 +466,9 @@ public class DialogueManager3_5 : MonoBehaviour
                     BirdSource.loop = true;
                     BirdSource.Play();
                 }
-
                 if (index == 12 && FestivalSource != null && FestivalSource.isPlaying)
-                {
-                    FestivalSource.Stop(); // 12ø°º≠ Festival ∏ÿ√„
-                }
+                    FestivalSource.Stop();
                 break;
         }
-
     }
 }

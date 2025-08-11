@@ -71,21 +71,21 @@ public class DialogueManagerStage1_1 : MonoBehaviour
 
     private void LoadLinesForCurrentLanguage()
     {
-        string lang = LanguageManager.GetLanguage()?.Trim().ToLower();
+        string lang = LanguageManager.GetLanguage()?.Trim().ToLowerInvariant();
         switch (lang)
         {
-            case "korean": lines = languageCollector.KoreanLines1_1; break;
-            case "english": lines = languageCollector.EnglishLines1_1; break;
+            case "korean":   lines = languageCollector.KoreanLines1_1;   break;
+            case "english":  lines = languageCollector.EnglishLines1_1;  break;
             case "japanese": lines = languageCollector.JapaneseLines1_1; break;
-            case "chinese": lines = languageCollector.ChineseLines1_1; break;
-            case "kazahustan":
-            case "kaza": lines = languageCollector.KazaLines1_1; break;
+            case "chinese":  lines = languageCollector.ChineseLines1_1;  break;
+            case "kazakh":   lines = languageCollector.KazaLines1_1;     break; // ✅ 표준키
             default:
-                Debug.LogWarning($"Unknown language '{lang}', default to Korean.");
+                Debug.LogWarning($"Unknown language: {lang}. Fallback to Korean.");
                 lines = languageCollector.KoreanLines1_1;
-            break;
+                break;
         }
     }
+
 
     private IEnumerator ShowLineSequence()
     {
@@ -257,34 +257,32 @@ public class DialogueManagerStage1_1 : MonoBehaviour
             Chinese_Above, Chinese_Story,
             Kaza_Above, Kaza_Story
         };
-        foreach (var rt in all)
-            rt?.gameObject.SetActive(false);
+        foreach (var rt in all) rt?.gameObject.SetActive(false);
 
-        string lang = LanguageManager.GetLanguage()?.Trim().ToLower();
+        string lang = LanguageManager.GetLanguage()?.Trim().ToLowerInvariant();
         RectTransform above = Korean_Above, story = Korean_Story;
 
         switch (lang)
         {
-            case "english":    above = English_Above;   story = English_Story;   break;
-            case "japanese":   above = Japanese_Above;  story = Japanese_Story;  break;
-            case "chinese":    above = Chinese_Above;   story = Chinese_Story;   break;
-            case "kazakhstan": // <- 오탈자 수정 권장: "kazahustan" -> "kazakhstan"
-            case "kaza":       above = Kaza_Above;      story = Kaza_Story;      break;
+            case "english":  above = English_Above;  story = English_Story;  break;
+            case "japanese": above = Japanese_Above; story = Japanese_Story; break;
+            case "chinese":  above = Chinese_Above;  story = Chinese_Story;  break;
+            case "kazakh":   above = Kaza_Above;     story = Kaza_Story;     break; // ✅ 표준키
             // default: Korean
         }
 
-        if (above != null && story != null)
+        if (above && story)
         {
             above.gameObject.SetActive(true);
             story.gameObject.SetActive(true);
             above.anchoredPosition = AboPo;
             story.anchoredPosition = StoPo;
 
-            // 핵심: 현재 활성화된 언어 블록에서 TMP 텍스트를 다시 물려줌
             aboveText = above.GetComponentInChildren<TextMeshProUGUI>(true);
             storyText = story.GetComponentInChildren<TextMeshProUGUI>(true);
         }
     }
+
 
 
     private void OnLanguageChanged(string newLang)

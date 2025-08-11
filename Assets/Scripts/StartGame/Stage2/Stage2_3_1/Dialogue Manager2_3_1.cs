@@ -59,16 +59,23 @@ public class DialogueManager2_3_1 : MonoBehaviour
 
     // ===== 언어 헬퍼 =====
     private string CurrentLanguage => NormalizeLang(LanguageManager.GetLanguage());
+
     private string NormalizeLang(string raw)
     {
         string s = (raw ?? "korean").Trim().ToLowerInvariant();
+
         if (s.StartsWith("en")) return "english";
         if (s.StartsWith("ko")) return "korean";
         if (s.StartsWith("ja")) return "japanese";
         if (s.StartsWith("zh")) return "chinese";
-        if (s.StartsWith("ka") || s.Contains("kaza") || s.Contains("kazah")) return "kaza";
+
+        // ✅ "kazakh" 표준키로 귀결
+        if (s.StartsWith("kk") || s.Contains("kazakh") || s.Contains("kaza") || s.Contains("kazah"))
+            return "kazakh";
+
         return "korean";
     }
+
 
     private void Awake()
     {
@@ -123,10 +130,26 @@ public class DialogueManager2_3_1 : MonoBehaviour
             lines = new string[0];
             return;
         }
-        lines = languageCollector.GetLines();
-        if (lines == null || lines.Length == 0)
-            lines = new[] { " " };
+
+        string lang = CurrentLanguage; // ← 위에서 표준화된 값 사용
+        switch (lang)
+        {
+            case "korean":   lines = languageCollector.KoreanLines2_3_1;  break;
+            case "english":  lines = languageCollector.EnglishLines2_3_1; break;
+            case "japanese": lines = languageCollector.JapaneseLines2_3_1;break;
+            case "chinese":  lines = languageCollector.ChineseLines2_3_1; break;
+            case "kazakh":   lines = languageCollector.KazaLines2_3_1;    break; // ✅
+            default:
+                Debug.LogWarning($"[2_3_1] Unknown lang '{lang}', fallback=Korean");
+                lines = languageCollector.KoreanLines2_3_1;
+                break;
+        }
+
+        if (lines == null || lines.Length == 0) lines = new[] { "" };
+
+        Debug.Log($"[2_3_1] Loaded lines -> lang={lang}, len={lines.Length}");
     }
+
 
     // ===== 한 줄 표시 시퀀스 =====
     private IEnumerator ShowLineSequence()
@@ -252,9 +275,9 @@ public class DialogueManager2_3_1 : MonoBehaviour
             case "english":  above = English_Above;  story = English_Story;  break;
             case "japanese": above = Japanese_Above; story = Japanese_Story; break;
             case "chinese":  above = Chinese_Above;  story = Chinese_Story;  break;
-            case "kaza":     above = Kaza_Above;     story = Kaza_Story;     break;
-            // default: korean
+            case "kazakh":   above = Kaza_Above;     story = Kaza_Story;     break; // ✅
         }
+
 
         if (above != null && story != null)
         {
@@ -297,7 +320,8 @@ public class DialogueManager2_3_1 : MonoBehaviour
             case "english": targets = englishObjects; break;
             case "japanese":targets = japaneseObjects;break;
             case "chinese": targets = chineseObjects; break;
-            case "kaza":    targets = kazaObjects;    break;
+            case "kazakh": targets = kazaObjects; break; // 또는 target = kazaObjects;
+
         }
         if (targets == null) return;
 
@@ -341,7 +365,8 @@ public class DialogueManager2_3_1 : MonoBehaviour
             case "english": target = englishObjects; break;
             case "japanese":target = japaneseObjects;break;
             case "chinese": target = chineseObjects; break;
-            case "kaza":    target = kazaObjects;    break;
+            case "kazakh": target = kazaObjects; break; // 또는 target = kazaObjects;
+
         }
         if (target != null)
             foreach (var obj in target)
@@ -369,16 +394,18 @@ public class DialogueManager2_3_1 : MonoBehaviour
     private string GetNameEcho()
     {
         if (languageCollector == null) return "Echo";
+
         return CurrentLanguage switch
         {
-            "korean"   => SafeName(languageCollector.KoreanAbove2_3_1,   0, "에코"),
-            "english"  => SafeName(languageCollector.EnglishAbove2_3_1,  0, "Echo"),
-            "japanese" => SafeName(languageCollector.JapaneseAbove2_3_1, 0, "エコー"),
-            "chinese"  => SafeName(languageCollector.ChineseAbove2_3_1,  0, "艾可"),
-            "kaza"     => SafeName(languageCollector.KazaAbove2_3_1,     0, "Эко"),
-            _          => "Echo"
+            "korean"  => SafeName(languageCollector.KoreanAbove2_3_1,   0, "에코"),
+            "english" => SafeName(languageCollector.EnglishAbove2_3_1,  0, "Echo"),
+            "japanese"=> SafeName(languageCollector.JapaneseAbove2_3_1, 0, "エコー"),
+            "chinese" => SafeName(languageCollector.ChineseAbove2_3_1,  0, "艾可"),
+            "kazakh"  => SafeName(languageCollector.KazaAbove2_3_1,     0, "Эко"), // ✅
+            _         => "Echo"
         };
     }
+
 
     private string GetNameNarke()
     {
@@ -389,7 +416,7 @@ public class DialogueManager2_3_1 : MonoBehaviour
             "english"  => SafeName(languageCollector.EnglishAbove2_3_1,  2, "Narke"),
             "japanese" => SafeName(languageCollector.JapaneseAbove2_3_1, 2, "ナルケ"),
             "chinese"  => SafeName(languageCollector.ChineseAbove2_3_1,  2, "纳尔克"),
-            "kaza"     => SafeName(languageCollector.KazaAbove2_3_1,     2, "Нарыке"),
+            "kazah"     => SafeName(languageCollector.KazaAbove2_3_1,     2, "Нарыке"),
             _          => "Narke"
         };
     }

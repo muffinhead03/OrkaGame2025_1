@@ -55,8 +55,10 @@ public class DialogueManager2_4 : MonoBehaviour
         if (s.StartsWith("ko")) return "korean";
         if (s.StartsWith("ja")) return "japanese";
         if (s.StartsWith("zh")) return "chinese";
-        if (s.StartsWith("ka") || s.Contains("kaza") || s.Contains("kazah")) return "kaza";
-        return s;
+        // ✅ 표준키로 귀결
+        if (s.StartsWith("kk") || s.Contains("kazakh") || s.Contains("kaza") || s.Contains("kazah"))
+            return "kazakh";
+        return "korean";
     }
 
     private void Awake()
@@ -96,6 +98,12 @@ public class DialogueManager2_4 : MonoBehaviour
         StartEndingIfNeeded();
     }
 
+    private void OnDestroy()
+    {
+        LanguageManager.OnLanguageChanged -= OnLanguageChanged;
+    }
+
+    // ===== 대사 로드 (언어별 명시 선택) =====
     private void LoadLinesForCurrentLanguage()
     {
         if (languageCollector == null)
@@ -104,12 +112,28 @@ public class DialogueManager2_4 : MonoBehaviour
             lines = new string[0];
             return;
         }
-        lines = languageCollector.GetLines();
+
+        string lang = CurrentLanguage;
+        switch (lang)
+        {
+            case "korean":   lines = languageCollector.KoreanLines2_4;   break;
+            case "english":  lines = languageCollector.EnglishLines2_4;  break;
+            case "japanese": lines = languageCollector.JapaneseLines2_4; break;
+            case "chinese":  lines = languageCollector.ChineseLines2_4;  break;
+            case "kazakh":   lines = languageCollector.KazaLines2_4;     break; // ✅
+            default:
+                Debug.LogWarning($"[DialogueManager2_4] Unknown lang '{lang}', fallback=Korean");
+                lines = languageCollector.KoreanLines2_4;
+                break;
+        }
+
         if (lines == null || lines.Length == 0)
         {
             Debug.LogWarning("[DialogueManager2_4] 선택 언어 대사가 비어있습니다. 인스펙터에서 입력해 주세요.");
             lines = new[] { " " };
         }
+
+        Debug_LogLine("LOAD", -1, $"loaded={lines.Length}");
     }
 
     private IEnumerator ShowLineSequence()
@@ -235,7 +259,7 @@ public class DialogueManager2_4 : MonoBehaviour
             case "english":  above = English_Above;  story = English_Story;  break;
             case "japanese": above = Japanese_Above; story = Japanese_Story; break;
             case "chinese":  above = Chinese_Above;  story = Chinese_Story;  break;
-            case "kaza":     above = Kaza_Above;     story = Kaza_Story;     break;
+            case "kazakh":   above = Kaza_Above;     story = Kaza_Story;     break; // ✅
             // default: korean
         }
 
@@ -269,11 +293,6 @@ public class DialogueManager2_4 : MonoBehaviour
         StartEndingIfNeeded();
     }
 
-    private void OnDestroy()
-    {
-        LanguageManager.OnLanguageChanged -= OnLanguageChanged;
-    }
-
     // ===== 화자명(나르케) 언어별 =====
     private string GetSpeakerNameNarke()
     {
@@ -284,7 +303,7 @@ public class DialogueManager2_4 : MonoBehaviour
             case "english":  return SafeName(languageCollector.EnglishAbove2_4,  2, "Narke");
             case "japanese": return SafeName(languageCollector.JapaneseAbove2_4, 2, "ナルケ");
             case "chinese":  return SafeName(languageCollector.ChineseAbove2_4,  2, "纳尔克");
-            case "kaza":     return SafeName(languageCollector.KazaAbove2_4,     2, "Нарыке");
+            case "kazakh":   return SafeName(languageCollector.KazaAbove2_4,     2, "Нарыке"); // ✅
             default:         return "Narke";
         }
     }

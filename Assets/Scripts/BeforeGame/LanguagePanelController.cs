@@ -8,7 +8,8 @@ public class LanguagePanelController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI currentLanguageText; // 현재 언어 표시용 TMP
 
     [Header("언어 리스트")]
-    private readonly string[] languages = { "Korean", "English", "Chinese", "Japanese", "Kazahustan" };
+    private readonly string[] languages = { "korean", "english", "chinese", "japanese", "kazakh" };
+
     private int currentIndex = 0;
 
     private void Start()
@@ -63,6 +64,7 @@ public class LanguagePanelController : MonoBehaviour
     private void UpdateLanguageDisplay()
     {
         if (currentLanguageText != null)
-            currentLanguageText.text = languages[currentIndex];
+            currentLanguageText.text = char.ToUpper(languages[currentIndex][0]) + languages[currentIndex].Substring(1);
     }
+
 }

@@ -62,26 +62,21 @@ public class GameControllerScript : MonoBehaviour
         switch (lang)
         {
             case "korean":
-                ActivateLanguage(Korean_AboveLine, Korean_Story);
-                break;
+                ActivateLanguage(Korean_AboveLine, Korean_Story); break;
             case "english":
-                ActivateLanguage(English_Above, English_Story);
-                break;
+                ActivateLanguage(English_Above, English_Story); break;
             case "japanese":
-                ActivateLanguage(Japanese_Above, Japanese_Story);
-                break;
+                ActivateLanguage(Japanese_Above, Japanese_Story); break;
             case "chinese":
-                ActivateLanguage(Chinese_Above, Chinese_Story);
-                break;
-            case "kazahustan":
-            case "kaza":
-                ActivateLanguage(Kaza_Above, Kaza_Story);
-                break;
+                ActivateLanguage(Chinese_Above, Chinese_Story); break;
+            case "kazakh": // ✅ 표준키
+                ActivateLanguage(Kaza_Above, Kaza_Story); break;
             default:
                 Debug.LogWarning("[GameControllerScript] Unknown language: " + lang);
                 break;
         }
     }
+
 
     private void ActivateLanguage(RectTransform above, RectTransform story)
     {
@@ -161,19 +156,18 @@ public class GameControllerScript : MonoBehaviour
     
     public void OnLanguageDropdownChanged(int index)
     {
-        string selectedLang = ""; // 드롭다운 값에 따라
-
-        switch (index)
+        string selectedLang = index switch
         {
-            case 0: selectedLang = "korean"; break;
-            case 1: selectedLang = "english"; break;
-            case 2: selectedLang = "japanese"; break;
-            case 3: selectedLang = "chinese"; break;
-            case 4: selectedLang = "kaza"; break;
-        }
-
+            0 => "korean",
+            1 => "english",
+            2 => "japanese",
+            3 => "chinese",
+            4 => "kazakh", // ✅ "kaza" 말고 표준키
+            _ => "english"
+        };
         LanguageManager.SetLanguage(selectedLang);
     }
+
 
     
 

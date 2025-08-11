@@ -7,6 +7,7 @@ using System.Linq;
 
 public class DialogueManager2_5 : MonoBehaviour
 {
+    
     [Header("언어 오브젝트")]
     public RectTransform Korean_Above, Korean_Story;
     public RectTransform English_Above, English_Story;
@@ -57,8 +58,10 @@ public class DialogueManager2_5 : MonoBehaviour
         if (s.StartsWith("ko")) return "korean";
         if (s.StartsWith("ja")) return "japanese";
         if (s.StartsWith("zh")) return "chinese";
-        if (s.StartsWith("ka") || s.Contains("kaza") || s.Contains("kazah")) return "kaza";
-        return s;
+        // ✅ 표준키로 통일
+        if (s.StartsWith("kk") || s.Contains("kazakh") || s.Contains("kaza") || s.Contains("kazah"))
+            return "kazakh";
+        return "korean";
     }
 
     private void Awake()
@@ -103,16 +106,17 @@ public class DialogueManager2_5 : MonoBehaviour
 
         switch (CurrentLanguage)
         {
-            case "korean":   lines = languageCollector.KoreanLines2_5; break;
+            case "korean":   lines = languageCollector.KoreanLines2_5;  break;
             case "english":  lines = languageCollector.EnglishLines2_5; break;
-            case "japanese": lines = languageCollector.JapaneseLines2_5; break;
+            case "japanese": lines = languageCollector.JapaneseLines2_5;break;
             case "chinese":  lines = languageCollector.ChineseLines2_5; break;
-            case "kaza":     lines = languageCollector.KazaLines2_5; break;
+            case "kazakh":   lines = languageCollector.KazaLines2_5;    break; // ✅
             default:
                 Debug.LogWarning($"[2_5] Unknown lang='{CurrentLanguage}', fallback to Korean.");
                 lines = languageCollector.KoreanLines2_5;
                 break;
         }
+
 
         if (lines == null || lines.Length == 0)
         {
@@ -161,10 +165,11 @@ public class DialogueManager2_5 : MonoBehaviour
             case "english":  return SafeName(languageCollector.EnglishAbove2_5,  2, "Narke");
             case "japanese": return SafeName(languageCollector.JapaneseAbove2_5, 2, "ナルケ");
             case "chinese":  return SafeName(languageCollector.ChineseAbove2_5,  2, "纳尔克");
-            case "kaza":     return SafeName(languageCollector.KazaAbove2_5,     2, "Нарыке");
+            case "kazakh":   return SafeName(languageCollector.KazaAbove2_5,     2, "Нарыке"); // ✅
             default:         return "Narke";
         }
     }
+
 
     private string SafeName(string[] arr, int idx, string fallback)
     {
@@ -234,8 +239,10 @@ public class DialogueManager2_5 : MonoBehaviour
             case "english":  above = English_Above;  story = English_Story;  break;
             case "japanese": above = Japanese_Above; story = Japanese_Story; break;
             case "chinese":  above = Chinese_Above;  story = Chinese_Story;  break;
-            case "kaza":     above = Kaza_Above;     story = Kaza_Story;     break;
+            case "kazakh":   above = Kaza_Above;     story = Kaza_Story;     break; // ✅
+            // default: korean
         }
+
 
         if (above != null && story != null)
         {

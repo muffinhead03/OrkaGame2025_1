@@ -88,21 +88,21 @@ public class DialogueManagerStage2_2 : MonoBehaviour
 
     private void LoadLinesForCurrentLanguage()
     {
-        string lang = LanguageManager.GetLanguage()?.Trim().ToLower();
+        string lang = (LanguageManager.GetLanguage() ?? "").Trim().ToLowerInvariant();
         switch (lang)
         {
-            case "korean":      lines = languageCollector.KoreanLines2_2; break;
-            case "english":     lines = languageCollector.EnglishLines2_2; break;
-            case "japanese":    lines = languageCollector.JapaneseLines2_2; break;
-            case "chinese":     lines = languageCollector.ChineseLines2_2; break;
-            case "kazahustan":
-            case "kaza":        lines = languageCollector.KazaLines2_2; break;
+            case "korean":   lines = languageCollector.KoreanLines2_2;   break;
+            case "english":  lines = languageCollector.EnglishLines2_2;  break;
+            case "japanese": lines = languageCollector.JapaneseLines2_2; break;
+            case "chinese":  lines = languageCollector.ChineseLines2_2;  break;
+            case "kazakh":   lines = languageCollector.KazaLines2_2;     break; // ✅ 표준키
             default:
                 Debug.LogWarning($"Unknown language '{lang}', default to Korean.");
                 lines = languageCollector.KoreanLines2_2;
                 break;
         }
     }
+
 
     private IEnumerator ShowLineSequence()
     {
@@ -240,19 +240,20 @@ public class DialogueManagerStage2_2 : MonoBehaviour
             Chinese_Above, Chinese_Story,
             Kaza_Above, Kaza_Story
         };
-        foreach (var rt in all)
-            rt?.gameObject.SetActive(false);
+        foreach (var rt in all) rt?.gameObject.SetActive(false);
 
-        string lang = LanguageManager.GetLanguage()?.Trim().ToLower();
+        string lang = (LanguageManager.GetLanguage() ?? "").Trim().ToLowerInvariant();
         RectTransform above = Korean_Above, story = Korean_Story;
+
         switch (lang)
         {
-            case "english":   above = English_Above;  story = English_Story; break;
-            case "japanese":  above = Japanese_Above; story = Japanese_Story; break;
-            case "chinese":   above = Chinese_Above;  story = Chinese_Story; break;
-            case "kazahustan":
-            case "kaza":      above = Kaza_Above;     story = Kaza_Story; break;
+            case "english": above = English_Above;  story = English_Story;  break;
+            case "japanese":above = Japanese_Above; story = Japanese_Story; break;
+            case "chinese": above = Chinese_Above;  story = Chinese_Story;  break;
+            case "kazakh":  above = Kaza_Above;     story = Kaza_Story;     break; // ✅
+            // default: Korean
         }
+
         if (above != null && story != null)
         {
             above.gameObject.SetActive(true);
@@ -266,6 +267,7 @@ public class DialogueManagerStage2_2 : MonoBehaviour
             if (newStory != null) storyText = newStory;
         }
     }
+
 
     private void OnLanguageChanged(string newLang)
     {
@@ -295,36 +297,25 @@ public class DialogueManagerStage2_2 : MonoBehaviour
     {
         if (languageCollector == null) return speakerKo;
 
-        // 인덱스 결정: 0=에코, 1=판, 2=나르케
         int idx = 0;
         if (speakerKo == "판") idx = 1;
         else if (speakerKo == "나르케") idx = 2;
 
-        string lang = (LanguageManager.GetLanguage() ?? "").Trim().ToLower();
+        string lang = (LanguageManager.GetLanguage() ?? "").Trim().ToLowerInvariant();
 
-        string[][] nameTables = new string[][]
-        {
-            languageCollector.KoreanAbove2_2,
-            languageCollector.EnglishAbove2_2,
-            languageCollector.JapaneseAbove2_2,
-            languageCollector.ChineseAbove2_2,
-            languageCollector.KazaAbove2_2
-        };
-
-        string[] chosen = languageCollector.KoreanAbove2_2;
+        string[] chosen = languageCollector.KoreanAbove2_2; // 기본값
         switch (lang)
         {
-            case "english":   chosen = languageCollector.EnglishAbove2_2; break;
-            case "japanese":  chosen = languageCollector.JapaneseAbove2_2; break;
-            case "chinese":   chosen = languageCollector.ChineseAbove2_2; break;
-            case "kazahustan":
-            case "kaza":      chosen = languageCollector.KazaAbove2_2; break;
+            case "english":  chosen = languageCollector.EnglishAbove2_2; break;
+            case "japanese": chosen = languageCollector.JapaneseAbove2_2; break;
+            case "chinese":  chosen = languageCollector.ChineseAbove2_2; break;
+            case "kazakh":   chosen = languageCollector.KazaAbove2_2;     break; // ✅
         }
 
-        // 안전하게 범위 체크
         if (chosen != null && idx >= 0 && idx < chosen.Length && !string.IsNullOrEmpty(chosen[idx]))
             return chosen[idx];
 
         return speakerKo;
     }
+
 }
