@@ -107,6 +107,8 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
     void InitializeBoardAfterDeath()
     {
         positionToPuzzleAfterDeath.Clear();
+        puzzlePositionMapAfterDeath.Clear(); // ← 추가
+
         foreach (var puzzle in puzzleScriptsAfterDeath)
         {
             var posIndex = puzzle.currentPositionIndex;
@@ -115,6 +117,7 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
             positionToPuzzleAfterDeath[posIndex] = puzzle;
         }
     }
+
 
     public void TryMovePuzzle(SlidingPuzzle1ScriptAfterDeath clicked)
     {
@@ -187,72 +190,81 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
     }
 
     // ---- 안정적인 클리어 판정 + 디버그 로그 ----
-    void CheckClearConditionsAfterDeath()
+void CheckClearConditionsAfterDeath()
+{
+    // 1) 머리핀: 타일 [3,5,8,9] 이 아래 후보 위치와 "정확히" 일치해야 함
+    if (!hairpinCleared && MatchAnyExactMapping(
+            new List<int> { 3, 5, 8, 9 },
+            new List<List<int>> {
+                new() { 2, 3, 5, 6 },
+                new() { 3, 4, 6, 7 },
+                new() { 5, 6, 8, 9 },
+                new() { 6, 7, 9, 10 },
+                new() { 8, 9, 11, 12 },
+                new() { 9, 10, 12, 13 }
+            }))
     {
-        // Hairpin
-        if (!hairpinCleared)
-        {
-            var hairpinTiles = new[] { 3, 5, 8, 9 };
-            if (TryGetPositionsKeyForTiles(hairpinTiles, out var key))
-            {
-                Debug.Log($"[HAIRPIN] currentKey = {key}");
-                if (_hairpinAllowed.Contains(key))
-                {
-                    Debug.Log("Hairpin 조건 충족 → 클리어 처리");
-                    SetAlphaAfterDeath(hairpinCanvasAfterDeath, 0.1f, lockIt: true, raycast: false, interact: false, ignoreParents: true);
-                    hairpinCleared = true;
-                }
-            }
-            else
-            {
-                Debug.LogWarning("[HAIRPIN] 키 계산 실패: puzzlePositionMapAfterDeath에 누락된 타일이 있습니다(3,5,8,9 확인).");
-            }
-        }
-
-        // First lock
-        if (!firstLockCleared)
-        {
-            var firstLockTiles = new[] { 5, 2, 6, 1, 7, 12 };
-            if (TryGetPositionsKeyForTiles(firstLockTiles, out var key))
-            {
-                Debug.Log($"[FIRST] currentKey = {key}");
-                if (_firstLockAllowed.Contains(key))
-                {
-                    Debug.Log("FirstLock 조건 충족 → 클리어 처리");
-                    SetAlphaAfterDeath(firstLockCanvasAfterDeath, 0.1f, lockIt: true, raycast: false, interact: false, ignoreParents: true);
-                    firstLockCleared = true;
-                }
-            }
-            else
-            {
-                Debug.LogWarning("[FIRST] 키 계산 실패: (5,2,6,1,7,12) 중 누락 존재.");
-            }
-        }
-
-        // Final
-        if (hairpinCleared && firstLockCleared && !finalCleared)
-        {
-            var finalTiles = new[] { 8, 6, 7, 11, 12, 3, 10 };
-            if (TryGetPositionsKeyForTiles(finalTiles, out var key))
-            {
-                Debug.Log($"[FINAL] currentKey = {key}");
-                if (_finalAllowed.Contains(key))
-                {
-                    Debug.Log("Final 조건 충족 → 문 잠금 클리어 처리");
-                    SetAlphaAfterDeath(doorLockCanvasAfterDeath,   0.1f, lockIt: true, raycast: false, interact: false, ignoreParents: true);
-                    SetAlphaAfterDeath(secondLockCanvasAfterDeath, 0.1f, lockIt: true, raycast: false, interact: false, ignoreParents: true);
-                    finalCleared = true;
-
-                    // ✅ 최종 성공 → 성공 씬으로 전환
-                    TransitionToSuccess(1.5f);
-                }
-            }
-            else
-            {
-                Debug.LogWarning("[FINAL] 키 계산 실패: (8,6,7,11,12,3,10) 중 누락 존재.");
-            }
-        }
+        Debug.Log("[HAIRPIN] OK");
+        SetAlphaAfterDeath(hairpinCanvasAfterDeath, 0.1f, lockIt: true, raycast: false, interact: false, ignoreParents: true);
+        hairpinCleared = true;
     }
+
+    // 2) 1차 자물쇠: 타일 [1,2,5,6,7,12] 이 아래 후보 위치와 "정확히" 일치해야 함
+    if (!firstLockCleared && MatchAnyExactMapping(
+            new List<int> { 1, 2, 5, 6, 7, 12 },
+            new List<List<int>> {
+                new() { 5, 3, 2, 4, 6, 7  },
+                new() { 8, 6, 5, 7, 9, 10 },
+                new() { 11, 9, 8, 10, 12, 13 }
+            }))
+    {
+        Debug.Log("[FIRST] OK");
+        SetAlphaAfterDeath(firstLockCanvasAfterDeath, 0.1f, lockIt: true, raycast: false, interact: false, ignoreParents: true);
+        firstLockCleared = true;
+    }
+
+    // 3) 최종: 타일 [3,6,7,8,10,11,12] 이 아래 후보 위치와 "정확히" 일치해야 함
+    if (hairpinCleared && firstLockCleared && !finalCleared &&
+        MatchAnyExactMapping(
+            new List<int> { 3, 6, 7, 8, 10, 11, 12 },
+            new List<List<int>> {
+                new() { 7, 3, 4, 2, 10, 5, 6 },
+                new() { 10, 6, 7, 5, 13, 8, 9 }
+            }))
+    {
+        Debug.Log("[FINAL] OK -> Success transition");
+        SetAlphaAfterDeath(doorLockCanvasAfterDeath,   0.1f, lockIt: true, raycast: false, interact: false, ignoreParents: true);
+        SetAlphaAfterDeath(secondLockCanvasAfterDeath, 0.1f, lockIt: true, raycast: false, interact: false, ignoreParents: true);
+        finalCleared = true;
+
+        TransitionToSuccess(1.5f);
+    }
+}
+
+// ===== 정확 매핑 헬퍼 =====
+// 타일 목록(순서 고정)의 각 타일이 positionsInOrder[i] 위치에 정확히 있어야 true
+bool MatchExactMapping(IList<int> tilesInOrder, IList<int> positionsInOrder)
+{
+    if (tilesInOrder == null || positionsInOrder == null || tilesInOrder.Count != positionsInOrder.Count)
+        return false;
+
+    for (int i = 0; i < tilesInOrder.Count; i++)
+    {
+        int tile = tilesInOrder[i];
+        int wantPos = positionsInOrder[i];
+        if (!puzzlePositionMapAfterDeath.TryGetValue(tile, out int curPos) || curPos != wantPos)
+            return false;
+    }
+    return true;
+}
+
+bool MatchAnyExactMapping(IList<int> tilesInOrder, List<List<int>> mappingCandidates)
+{
+    foreach (var candidate in mappingCandidates)
+        if (MatchExactMapping(tilesInOrder, candidate)) return true;
+    return false;
+}
+
 
     // 현재 타일들 위치 키 만들기(안전 가드)
     private bool TryGetPositionsKeyForTiles(int[] tileNums, out string key)

@@ -112,44 +112,102 @@ public class SlidingGameManager1BeforeDeathScript : MonoBehaviour
             LoadFailScene();
     }
 
-    void CheckClearConditions()
-    {
-        if (!hairpinCleared && MatchCondition(new List<int> { 3, 5, 8, 9 }, new List<List<int>> {
-            new() {2,3,5,6}, new() {3,4,6,7}, new() {5,6,8,9},
-            new() {6,7,9,10}, new() {8,9,11,12}, new() {9,10,12,13}
-        }))
-        {
-            SetAlpha(hairpinCanvas, 0.1f);
-            hairpinCleared = true;
-        }
-
-        if (!firstLockCleared && MatchCondition(new List<int> { 5, 2, 6, 1, 7, 12 }, new List<List<int>> {
-            new() {2,3,4,5,6,7}, new() {5,6,7,8,9,10}, new() {8,9,10,11,12,13}
-        }))
-        {
-            SetAlpha(firstLockCanvas, 0.1f);
-            firstLockCleared = true;
-        }
-
-        if (hairpinCleared && firstLockCleared && !finalCleared &&
-            MatchCondition(new List<int> { 8, 6, 7, 11, 12, 3, 10 }, new List<List<int>> {
-                new() {2,3,4,5,6,7,10}, new() {5,6,7,8,9,10,13}
+void CheckClearConditions()
+{
+    // 1) 머리핀: 집합 매칭 그대로 유지
+    if (!hairpinCleared && MatchAnyExactMapping(
+            new List<int> { 3, 5, 8, 9 },
+            new List<List<int>> {
+                new() { 2, 3, 5, 6 },
+                new() { 3, 4, 6, 7 },
+                new() { 5, 6, 8, 9 },
+                new() { 6, 7, 9, 10 },
+                new() { 8, 9, 11, 12 },
+                new() { 9, 10, 12, 13 }
             }))
-        {
-            SetAlpha(doorLockCanvas, 0.1f);
-            SetAlpha(secondLockCanvas, 0.1f);
-            finalCleared = true;
-
-            // ✅ 시간 안에 전부 클리어 → 즉시 성공 씬 로딩
-            LoadSuccessScene();
-        }
-    }
-
-    bool MatchCondition(List<int> puzzleNums, List<List<int>> validPosSets)
     {
-        var current = puzzleNums.Select(p => puzzlePositionMap[p]).OrderBy(x => x).ToList();
-        return validPosSets.Any(set => set.OrderBy(x => x).SequenceEqual(current));
+        SetAlpha(hairpinCanvas, 0.1f);
+        hairpinCleared = true;
     }
+
+    // 2) 1차 자물쇠: 타일 번호 {1,2,5,6,7,12} 가 아래 매핑 중 하나와 "정확히" 일치
+    if (!firstLockCleared && MatchAnyExactMapping(
+            new List<int> { 1, 2, 5, 6, 7, 12 },
+            new List<List<int>> {
+                new() { 5, 3, 2, 4, 6, 7  },
+                new() { 8, 6, 5, 7, 9, 10 },
+                new() { 11, 9, 8, 10, 12, 13 }
+            }))
+    {
+        SetAlpha(firstLockCanvas, 0.1f);
+        firstLockCleared = true;
+    }
+
+    // 3) 최종: 타일 번호 {3,6,7,8,10,11,12} 가 아래 매핑 중 하나와 "정확히" 일치
+    if (hairpinCleared && firstLockCleared && !finalCleared &&
+        MatchAnyExactMapping(
+            new List<int> { 3, 6, 7, 8, 10, 11, 12 },
+            new List<List<int>> {
+                new() { 7, 3, 4, 2, 10, 5, 6 },
+                new() { 10, 6, 7, 5, 13, 8, 9 }
+            }))
+    {
+        SetAlpha(doorLockCanvas, 0.1f);
+        SetAlpha(secondLockCanvas, 0.1f);
+        finalCleared = true;
+        LoadSuccessScene();
+    }
+}
+
+/* ===== 보조 함수들 ===== */
+
+// (집합) + (특정 타일 고정 매핑) 조합 검사 — 머리핀 그대로 사용
+bool MatchSetWithFixed(List<int> tiles, List<int> targetPositions, Dictionary<int,int> fixedMap)
+{
+    var current = tiles.Select(t => puzzlePositionMap[t]).OrderBy(x => x).ToList();
+    var target  = targetPositions.OrderBy(x => x).ToList();
+    if (!current.SequenceEqual(target)) return false;
+
+    if (fixedMap != null)
+    {
+        foreach (var kv in fixedMap)
+            if (!puzzlePositionMap.TryGetValue(kv.Key, out int pos) || pos != kv.Value)
+                return false;
+    }
+    return true;
+}
+
+bool MatchAnySetWithFixed(List<int> tiles, List<List<int>> validSets, Dictionary<int,int> fixedMap)
+{
+    foreach (var set in validSets)
+        if (MatchSetWithFixed(tiles, set, fixedMap)) return true;
+    return false;
+}
+
+// ===== 새로 추가: "정확 매핑" 검사 (타일[i] -> positions[i] 이어야 함)
+bool MatchExactMapping(IList<int> tilesInOrder, IList<int> positionsInOrder)
+{
+    if (tilesInOrder == null || positionsInOrder == null || tilesInOrder.Count != positionsInOrder.Count)
+        return false;
+
+    for (int i = 0; i < tilesInOrder.Count; i++)
+    {
+        int tile = tilesInOrder[i];
+        int wantPos = positionsInOrder[i];
+        if (!puzzlePositionMap.TryGetValue(tile, out int curPos) || curPos != wantPos)
+            return false;
+    }
+    return true;
+}
+
+bool MatchAnyExactMapping(IList<int> tilesInOrder, List<List<int>> mappingCandidates)
+{
+    foreach (var candidate in mappingCandidates)
+        if (MatchExactMapping(tilesInOrder, candidate)) return true;
+    return false;
+}
+
+
 
     void SetAlpha(CanvasGroup group, float alpha)
     {

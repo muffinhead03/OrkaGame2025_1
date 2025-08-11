@@ -5,30 +5,29 @@ using TMPro;
 using System.Collections;
 using UnityEngine.SceneManagement;
 
-
 public class DialogueManager3_3 : MonoBehaviour
 {
-    [Header("¾ğ¾î ¿ÀºêÁ§Æ®")]
+    [Header("ì–¸ì–´ë³„ RectTransform")]
     public RectTransform Korean_Above, Korean_Story;
     public RectTransform English_Above, English_Story;
     public RectTransform Japanese_Above, Japanese_Story;
     public RectTransform Chinese_Above, Chinese_Story;
     public RectTransform Kaza_Above, Kaza_Story;
 
-    [Header("±âº» À§Ä¡°ª")]
+    [Header("ê¸°ë³¸ ìœ„ì¹˜ê°’")]
     public Vector2 AboPo = new Vector2(-750f, 160f);
     public Vector2 StoPo = new Vector2(-250f, -20f);
 
-    [Header("UI ¿ä¼Ò")]
+    [Header("UI")]
     public TextMeshProUGUI aboveText;
     public TextMeshProUGUI storyText;
     public Button nextButton;
     public VideoPlayer endingVideoPlayer;
 
-    [Header("Å¸ÀÌÇÎ ¼Óµµ")]
+    [Header("íƒ€ì´í•‘ ì†ë„")]
     public float typingSpeed = 0.04f;
 
-    [Header("¹è°æ ¹× Ä³¸¯ÅÍ")]
+    [Header("ë°°ê²½/ì—°ì¶œ ì˜¤ë¸Œì íŠ¸")]
     public Image backgroundImage;
     public GameObject blackImageObj;
     public GameObject Pan_4eyeclosedObj;
@@ -40,28 +39,50 @@ public class DialogueManager3_3 : MonoBehaviour
     public GameObject SettingPanel;
     public GameObject blackCoverPanel;
 
-
-    [Header("¿Àµğ¿À")]
+    [Header("ì˜¤ë””ì˜¤")]
     public AudioSource bgmSource;
 
-    [Header("´ë»ç ½ºÅ©¸³Æ®")]
+    [Header("ëŒ€ì‚¬ ì†ŒìŠ¤")]
     public LanguageCollector3_3 languageCollector;
+
+    // ===== Debug ì˜µì…˜ =====
+    [Header("Debug")]
+    [SerializeField] private bool logDebug = true;
+    [SerializeField] private bool logFullLine = false;
+    [SerializeField] private int previewChars = 80;
 
     private string[] lines;
     private int index;
     private Coroutine typingCoroutine;
 
-    // Á¡ÇÁ ¾Ö´Ï¸ŞÀÌ¼Ç °ü·Ã
+    // ì í”„ ìŠ¤ì¼€ì¼ ì—°ì¶œ
     private bool isJumpScaling = false;
     private float jumpTimer = 0f;
     private float jumpDuration = 0.3f;
     private Vector3 pan2TargetScale = Vector3.one;
 
+    // === ì–¸ì–´ í—¬í¼ ===
+    private string currentLangKey = "korean";
+    private string CurrentLanguage => NormalizeLang(LanguageManager.GetLanguage());
+    private string NormalizeLang(string raw)
+    {
+        string s = (raw ?? "korean").Trim().ToLowerInvariant();
+        if (s.StartsWith("en")) return "english";
+        if (s.StartsWith("ko")) return "korean";
+        if (s.StartsWith("ja")) return "japanese";
+        if (s.StartsWith("zh")) return "chinese";
+        if (s.StartsWith("ka") || s.Contains("kaza") || s.Contains("kazah")) return "kaza";
+        return s;
+    }
+
     private void Awake()
     {
-        nextButton.onClick.RemoveAllListeners();
-        nextButton.onClick.AddListener(OnNext);
-        nextButton.gameObject.SetActive(false);
+        if (nextButton != null)
+        {
+            nextButton.onClick.RemoveAllListeners();
+            nextButton.onClick.AddListener(OnNext);
+            nextButton.gameObject.SetActive(false);
+        }
 
         LanguageManager.Initialize();
         LanguageManager.OnLanguageChanged += OnLanguageChanged;
@@ -71,106 +92,73 @@ public class DialogueManager3_3 : MonoBehaviour
     {
         SetupLanguageUI();
 
-        if (aboveText != null)
-            aboveText.text = "ÆÇ";
-
-        
-
         LoadLinesForCurrentLanguage();
 
+        // ì´ ì¥ë©´ì€ íŒ(Pan) ëŒ€ì‚¬ë§Œ ë‚˜ì˜¤ë¯€ë¡œ ìŠ¤í”¼ì»¤ëª… = Panìœ¼ë¡œ ì„¤ì •
+        if (aboveText != null) aboveText.text = GetSpeakerNamePan();
+
         index = 0;
-        StartCoroutine(ShowLineSequence());       
+        StartCoroutine(ShowLineSequence());
     }
 
     private void LoadLinesForCurrentLanguage()
     {
-        string lang = LanguageManager.GetLanguage()?.Trim().ToLower();
-        switch (lang)
+        currentLangKey = CurrentLanguage;
+        switch (currentLangKey)
         {
-            case "korean": lines = languageCollector.KoreanLines3_3; break;
-            case "english": lines = languageCollector.EnglishLines3_3; break;
+            case "korean":   lines = languageCollector.KoreanLines3_3; break;
+            case "english":  lines = languageCollector.EnglishLines3_3; break;
             case "japanese": lines = languageCollector.JapaneseLines3_3; break;
-            case "chinese": lines = languageCollector.ChineseLines3_3; break;
-            case "kazahustan":
-            case "kaza": lines = languageCollector.KazaLines3_3; break;
-            default: lines = languageCollector.KoreanLines3_3; break;
+            case "chinese":  lines = languageCollector.ChineseLines3_3; break;
+            case "kaza":     lines = languageCollector.KazaLines3_3; break;
+            default:
+                lines = languageCollector.KoreanLines3_3;
+                currentLangKey = "korean";
+                Debug.LogWarning($"[D3_3] Unknown language, default to Korean.");
+                break;
         }
+        Debug_LogLangSelected(lines?.Length ?? 0);
     }
-
-    private IEnumerator JumpScaleInOut(GameObject targetObj, float duration = 0.5f)
-    {
-        if (targetObj == null) yield break;
-
-        targetObj.SetActive(true);
-        Vector3 startScale = Vector3.zero;
-        Vector3 endScale = Vector3.one;
-
-        // ½ºÄÉÀÏ ¾÷ (µîÀå)
-        float t = 0f;
-        while (t < duration)
-        {
-            t += Time.deltaTime;
-            float scaleT = t / duration;
-            targetObj.transform.localScale = Vector3.Lerp(startScale, endScale, scaleT);
-            yield return null;
-        }
-
-        // Àá½Ã À¯Áö (¼±ÅÃ »çÇ×, »ı·« °¡´É)
-        // yield return new WaitForSeconds(0.1f);
-
-        // ½ºÄÉÀÏ ´Ù¿î (»ç¶óÁü)
-        t = 0f;
-        while (t < duration)
-        {
-            t += Time.deltaTime;
-            float scaleT = t / duration;
-            targetObj.transform.localScale = Vector3.Lerp(endScale, startScale, scaleT);
-            yield return null;
-        }
-
-        targetObj.SetActive(false);
-    }
-
-
 
     private IEnumerator ShowLineSequence()
     {
+        if (lines == null || index < 0 || index >= lines.Length)
+        {
+            Debug.LogError($"[D3_3] Invalid line index {index} (len={lines?.Length ?? 0})");
+            yield break;
+        }
+
+        // í™œì„± ì–¸ì–´ TMPê°€ ëŠê²¼ì„ ìˆ˜ ìˆìœ¼ë¯€ë¡œ ë³´ì¦
+        EnsureTMPBound();
+
         UpdateVisuals(index);
 
         yield return new WaitForSeconds(0.5f);
 
-        if (typingCoroutine != null)
-            StopCoroutine(typingCoroutine);
+        if (typingCoroutine != null) StopCoroutine(typingCoroutine);
+
+        // ë””ë²„ê·¸: ë¼ì¸ ì‹œì‘
+        Debug_LogLine("BEGIN", index, lines[index]);
+
         typingCoroutine = StartCoroutine(TypeText(lines[index]));
         yield return typingCoroutine;
 
+        // ë””ë²„ê·¸: ë¼ì¸ ì™„ë£Œ
+        Debug_LogLine("END", index, lines[index]);
+
         nextButton?.gameObject.SetActive(true);
 
+        // 1ë²ˆ(ë‘ ë²ˆì§¸ ì¤„) ì´í›„ì— ì˜ìƒ ì¬ìƒ íŠ¸ë¦¬ê±°
         if ((index == 1 || index == lines.Length - 1) && Pan_2Obj != null)
         {
             yield return StartCoroutine(JumpScaleInOut(Pan_2Obj, 0.5f));
 
             if (index == 1)
             {
-                yield return new WaitForSeconds(0.5f); // ¾Ö´Ï¸ŞÀÌ¼Ç ÈÄ Àá±ñ ´ë±â
+                yield return new WaitForSeconds(0.5f);
                 PlayEndingVideo();
             }
         }
-
-
-    }
-
-
-
-    private void OnVideoFinished(VideoPlayer vp)
-    {
-        Debug.Log("ºñµğ¿À Àç»ıÀÌ Á¾·áµÇ¾ú½À´Ï´Ù.");
-
-        // ¿¹: ºñµğ¿À Àç»ıÀÌ ³¡³­ ÈÄ ¾À ÀüÈ¯ µî Ãß°¡ ÀÛ¾÷ÀÌ ÇÊ¿äÇÏ¸é ¿©±â¼­ Ã³¸®
-        if (blackCoverPanel != null) blackCoverPanel.SetActive(false);
-
-        // ¾À ÀüÈ¯
-        SceneManager.LoadScene("Stage3_2");
     }
 
     private void UpdateVisuals(int idx)
@@ -181,6 +169,9 @@ public class DialogueManager3_3 : MonoBehaviour
         Pan_4eyeclosedObj?.SetActive(false);
         Pan_2Obj?.SetActive(false);
         if (idx == 0) Pan_4eyeclosedObj?.SetActive(true);
+
+        // ìŠ¤í”¼ì»¤ëª…: ì´ ì¥ë©´ì€ ê³„ì† Pan
+        if (aboveText != null) aboveText.text = GetSpeakerNamePan();
 
         if (bgmSource != null)
         {
@@ -200,37 +191,72 @@ public class DialogueManager3_3 : MonoBehaviour
     {
         if (endingVideoPlayer == null)
         {
-            Debug.LogWarning("endingVideoPlayer°¡ ¼³Á¤µÇ¾î ÀÖÁö ¾Ê½À´Ï´Ù!");
+            Debug.LogWarning("[D3_3] endingVideoPlayerê°€ ì„¤ì •ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
             return;
         }
 
-        // °ËÀº»ö Ä¿¹ö ÆĞ³Î È°¼ºÈ­
         if (blackCoverPanel != null) blackCoverPanel.SetActive(true);
 
-        // ºñµğ¿À Àç»ı Àü¿¡ ÀÌ¹ÌÁöµé ºñÈ°¼ºÈ­
         if (backgroundImage != null) backgroundImage.enabled = false;
         if (blackImageObj != null) blackImageObj.SetActive(false);
         if (Pan_4eyeclosedObj != null) Pan_4eyeclosedObj.SetActive(false);
         if (Pan_2Obj != null) Pan_2Obj.SetActive(false);
 
-        // »õ·Î Ãß°¡ÇÑ ¿ÀºêÁ§Æ® ºñÈ°¼ºÈ­
         if (CarrotButton != null) CarrotButton.SetActive(false);
         if (DialogueImage != null) DialogueImage.SetActive(false);
         if (FirstPanel != null) FirstPanel.SetActive(false);
         if (SettingPanel != null) SettingPanel.SetActive(false);
 
-
         endingVideoPlayer.gameObject.SetActive(true);
-        endingVideoPlayer.Play();
-
-        // ºñµğ¿À Á¾·á ½Ã È£ÃâµÉ ÀÌº¥Æ® µî·Ï
+        endingVideoPlayer.loopPointReached -= OnVideoFinished; // ì¤‘ë³µ ë°©ì§€
         endingVideoPlayer.loopPointReached += OnVideoFinished;
+        endingVideoPlayer.Play();
     }
 
+    private void OnVideoFinished(VideoPlayer vp)
+    {
+        Debug.Log("[D3_3] Ending video finished.");
+        if (blackCoverPanel != null) blackCoverPanel.SetActive(false);
+        SceneManager.LoadScene("Stage3_2");
+    }
+
+    private IEnumerator JumpScaleInOut(GameObject targetObj, float duration = 0.5f)
+    {
+        if (targetObj == null) yield break;
+
+        targetObj.SetActive(true);
+        Vector3 startScale = Vector3.zero;
+        Vector3 endScale = Vector3.one;
+
+        float t = 0f;
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            float scaleT = t / duration;
+            targetObj.transform.localScale = Vector3.Lerp(startScale, endScale, scaleT);
+            yield return null;
+        }
+
+        t = 0f;
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            float scaleT = t / duration;
+            targetObj.transform.localScale = Vector3.Lerp(endScale, startScale, scaleT);
+            yield return null;
+        }
+
+        targetObj.SetActive(false);
+    }
 
     private IEnumerator TypeText(string fullText)
     {
-        if (storyText == null) yield break;
+        if (storyText == null)
+        {
+            Debug.LogError("[D3_3] storyTextê°€ ë°”ì¸ë”©ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
+            yield break;
+        }
+
         storyText.text = "";
         foreach (char c in fullText)
         {
@@ -250,7 +276,6 @@ public class DialogueManager3_3 : MonoBehaviour
         StartCoroutine(ShowLineSequence());
     }
 
-
     private void SetupLanguageUI()
     {
         var all = new[] {
@@ -260,19 +285,19 @@ public class DialogueManager3_3 : MonoBehaviour
             Chinese_Above, Chinese_Story,
             Kaza_Above, Kaza_Story
         };
-        foreach (var rt in all)
-            rt?.gameObject.SetActive(false);
+        foreach (var rt in all) rt?.gameObject.SetActive(false);
 
-        string lang = LanguageManager.GetLanguage()?.Trim().ToLower();
+        string lang = CurrentLanguage;
+        currentLangKey = lang;
+
         RectTransform above = Korean_Above, story = Korean_Story;
-
         switch (lang)
         {
-            case "english": above = English_Above; story = English_Story; break;
-            case "japanese": above = Japanese_Above; story = Japanese_Story; break;
-            case "chinese": above = Chinese_Above; story = Chinese_Story; break;
-            case "kazahustan":
-            case "kaza": above = Kaza_Above; story = Kaza_Story; break;
+            case "english":   above = English_Above;   story = English_Story;   break;
+            case "japanese":  above = Japanese_Above;  story = Japanese_Story;  break;
+            case "chinese":   above = Chinese_Above;   story = Chinese_Story;   break;
+            case "kaza":      above = Kaza_Above;      story = Kaza_Story;      break;
+            // default: korean
         }
 
         if (above != null && story != null)
@@ -281,18 +306,106 @@ public class DialogueManager3_3 : MonoBehaviour
             story.gameObject.SetActive(true);
             above.anchoredPosition = AboPo;
             story.anchoredPosition = StoPo;
+
+            // ì–¸ì–´ë³„ TMP ì¬ë°”ì¸ë”©
+            aboveText = FindTMP(above);
+            storyText = FindTMP(story);
+
+            Debug_LogBind("Above", aboveText);
+            Debug_LogBind("Story", storyText);
+
+            if (aboveText == null || storyText == null)
+                Debug.LogWarning("[D3_3] Active language TMP not found. Check children TextMeshProUGUI.");
         }
+    }
+
+    // í™œì„± ì–¸ì–´ íŒ¨ë„ì—ì„œ TMPë¥¼ ì¬íƒìƒ‰(ì•ˆì „ë§)
+    private void EnsureTMPBound()
+    {
+        if (aboveText != null && storyText != null &&
+            aboveText.gameObject.activeInHierarchy && storyText.gameObject.activeInHierarchy)
+            return;
+
+        RectTransform a, s;
+        GetLangRoots(CurrentLanguage, out a, out s);
+        if (a != null) aboveText = FindTMP(a);
+        if (s != null) storyText = FindTMP(s);
+
+        Debug_LogBind("Ensure.Above", aboveText);
+        Debug_LogBind("Ensure.Story", storyText);
+    }
+
+    private void GetLangRoots(string lang, out RectTransform above, out RectTransform story)
+    {
+        switch (lang)
+        {
+            case "english":   above = English_Above;   story = English_Story;   return;
+            case "japanese":  above = Japanese_Above;  story = Japanese_Story;  return;
+            case "chinese":   above = Chinese_Above;   story = Chinese_Story;   return;
+            case "kaza":      above = Kaza_Above;      story = Kaza_Story;      return;
+            default:          above = Korean_Above;    story = Korean_Story;    return;
+        }
+    }
+
+    private TextMeshProUGUI FindTMP(RectTransform root)
+    {
+        if (root == null) return null;
+        var tmp = root.GetComponent<TextMeshProUGUI>();
+        if (tmp != null) return tmp;
+        return root.GetComponentInChildren<TextMeshProUGUI>(true);
     }
 
     private void OnLanguageChanged(string newLang)
     {
+        SetupLanguageUI();
         LoadLinesForCurrentLanguage();
+
+        // ì¸ë±ìŠ¤ê°€ ë²—ì–´ë‚˜ë©´ 0ìœ¼ë¡œ
+        if (index >= (lines?.Length ?? 0)) index = 0;
+
         StopAllCoroutines();
         StartCoroutine(ShowLineSequence());
     }
 
-    private void OnDestroy()
+    // ===== í™”ìëª…(ì–¸ì–´ë³„) : Pan (Above1_2[1]) =====
+    private string GetSpeakerNamePan()
     {
-        LanguageManager.OnLanguageChanged -= OnLanguageChanged;
+        switch (CurrentLanguage)
+        {
+            case "korean":   return SafeName(languageCollector?.KoreanAbove1_2, 1, "íŒ");
+            case "english":  return SafeName(languageCollector?.EnglishAbove1_2, 1, "Pan");
+            case "japanese": return SafeName(languageCollector?.JapaneseAbove1_2, 1, "ãƒ‘ãƒ¼ãƒ³");
+            case "chinese":  return SafeName(languageCollector?.ChineseAbove1_2, 1, "æ½˜");
+            case "kaza":     return SafeName(languageCollector?.KazaAbove1_2,    1, "ĞŸĞ°Ğ½");
+            default:         return "Pan";
+        }
+    }
+    private string SafeName(string[] arr, int idx, string fallback)
+    {
+        if (arr != null && arr.Length > idx && !string.IsNullOrEmpty(arr[idx])) return arr[idx];
+        return fallback;
+    }
+
+    // ===== Debug helpers =====
+    private void Debug_LogLangSelected(int totalLines)
+    {
+        if (!logDebug) return;
+        Debug.Log($"[D3_3][LANG] selected={currentLangKey}, lines={totalLines}");
+    }
+
+    private void Debug_LogLine(string phase, int idx, string line)
+    {
+        if (!logDebug) return;
+        string text = line ?? "";
+        if (!logFullLine && text.Length > previewChars)
+            text = text.Substring(0, previewChars) + "...";
+        Debug.Log($"[D3_3][LINE {phase}] lang={currentLangKey}, idx={idx}, text=\"{text}\"");
+    }
+
+    private void Debug_LogBind(string which, TextMeshProUGUI tmp)
+    {
+        if (!logDebug) return;
+        string name = tmp ? tmp.gameObject.name : "NULL";
+        Debug.Log($"[D3_3][BIND] {which} -> {name}");
     }
 }

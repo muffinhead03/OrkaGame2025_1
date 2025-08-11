@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class LanguageCollector3_2 : MonoBehaviour
 {
-    [TextArea] public string[] KoreanAbove1_2 = {"에코", "판"};
-    [TextArea] public string[] EnglishAbove1_2 = {"Echo", "Pan"} ;
-    [TextArea] public string[] JapaneseAbove1_2 = {"エコー", "パーン"};
-    [TextArea] public string[] ChineseAbove1_2 = {"艾可","潘"};
-    [TextArea] public string[] KazaAbove1_2 = {"Эко", "Пан"};
+    [TextArea] public string[] KoreanAbove1_2 = {"에코", "판", "나르케"};
+    [TextArea] public string[] EnglishAbove1_2 = {"Echo", "Pan", "Narke"} ;
+    [TextArea] public string[] JapaneseAbove1_2 = {"エコー", "パーン","ナルケ" };
+    [TextArea] public string[] ChineseAbove1_2 = {"艾可","潘","纳尔克"};
+    [TextArea] public string[] KazaAbove1_2 = {"Эко", "Пан", "Нарыке"};
 
     // �� ��� �迭
     public readonly string[] KoreanLines3_2 = {

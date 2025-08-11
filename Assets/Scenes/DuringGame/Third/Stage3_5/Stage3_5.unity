@@ -3012,7 +3012,11 @@ PrefabInstance:
       value: OnArrowLeft
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 8706653880837387962, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
+    - {fileID: 4951012486792874416, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
+    - {fileID: 6965542387678462331, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
+    - {fileID: 5659580173602651900, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a4945f7f65662f04faef9dc16387d192, type: 3}

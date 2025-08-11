@@ -8,6 +8,13 @@ public class DialogueManager3_2 : MonoBehaviour
 {
     private int currentCase = 0;
 
+    // ===== Debug 옵션 =====
+    [Header("Debug")]
+    [SerializeField] private bool logDebug = true;
+    [SerializeField] private bool logFullLine = false;
+    [SerializeField] private int previewChars = 80;
+    private string currentLangKey = "korean";
+
     public void ChangeCase(int caseNumber)
     {
         currentCase = caseNumber;
@@ -23,11 +30,8 @@ public class DialogueManager3_2 : MonoBehaviour
     {
         if (scene.name == "Stage3_2")
         {
-            DialogueManager3_2 dm = FindObjectOfType<DialogueManager3_2>();
-            if (dm != null)
-            {
-                dm.ChangeCase(15);  // 케이스 15부터 시작
-            }
+            // 필요 시 외부에서 ChangeCase 호출해 시작 지점 바꿔주세요.
+            // 여기서는 자동 점프 안 함
         }
     }
 
@@ -122,19 +126,25 @@ public class DialogueManager3_2 : MonoBehaviour
 
         LoadLinesForCurrentLanguage();
 
-        ChangeCase(currentCase);
+        // 기본 0부터 시작
+        index = Mathf.Clamp(index, 0, (lines != null && lines.Length > 0) ? lines.Length - 1 : 0);
+        currentCase = index;
 
         if (lines == null || lines.Length == 0)
         {
             Debug.LogError("[DialogueManager3_2] 대사가 없습니다.");
             return;
         }
+
+        StopAllCoroutines();
+        StartCoroutine(ShowLineSequence());
     }
 
     private void LoadLinesForCurrentLanguage()
     {
-        string lang = CurrentLanguage;
-        switch (lang)
+        currentLangKey = CurrentLanguage;
+
+        switch (currentLangKey)
         {
             case "korean":   lines = languageCollector.KoreanLines3_2; break;
             case "english":  lines = languageCollector.EnglishLines3_2; break;
@@ -142,19 +152,25 @@ public class DialogueManager3_2 : MonoBehaviour
             case "chinese":  lines = languageCollector.ChineseLines3_2; break;
             case "kaza":     lines = languageCollector.KazaLines3_2; break;
             default:
-                Debug.LogWarning($"Unknown language '{lang}', default to Korean.");
+                Debug.LogWarning($"Unknown language '{currentLangKey}', default to Korean.");
                 lines = languageCollector.KoreanLines3_2;
+                currentLangKey = "korean";
                 break;
         }
+
+        Debug_LogLangSelected(lines?.Length ?? 0);
     }
 
     private IEnumerator ShowLineSequence()
     {
-        if (lines == null || index >= lines.Length)
+        if (lines == null || index < 0 || index >= lines.Length)
         {
-            Debug.LogError("[ShowLineSequence] 유효하지 않은 대사 인덱스.");
+            Debug.LogError($"[ShowLineSequence] 유효하지 않은 대사 인덱스 index={index}, len={lines?.Length ?? 0}");
             yield break;
         }
+
+        // 활성 TMP 바인딩 보증 (언어 패널 전환/비활성화 대비)
+        EnsureTMPBound();
 
         // 효과음/배경음
         if (index == 1 && !kwangPlayed)
@@ -181,8 +197,15 @@ public class DialogueManager3_2 : MonoBehaviour
 
         if (typingCoroutine != null)
             StopCoroutine(typingCoroutine);
+
+        // 디버그: 라인 시작 로그
+        Debug_LogLine("BEGIN", index, lines[index]);
+
         typingCoroutine = StartCoroutine(TypeText(lines[index]));
         yield return typingCoroutine;
+
+        // 디버그: 라인 완료 로그
+        Debug_LogLine("END", index, lines[index]);
 
         nextButton?.gameObject.SetActive(true);
 
@@ -207,7 +230,6 @@ public class DialogueManager3_2 : MonoBehaviour
                 {
                     if (parentObj == null) continue;
 
-                    // 이름이 "2"로 시작하는 루트는 건드리지 않음 (기존 로직 유지)
                     if (!parentObj.name.ToLower().Trim().StartsWith("2"))
                         parentObj.SetActive(true);
 
@@ -233,7 +255,6 @@ public class DialogueManager3_2 : MonoBehaviour
 
     private void UpdateCharacterFace(int idx)
     {
-        // 표정 초기화
         Eco_smiledObj?.SetActive(false);
         Eco_eyeclosedObj?.SetActive(false);
         Eco_readyObj?.SetActive(false);
@@ -243,7 +264,6 @@ public class DialogueManager3_2 : MonoBehaviour
         Narke_defaultObj?.SetActive(false);
         Narke_2Obj?.SetActive(false);
 
-        // 기존 연출 유지
         switch (idx)
         {
             case 0: Eco_smiledObj?.SetActive(true); break;
@@ -264,12 +284,11 @@ public class DialogueManager3_2 : MonoBehaviour
             case 14: Eco_surprisedObj?.SetActive(true); break;
         }
 
-        // === 화자명(AboveLine) 언어별 출력 ===
-        bool isNarke = ( (Narke_defaultObj != null && Narke_defaultObj.activeSelf) ||
-                         (Narke_2Obj != null && Narke_2Obj.activeSelf) );
-        bool isPan   = ( (Pan_defaultObj != null && Pan_defaultObj.activeSelf) ||
-                         (Pan_4eyeclosedObj != null && Pan_4eyeclosedObj.activeSelf) );
-        bool isEcho  = !isNarke && !isPan; // 나머지
+        bool isNarke = ((Narke_defaultObj != null && Narke_defaultObj.activeSelf) ||
+                        (Narke_2Obj != null && Narke_2Obj.activeSelf));
+        bool isPan   = ((Pan_defaultObj != null && Pan_defaultObj.activeSelf) ||
+                        (Pan_4eyeclosedObj != null && Pan_4eyeclosedObj.activeSelf));
+        bool isEcho  = !isNarke && !isPan;
 
         if (aboveText != null)
         {
@@ -279,7 +298,6 @@ public class DialogueManager3_2 : MonoBehaviour
         }
     }
 
-    // === 화자명(언어별) ===
     private string GetSpeakerNameEcho()
     {
         switch (CurrentLanguage)
@@ -306,14 +324,13 @@ public class DialogueManager3_2 : MonoBehaviour
     }
     private string GetSpeakerNameNarke()
     {
-        // 컬렉터에 나르케 전용 배열이 없으므로 간단한 기본값 제공
         switch (CurrentLanguage)
         {
-            case "korean":   return "나르케";
-            case "english":  return "Narke";
-            case "japanese": return "ナルケ";
-            case "chinese":  return "纳尔克";
-            case "kaza":     return "Нарыке";
+            case "korean":   return SafeName(languageCollector?.KoreanAbove1_2, 2, "나르케");
+            case "english":  return SafeName(languageCollector?.EnglishAbove1_2, 2, "Narke");
+            case "japanese": return SafeName(languageCollector?.JapaneseAbove1_2, 2, "ナルケ");
+            case "chinese":  return SafeName(languageCollector?.ChineseAbove1_2, 2, "纳尔克");
+            case "kaza":     return SafeName(languageCollector?.KazaAbove1_2,    2, "Нарыке");
             default:         return "Narke";
         }
     }
@@ -325,7 +342,11 @@ public class DialogueManager3_2 : MonoBehaviour
 
     private IEnumerator TypeText(string fullText)
     {
-        if (storyText == null) yield break;
+        if (storyText == null)
+        {
+            Debug.LogError("[Dialogue3_2] storyText가 바인딩되지 않았습니다.");
+            yield break;
+        }
         storyText.text = string.Empty;
         foreach (char c in fullText)
         {
@@ -355,6 +376,8 @@ public class DialogueManager3_2 : MonoBehaviour
         foreach (var rt in all) rt?.gameObject.SetActive(false);
 
         string lang = CurrentLanguage;
+        currentLangKey = lang;
+
         RectTransform above = Korean_Above, story = Korean_Story;
         switch (lang)
         {
@@ -372,12 +395,42 @@ public class DialogueManager3_2 : MonoBehaviour
             above.anchoredPosition = AboPo;
             story.anchoredPosition = StoPo;
 
-            // 언어별 TMP 재바인딩 (언어 변경 시 미출력 이슈 방지)
+            // 언어별 TMP 재바인딩
             aboveText = FindTMP(above);
             storyText = FindTMP(story);
 
+            Debug_LogBind("Above", aboveText);
+            Debug_LogBind("Story", storyText);
+
             if (aboveText == null || storyText == null)
                 Debug.LogWarning("[DialogueManager3_2] Active language TMP not found. Check children TextMeshProUGUI.");
+        }
+    }
+
+    // 활성 언어 패널에서 TMP 재탐색 (안전망)
+    private void EnsureTMPBound()
+    {
+        if (aboveText != null && storyText != null && aboveText.gameObject.activeInHierarchy && storyText.gameObject.activeInHierarchy)
+            return;
+
+        RectTransform a, s;
+        GetLangRoots(CurrentLanguage, out a, out s);
+        if (a != null) aboveText = FindTMP(a);
+        if (s != null) storyText = FindTMP(s);
+
+        Debug_LogBind("Ensure.Above", aboveText);
+        Debug_LogBind("Ensure.Story", storyText);
+    }
+
+    private void GetLangRoots(string lang, out RectTransform above, out RectTransform story)
+    {
+        switch (lang)
+        {
+            case "english":   above = English_Above;   story = English_Story;   return;
+            case "japanese":  above = Japanese_Above;  story = Japanese_Story;  return;
+            case "chinese":   above = Chinese_Above;   story = Chinese_Story;   return;
+            case "kaza":      above = Kaza_Above;      story = Kaza_Story;      return;
+            default:          above = Korean_Above;    story = Korean_Story;    return;
         }
     }
 
@@ -391,9 +444,10 @@ public class DialogueManager3_2 : MonoBehaviour
 
     private void OnLanguageChanged(string newLang)
     {
-        // 먼저 UI 재바인딩 → 대사 로드 → 시퀀스 재시작
         SetupLanguageUI();
         LoadLinesForCurrentLanguage();
+
+        if (index >= lines.Length) index = 0;
 
         StopAllCoroutines();
         StartCoroutine(ShowLineSequence());
@@ -448,5 +502,28 @@ public class DialogueManager3_2 : MonoBehaviour
     private void LoadScene(string sceneName)
     {
         SceneManager.LoadScene(sceneName);
+    }
+
+    // ===== Debug helpers =====
+    private void Debug_LogLangSelected(int totalLines)
+    {
+        if (!logDebug) return;
+        Debug.Log($"[D3_2][LANG] selected={currentLangKey}, lines={totalLines}");
+    }
+
+    private void Debug_LogLine(string phase, int idx, string line)
+    {
+        if (!logDebug) return;
+        string text = line ?? "";
+        if (!logFullLine && text.Length > previewChars)
+            text = text.Substring(0, previewChars) + "...";
+        Debug.Log($"[D3_2][LINE {phase}] lang={currentLangKey}, idx={idx}, text=\"{text}\"");
+    }
+
+    private void Debug_LogBind(string which, TextMeshProUGUI tmp)
+    {
+        if (!logDebug) return;
+        string name = tmp ? tmp.gameObject.name : "NULL";
+        Debug.Log($"[D3_2][BIND] {which} -> {name}");
     }
 }

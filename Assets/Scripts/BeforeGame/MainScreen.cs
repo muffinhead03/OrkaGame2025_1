@@ -17,7 +17,7 @@ public class MainScreen : MonoBehaviour
     // Start 버튼
     public void OnStartButtonClicked()
     {
-        SceneManager.LoadScene("SlidingGameSecond");
+        SceneManager.LoadScene("SlidingPuzzle");
     }
 
     // Quit 버튼

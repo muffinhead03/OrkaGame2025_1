@@ -54,8 +54,8 @@
     <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage2\CardGame2Manager.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\Stage2_5\DialogueManager2_5.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage1\SlidingGame\SlidingGameManager1AfterFirstDeath\SlidingPuzzleAfterDeathImageChangePiri.cs" />
-    <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage1\250802Update\FirstCardLanguageScript.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage1\SlidingGame\SlidingGameManager1BeforeDeath\SlidingGameRuleExplain.cs" />
+    <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage1\250802Update\FirstCardLanguageScript.cs" />
     <Compile Include="Assets\Scripts\BeforeGame\LanguageManager.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage1\FirstCardLanguage.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage3\SlidingSecond\EmptyPuzzle2Script.cs" />

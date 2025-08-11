@@ -128,7 +128,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 137426500}
-  - component: {fileID: 137426501}
   - component: {fileID: 137426502}
   m_Layer: 0
   m_Name: DialogueManager
@@ -152,18 +151,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &137426501
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 137426499}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e79db8dfb1c18e24bae7e387fa0ae7e0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &137426502
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -208,6 +195,9 @@ MonoBehaviour:
   footSound: {fileID: 1702780488}
   fluteSound: {fileID: 1666518551}
   languageCollector: {fileID: 1774722657}
+  logDebug: 1
+  logFullLine: 0
+  previewChars: 80
 --- !u!1001 &333153850
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1220,7 +1210,11 @@ PrefabInstance:
       value: OnArrowLeft
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 4951012486792874416, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
+    - {fileID: 6965542387678462331, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
+    - {fileID: 8706653880837387962, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
+    - {fileID: 5659580173602651900, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a4945f7f65662f04faef9dc16387d192, type: 3}
@@ -2582,7 +2576,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1774722655}
-  - component: {fileID: 1774722656}
   - component: {fileID: 1774722657}
   m_Layer: 0
   m_Name: LanguageStage3_4
@@ -2606,18 +2599,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1774722656
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1774722654}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 72c555225e9bf294ea95c9f6a4635647, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1774722657
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2630,6 +2611,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d1303113d08d074c9e16495209e28e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  KoreanAbove1_2:
+  - "\uC5D0\uCF54"
+  - "\uD310"
+  - "\uB098\uB974\uCF00"
+  EnglishAbove1_2:
+  - Echo
+  - Pan
+  - Narke
+  JapaneseAbove1_2:
+  - "\u30A8\u30B3\u30FC"
+  - "\u30D1\u30FC\u30F3"
+  - "\u30CA\u30EB\u30B1"
+  ChineseAbove1_2:
+  - "\u827E\u53EF"
+  - "\u6F58"
+  - "\u7EB3\u5C14\u514B"
+  KazaAbove1_2:
+  - "\u042D\u043A\u043E"
+  - "\u041F\u0430\u043D"
+  - "\u041D\u0430\u0440\u044B\u043A\u0435"
 --- !u!1 &1954648752
 GameObject:
   m_ObjectHideFlags: 0
