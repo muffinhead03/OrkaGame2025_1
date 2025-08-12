@@ -281,24 +281,58 @@ public class SlidingGameRuleExplain : MonoBehaviour
 
     private void FinishAndResume()
     {
+        if (finishedAll) return;
         finishedAll = true;
 
+        // 다음 프레임까지 입력 흡수: 당근 버튼이 Down만 받고 Up을 못 받는 상황 방지
+        StartCoroutine(FinishRoutine());
+    }
+    private IEnumerator FinishRoutine()
+    {
+        // 1) 당장 블로커 끄지 말고, "마우스 업"을 기다린다.
+        if (inputBlocker != null)
+        {
+            inputBlocker.gameObject.SetActive(true);
+            inputBlocker.blocksRaycasts = true;   // 이 프레임 업 이벤트 흡수
+            inputBlocker.interactable   = true;
+            inputBlocker.alpha = Mathf.Max(inputBlocker.alpha, 0.001f);
+        }
+
+        // 2) 마우스가 올라갈 때까지 대기 (업 이벤트를 화면 상에서 소모)
+        while (Input.GetMouseButton(0))
+            yield return null; // 다음 프레임까지
+
+        // 3) 혹시 눌림 상태가 남지 않도록 선택 해제
+        if (eventSystem != null)
+            eventSystem.SetSelectedGameObject(null);
+
+        // 4) 한 프레임 더 쉬고 닫기 (UI 전환 안전)
+        yield return null;
+
+        // 5) 룰 설명 UI 비활성화
+        if (dialogueImage != null) dialogueImage.SetActive(false);
+        if (dialoguePanel != null) dialoguePanel.SetActive(false);
+
+        // 6) 블로커 해제
         if (inputBlocker != null)
         {
             inputBlocker.blocksRaycasts = false;
             inputBlocker.interactable   = false;
+            // 필요하면 inputBlocker.gameObject.SetActive(false);
         }
 
-        // 요청: 마지막 대사 후 클릭 → 이미지와 패널 비활성화
-        if (dialogueImage != null) dialogueImage.SetActive(false);
-        if (dialoguePanel != null) dialoguePanel.SetActive(false);
+        // 7) Next 버튼 숨김 + 선택 해제(안전)
+        if (nextButton != null) nextButton.gameObject.SetActive(false);
+        if (eventSystem != null) eventSystem.SetSelectedGameObject(null);
 
-        // 타이머/퍼즐 재개
+        // 8) 퍼즐 재개
         ForceResumeManagers();
+
+        // 9) 같은 프레임에 또 클릭 들어오지 않도록 살짝 쿨타임
+        BlockAdvance(0.1f);
 
         enabled = false;
     }
-
     // ====== Pause/Resume 보강 (Before 전용) ======
     private IEnumerator KeepPausedWhileOpen()
     {

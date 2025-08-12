@@ -120,6 +120,7 @@
     <Compile Include="Assets\Scripts\StartGame\Stage2\Stage2_1\DialogueManager2_1.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage1\250802Update\FirstCardClickManager.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage1\250802Update\FirstCardClickKeyedLinesMB.cs" />
+    <Compile Include="Assets\Scripts\CanvasScalerAutoMatch.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\Stage2_1\LanguageCollector2_1.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\Stage2_4\LanguegeDialogue2_4.cs" />
     <Compile Include="Assets\Scripts\BeforeGame\SettingPanelForMainMenu.cs" />

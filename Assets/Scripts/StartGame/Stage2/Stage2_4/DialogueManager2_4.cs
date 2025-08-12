@@ -7,6 +7,23 @@ using System.Linq;
 
 public class DialogueManager2_4 : MonoBehaviour
 {
+    [Header("Early End (optional)")]
+    [SerializeField] private bool endAfterFirstNext = false;     // 첫 줄 다음버튼에서 바로 엔딩
+    [SerializeField] private bool earlyEndBreathOnly = true;     // 플루트 스킵하고 숨소리만 재생
+    [SerializeField] private bool loadSceneAfterEarlyEnd = true; // 검은 화면 후 씬 전환 여부
+    [SerializeField] private float earlyFadeDelay = 0.2f;        // 숨소리 시작 전에 잠깐 딜레이
+    [SerializeField] private float earlyFadeDuration = 0f;       // 조기엔딩 페이드(0이면 즉시 전환)
+
+    [Header("Ending / Scene")]
+    [SerializeField] private string endingSceneName = "Credits"; // 크레딧 씬 이름
+    [SerializeField] private bool setPlayerPrefsIndex = false;   // 인덱스 저장 여부(선택)
+    [SerializeField] private string playerPrefsKey = "StartFromIndex";
+    [SerializeField] private int playerPrefsIndexValue = 4;
+
+    [Header("마지막 줄 엔딩 옵션")]
+    [SerializeField] private bool forceBreathOnlyAtEnd = false;  // 마지막에서도 숨소리만 재생하고 바로 전환
+    [SerializeField] private float endFadeDuration = 2.0f;       // 마지막 줄 일반 엔딩용 페이드
+
     [Header("언어별 컨테이너")]
     public RectTransform Korean_Above, Korean_Story;
     public RectTransform English_Above, English_Story;
@@ -55,7 +72,6 @@ public class DialogueManager2_4 : MonoBehaviour
         if (s.StartsWith("ko")) return "korean";
         if (s.StartsWith("ja")) return "japanese";
         if (s.StartsWith("zh")) return "chinese";
-        // ✅ 표준키로 귀결
         if (s.StartsWith("kk") || s.Contains("kazakh") || s.Contains("kaza") || s.Contains("kazah"))
             return "kazakh";
         return "korean";
@@ -66,7 +82,7 @@ public class DialogueManager2_4 : MonoBehaviour
         LanguageManager.Initialize();
         LanguageManager.OnLanguageChanged += OnLanguageChanged;
 
-        // Next 버튼이 있다면 클릭 핸들러 연결
+        // Next 버튼 연결
         var btn = nextButton ? nextButton.GetComponent<Button>() : null;
         if (btn != null)
         {
@@ -93,9 +109,6 @@ public class DialogueManager2_4 : MonoBehaviour
         index = 0;
 
         StartCoroutine(ShowLineSequence());
-
-        // 사운드 시퀀스 + 엔딩 페이드(한 번만)
-        StartEndingIfNeeded();
     }
 
     private void OnDestroy()
@@ -120,7 +133,7 @@ public class DialogueManager2_4 : MonoBehaviour
             case "english":  lines = languageCollector.EnglishLines2_4;  break;
             case "japanese": lines = languageCollector.JapaneseLines2_4; break;
             case "chinese":  lines = languageCollector.ChineseLines2_4;  break;
-            case "kazakh":   lines = languageCollector.KazaLines2_4;     break; // ✅
+            case "kazakh":   lines = languageCollector.KazaLines2_4;     break;
             default:
                 Debug.LogWarning($"[DialogueManager2_4] Unknown lang '{lang}', fallback=Korean");
                 lines = languageCollector.KoreanLines2_4;
@@ -155,7 +168,6 @@ public class DialogueManager2_4 : MonoBehaviour
         typingCoroutine = StartCoroutine(TypeText(line));
         yield return typingCoroutine;
 
-        // 한 줄뿐이지만, 버튼이 있으면 보여줌(옵션)
         if (nextButton != null) nextButton.SetActive(true);
     }
 
@@ -170,6 +182,39 @@ public class DialogueManager2_4 : MonoBehaviour
             yield return new WaitForSeconds(typingSpeed);
         }
         Debug_LogLine("END", index, fullText);
+
+        if (nextButton != null) nextButton.SetActive(true);
+    }
+
+    // ===== Next =====
+    public void OnNextClicked()
+    {
+        // ⬇️ 첫 줄에서 바로 엔딩을 원할 때
+        if (endAfterFirstNext && index == 0 && !soundSequenceStarted)
+        {
+            if (nextButton != null) nextButton.SetActive(false);
+            if (typingCoroutine != null) StopCoroutine(typingCoroutine);
+            storyText?.SetText(lines?[index] ?? string.Empty); // 현재 줄은 완성해서 보여주기(선택)
+            StartCoroutine(EarlyEndSequence());
+            return;
+        }
+
+        if (nextButton != null) nextButton.SetActive(false);
+
+        index++;
+        if (index < (lines?.Length ?? 0))
+        {
+            if (typingCoroutine != null) StopCoroutine(typingCoroutine);
+            StartCoroutine(TypeText(lines[index]));
+        }
+        else
+        {
+            // 마지막 줄에서 엔딩 트리거
+            if (forceBreathOnlyAtEnd)
+                StartCoroutine(BreathOnlyThenCredits());
+            else
+                StartEndingIfNeeded();
+        }
     }
 
     // ===== 사운드 + 엔딩 페이드 (한 번만) =====
@@ -192,25 +237,80 @@ public class DialogueManager2_4 : MonoBehaviour
         // 2) 숨소리
         if (breathSource != null) breathSource.Play();
 
-        // 3) 2초 후 엔딩 이미지 페이드 인
+        // 3) 잠깐 대기 후 엔딩 이미지 페이드 인
         yield return new WaitForSeconds(2f);
-        yield return StartCoroutine(FadeInEndingImage());
+        yield return StartCoroutine(FadeInEndingImage(endFadeDuration));
 
-        // 4) Stage2_3_1로 전환(+ 인덱스 4부터 시작)
-        PlayerPrefs.SetInt("StartFromIndex", 4);
-        SceneManager.LoadScene("Stage2_3_1");
+        // 4) 씬 전환
+        LoadEndingScene();
     }
 
-    private IEnumerator FadeInEndingImage()
+    private IEnumerator BreathOnlyThenCredits()
     {
-        if (endingImage == null) yield break;
+        if (soundSequenceStarted) yield break;
+        soundSequenceStarted = true;
+
+        if (breathSource != null)
+        {
+            breathSource.Play();
+            yield return new WaitWhile(() => breathSource.isPlaying);
+        }
+
+        // 숨소리만 듣고 바로(혹은 페이드 후) 전환하고 싶다면 earlyFadeDuration 사용
+        if (earlyFadeDuration > 0f)
+            yield return FadeToBlack(earlyFadeDuration);
+
+        LoadEndingScene();
+    }
+
+    private IEnumerator EarlyEndSequence()
+    {
+        soundSequenceStarted = true; // 중복 방지
+
+        // (선택) 플루트 재생
+        if (!earlyEndBreathOnly && fluteSource != null)
+        {
+            fluteSource.Play();
+            yield return new WaitWhile(() => fluteSource.isPlaying);
+        }
+
+        yield return new WaitForSeconds(earlyFadeDelay);
+
+        // 숨소리 재생
+        if (breathSource != null)
+        {
+            breathSource.Play();
+            yield return new WaitWhile(() => breathSource.isPlaying);
+        }
+
+        // 검은 화면 페이드(0이면 건너뜀)
+        if (earlyFadeDuration > 0f)
+            yield return FadeToBlack(earlyFadeDuration);
+
+        if (loadSceneAfterEarlyEnd)
+            LoadEndingScene();
+    }
+
+    private void LoadEndingScene()
+    {
+        if (setPlayerPrefsIndex)
+            PlayerPrefs.SetInt(playerPrefsKey, playerPrefsIndexValue);
+
+        if (!string.IsNullOrEmpty(endingSceneName))
+            SceneManager.LoadScene(endingSceneName);
+        else
+            Debug.LogError("[DialogueManager2_4] endingSceneName 이 비어있습니다.");
+    }
+
+    private IEnumerator FadeInEndingImage(float fadeDuration = 2.0f)
+    {
+        if (endingImage == null || fadeDuration <= 0f) yield break;
 
         Color color = endingImage.color;
         color.a = 0f;
         endingImage.color = color;
         endingImage.gameObject.SetActive(true);
 
-        float fadeDuration = 2.0f;
         float t = 0f;
         while (t < fadeDuration)
         {
@@ -223,21 +323,23 @@ public class DialogueManager2_4 : MonoBehaviour
         yield return new WaitForSeconds(2f);
     }
 
-    // ===== Next =====
-    public void OnNextClicked()
+    private IEnumerator FadeToBlack(float duration = 2f)
     {
-        if (nextButton != null) nextButton.SetActive(false);
+        if (endingImage == null || duration <= 0f) yield break;
 
-        index++;
-        if (index < (lines?.Length ?? 0))
+        // 순수 블랙 오버레이로 사용
+        endingImage.sprite = null; // 스프라이트 제거(단색)
+        var c = Color.black; c.a = 0f;
+        endingImage.color = c;
+        endingImage.gameObject.SetActive(true);
+
+        float t = 0f;
+        while (t < duration)
         {
-            if (typingCoroutine != null) StopCoroutine(typingCoroutine);
-            StartCoroutine(TypeText(lines[index]));
-        }
-        else
-        {
-            // 모든 대사 종료 → (가드 포함) 엔딩 처리
-            StartEndingIfNeeded();
+            t += Time.deltaTime;
+            float a = Mathf.Clamp01(t / duration);
+            endingImage.color = new Color(0f, 0f, 0f, a);
+            yield return null;
         }
     }
 
@@ -259,7 +361,7 @@ public class DialogueManager2_4 : MonoBehaviour
             case "english":  above = English_Above;  story = English_Story;  break;
             case "japanese": above = Japanese_Above; story = Japanese_Story; break;
             case "chinese":  above = Chinese_Above;  story = Chinese_Story;  break;
-            case "kazakh":   above = Kaza_Above;     story = Kaza_Story;     break; // ✅
+            case "kazakh":   above = Kaza_Above;     story = Kaza_Story;     break;
             // default: korean
         }
 
@@ -275,7 +377,6 @@ public class DialogueManager2_4 : MonoBehaviour
             if (newAbove != null) aboveText = newAbove; else Debug.LogWarning("[2_4] aboveText 바인딩 실패");
             if (newStory != null) storyText = newStory; else Debug.LogWarning("[2_4] storyText 바인딩 실패");
 
-            // 초깃값으로 화자명 설정(나르케)
             if (aboveText != null) aboveText.text = GetSpeakerNameNarke();
         }
     }
@@ -288,9 +389,11 @@ public class DialogueManager2_4 : MonoBehaviour
 
         StopAllCoroutines();
         index = 0;
-        soundSequenceStarted = false; // 언어 바뀌면 사운드 시퀀스도 다시
+
+        // 언어 바뀌면 사운드 시퀀스 가드 해제
+        soundSequenceStarted = false;
+
         StartCoroutine(ShowLineSequence());
-        StartEndingIfNeeded();
     }
 
     // ===== 화자명(나르케) 언어별 =====
@@ -303,7 +406,7 @@ public class DialogueManager2_4 : MonoBehaviour
             case "english":  return SafeName(languageCollector.EnglishAbove2_4,  2, "Narke");
             case "japanese": return SafeName(languageCollector.JapaneseAbove2_4, 2, "ナルケ");
             case "chinese":  return SafeName(languageCollector.ChineseAbove2_4,  2, "纳尔克");
-            case "kazakh":   return SafeName(languageCollector.KazaAbove2_4,     2, "Нарыке"); // ✅
+            case "kazakh":   return SafeName(languageCollector.KazaAbove2_4,     2, "Нарыке");
             default:         return "Narke";
         }
     }
@@ -314,7 +417,7 @@ public class DialogueManager2_4 : MonoBehaviour
         return fallback;
     }
 
-    // ===== 디버깅(몇 번, 어떤 언어) =====
+    // ===== 디버깅 =====
     private void Debug_LogLine(string phase, int idx, string text)
     {
         Debug.Log($"[2_4:{phase}] lang={CurrentLanguage}, idx={idx}, text={(text ?? "").Replace('\n',' ')}");

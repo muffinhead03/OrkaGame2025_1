@@ -46,19 +46,21 @@ public class SlidingGameManager2Script : MonoBehaviour
     // pos(0~9) -> piece
     private readonly Dictionary<int, SlidingPuzzle2Script> positionToPuzzle = new();
 
-    // 인접 규칙(요청한 표를 0-기반으로 사용)
+    // ===== 이동 규칙(대칭 보장) =====
+    // 기존 문제: 0<->2는 있었지만 2쪽에 0이 빠져 있었습니다.
+    // 아래는 모든 간선이 양방향이 되도록 보정한 버전입니다.
     private readonly Dictionary<int, List<int>> moveRules = new()
     {
-        {0, new(){2}},
-        {1, new(){2,4}},
-        {2, new(){1,3,5}},
-        {3, new(){2,6}},
-        {4, new(){1,5,7}},
-        {5, new(){2,4,6,8}},
-        {6, new(){3,5,9}},
-        {7, new(){3,8}},
-        {8, new(){5,7,9}},
-        {9, new(){6,8}},
+        {0, new(){2}},                // 0 <-> 2
+        {1, new(){2,4}},              // 1 <-> 2,4
+        {2, new(){0,1,3,5}},          // 2 <-> 0,1,3,5  ★ 0 추가
+        {3, new(){2,6,7}},            // 3 <-> 2,6,7   ★ 7 추가(7가 3을 가리키므로 대칭)
+        {4, new(){1,5,7}},            // 4 <-> 1,5,7
+        {5, new(){2,4,6,8}},          // 5 <-> 2,4,6,8
+        {6, new(){3,5,9}},            // 6 <-> 3,5,9
+        {7, new(){3,4,8}},            // 7 <-> 3,4,8   ★ 4 추가(4가 7을 가리키므로 대칭)
+        {8, new(){5,7,9}},            // 8 <-> 5,7,9
+        {9, new(){6,8}},              // 9 <-> 6,8
     };
 
     // ---- 판정 상태 ----
@@ -66,9 +68,8 @@ public class SlidingGameManager2Script : MonoBehaviour
     private bool lock1Cleared = false;
     private bool lock2Cleared = false;
 
-    // ---- 판정 규칙 (요청한 1기반 표를 0기반으로 변환해 정의) ----
-    // 열쇠: 타일 2,4,6,9  -> 위치 세트 (1,2,5,4), (2,3,6,5), (4,5,8,7), (5,6,9,8)  (1기반)
-    //      0기반으로:                  (0,1,4,3), (1,2,5,4), (3,4,7,6), (4,5,8,7)
+    // ---- 판정 규칙 ----
+    // 열쇠: 타일 2,4,6,9 -> (0,1,4,3), (1,2,5,4), (3,4,7,6), (4,5,8,7)
     private readonly int[] keyTiles = {2,4,6,9};
     private readonly List<HashSet<int>> keyValidSets = new()
     {
@@ -78,8 +79,7 @@ public class SlidingGameManager2Script : MonoBehaviour
         new HashSet<int>{4,5,8,7},
     };
 
-    // 1차 자물쇠: 타일 1,3,5,7 -> (3,6,9,5), (2,5,8,4) (1기반)
-    // 0기반:                         (2,5,8,4), (1,4,7,3)
+    // 1차 자물쇠: 타일 1,3,5,7 -> (2,5,8,4), (1,4,7,3)
     private readonly int[] lockTiles = {1,3,5,7};
     private readonly List<HashSet<int>> lock1ValidSets = new()
     {
@@ -87,8 +87,7 @@ public class SlidingGameManager2Script : MonoBehaviour
         new HashSet<int>{1,4,7,3},
     };
 
-    // 2차 자물쇠: 타일 1,3,5,7 -> (7,1,4,5), (8,2,5,6) (1기반)
-    // 0기반:                         (6,0,3,4), (7,1,4,5)
+    // 2차 자물쇠: 타일 1,3,5,7 -> (6,0,3,4), (7,1,4,5)
     private readonly List<HashSet<int>> lock2ValidSets = new()
     {
         new HashSet<int>{6,0,3,4},
@@ -110,8 +109,17 @@ public class SlidingGameManager2Script : MonoBehaviour
         SetAlpha(lock2Icon, 1f);
 
         InitializeBoard();
+
         ValidateSetup();
-        if (debugLogs) DumpState("[Init Dump]");
+        ValidateMoveRulesSymmetric();   // ★ 이동 규칙 대칭성 검증
+
+        if (debugLogs)
+        {
+            PrintNeighborTable();       // ★ 빈칸이 0~9일 때 교체 가능한 위치 테이블
+            if (puzzlePositionMap.ContainsKey(0))
+                LogNeighborsForEmpty(puzzlePositionMap[0]); // 현재 빈칸 기준 안내
+            DumpState("[Init Dump]");
+        }
     }
 
     private void ApplyTimerSettings()
@@ -172,30 +180,48 @@ public class SlidingGameManager2Script : MonoBehaviour
         if (!neighbors.Contains(clickedPos))
         {
             if (debugLogs)
-                Debug.Log($"[BLOCKED] empty:{emptyPos} <-/-> clicked:{clickedPos}  | allowed:[{string.Join(",", neighbors)}]");
+            {
+                Debug.Log($"[BLOCKED] empty:{emptyPos} <-/-> clicked:{clickedPos}");
+                LogNeighborsForEmpty(emptyPos); // ★ 어떤 위치로만 이동 가능한지 안내
+            }
             return;
         }
 
-        // 스왑
-        var empty = positionToPuzzle[emptyPos];
+        // 스왑(빈칸 오브젝트가 없더라도 방어적으로 처리)
+        positionToPuzzle.TryGetValue(emptyPos, out var empty);
 
         if (debugLogs)
             Debug.Log($"[MOVE] empty:{emptyPos} <-> clicked:{clickedPos}  | tile#{clicked.puzzleNumber}");
 
+        // 클릭한 타일을 빈칸 자리로 이동
         clicked.SetPosition(emptyPos, boardPositions[emptyPos]);
-        empty.SetPosition(clickedPos, boardPositions[clickedPos]);
 
+        if (empty != null)
+        {
+            // 빈칸 오브젝트가 있으면 그걸 클릭 위치로 이동
+            empty.SetPosition(clickedPos, boardPositions[clickedPos]);
+            positionToPuzzle[clickedPos] = empty;
+        }
+        else
+        {
+            // 빈칸 오브젝트가 없으면, 클릭 자리는 "비어있음"으로 두기
+            positionToPuzzle.Remove(clickedPos);
+            if (debugLogs) Debug.LogWarning("[SlidingGM2] 빈칸 오브젝트가 없어 clickedPos를 비워둡니다.");
+        }
+
+        // 맵 갱신
         puzzlePositionMap[clicked.puzzleNumber] = emptyPos;
-        puzzlePositionMap[0] = clickedPos;
-
+        puzzlePositionMap[0] = clickedPos; // 빈칸은 클릭한 자리로 이동
         positionToPuzzle[emptyPos] = clicked;
-        positionToPuzzle[clickedPos] = empty;
 
-        if (debugLogs) DumpState("[After Swap]");
+        if (debugLogs)
+        {
+            DumpState("[After Swap]");
+            LogNeighborsForEmpty(clickedPos); // ★ 새 빈칸 기준 안내
+        }
 
         // 이동 후 판정
         CheckJudgements();
-        // 최종 클리어도 여기서 처리
         if (lock2Cleared) LoadSuccessScene();
     }
 
@@ -221,7 +247,7 @@ public class SlidingGameManager2Script : MonoBehaviour
     // ===== 판정 로직 =====
     private void CheckJudgements()
     {
-        // 1) Key (아직 안 깼으면)
+        // 1) Key
         if (!keyCleared && MatchSet(keyTiles, keyValidSets))
         {
             keyCleared = true;
@@ -229,7 +255,7 @@ public class SlidingGameManager2Script : MonoBehaviour
             if (debugLogs) Debug.Log("[JUDGE] Key CLEARED");
         }
 
-        // 2) Lock1 (Key가 먼저여야 함)
+        // 2) Lock1 (Key 선행)
         if (keyCleared && !lock1Cleared && MatchSet(lockTiles, lock1ValidSets))
         {
             lock1Cleared = true;
@@ -237,7 +263,7 @@ public class SlidingGameManager2Script : MonoBehaviour
             if (debugLogs) Debug.Log("[JUDGE] Lock1 CLEARED");
         }
 
-        // 3) Lock2 (Lock1까지 완료 후에만)
+        // 3) Lock2 (Lock1 선행)
         if (keyCleared && lock1Cleared && !lock2Cleared && MatchSet(lockTiles, lock2ValidSets))
         {
             lock2Cleared = true;
@@ -250,13 +276,58 @@ public class SlidingGameManager2Script : MonoBehaviour
     // validSets: 허용 위치 "집합" 목록 (순서 무시)
     private bool MatchSet(int[] tiles, List<HashSet<int>> validSets)
     {
-        // 현재 해당 타일들의 "위치 인덱스(0~9)"를 집합으로 가져오기
         var current = new HashSet<int>(tiles.Select(t => puzzlePositionMap[t]));
-        // 어떤 허용 세트와도 정확히 같으면 true
         return validSets.Any(set => set.SetEquals(current));
     }
 
-    // =====================
+    // ===================== 유틸/디버그 =====================
+
+    // ★ 이동 규칙 대칭성 검증
+    private void ValidateMoveRulesSymmetric()
+    {
+        foreach (var kv in moveRules)
+        {
+            int a = kv.Key;
+            foreach (var b in kv.Value)
+            {
+                if (!moveRules.TryGetValue(b, out var list) || !list.Contains(a))
+                    Debug.LogWarning($"[SlidingGM2] moveRules 비대칭: {a} -> {b} (역방향 누락)");
+            }
+        }
+    }
+
+    // ★ “빈칸이 X일 때 어디와 교체 가능한가?” 로그
+    private void LogNeighborsForEmpty(int emptyPos)
+    {
+        if (!moveRules.TryGetValue(emptyPos, out var nbs))
+        {
+            Debug.LogWarning($"[SlidingGM2] emptyPos {emptyPos}의 이웃 정보 없음");
+            return;
+        }
+
+        // 각 이웃 칸에 현재 어떤 타일이 있는지도 함께 출력
+        string info = string.Join(", ", nbs.Select(p =>
+        {
+            string who = positionToPuzzle.TryGetValue(p, out var piece) ? $"tile#{piece.puzzleNumber}" : "empty";
+            return $"{p}({who})";
+        }));
+
+        Debug.Log($"[NEIGHBORS] empty@{emptyPos} -> can swap with [{string.Join(",", nbs)}]  | occupants: {info}");
+    }
+
+    // ★ 전체 테이블 출력(빈칸이 0~9일 때 이동 가능 위치)
+    private void PrintNeighborTable()
+    {
+        Debug.Log("====== SlidingGM2 Neighbor Table (emptyPos -> neighbors) ======");
+        for (int i = 0; i < 10; i++)
+        {
+            if (moveRules.TryGetValue(i, out var nbs))
+                Debug.Log($"empty@{i} -> [{string.Join(",", nbs)}]");
+            else
+                Debug.Log($"empty@{i} -> [None]");
+        }
+        Debug.Log("================================================================");
+    }
 
     private void LoadSuccessScene()
     {

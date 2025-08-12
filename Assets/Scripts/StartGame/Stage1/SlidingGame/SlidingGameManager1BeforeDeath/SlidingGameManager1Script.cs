@@ -30,6 +30,13 @@ public class SlidingGameManager1BeforeDeathScript : MonoBehaviour
     private Dictionary<int, SlidingPuzzle1Script> positionToPuzzle = new();
 
     private bool hairpinCleared = false, firstLockCleared = false, finalCleared = false;
+    [Header("Pause when these panels are active @ origin")]
+    [SerializeField] private RectTransform settingPanel;
+    [SerializeField] private RectTransform firstPanel;
+
+    // ✅ 기존 isPaused는 외부(다른 시스템) 일시정지를 담당하도록 분리
+    private bool isPausedExternal = false;   // PauseGame/ResumeGame 전용
+    private bool pausedByPanels   = false;   // 패널 상태로 인한 자동 일시정
 
     private readonly Dictionary<int, List<int>> moveRules = new()
     {
@@ -93,7 +100,8 @@ public class SlidingGameManager1BeforeDeathScript : MonoBehaviour
 
     void Update()
     {
-        if (isPaused || sceneLoading) return;
+        UpdatePanelPause();
+        if (isPausedExternal || pausedByPanels || sceneLoading) return;
 
         // 타이머 감소
         timer -= Time.deltaTime;
@@ -111,53 +119,72 @@ public class SlidingGameManager1BeforeDeathScript : MonoBehaviour
         if (timer <= 0f)
             LoadFailScene();
     }
-
-void CheckClearConditions()
-{
-    // 1) 머리핀: 집합 매칭 그대로 유지
-    if (!hairpinCleared && MatchAnyExactMapping(
-            new List<int> { 3, 5, 8, 9 },
-            new List<List<int>> {
-                new() { 2, 3, 5, 6 },
-                new() { 3, 4, 6, 7 },
-                new() { 5, 6, 8, 9 },
-                new() { 6, 7, 9, 10 },
-                new() { 8, 9, 11, 12 },
-                new() { 9, 10, 12, 13 }
-            }))
+    private static bool IsAtOriginAndActive(RectTransform rt)
     {
-        SetAlpha(hairpinCanvas, 0.1f);
-        hairpinCleared = true;
+        if (rt == null || !rt.gameObject.activeInHierarchy) return false;
+        // anchoredPosition(주), 예외적으로 localPosition도 0,0,0이면 원점으로 간주
+        return rt.anchoredPosition.sqrMagnitude <= 0.0001f || rt.localPosition.sqrMagnitude <= 0.0001f;
     }
 
-    // 2) 1차 자물쇠: 타일 번호 {1,2,5,6,7,12} 가 아래 매핑 중 하나와 "정확히" 일치
-    if (!firstLockCleared && MatchAnyExactMapping(
-            new List<int> { 1, 2, 5, 6, 7, 12 },
-            new List<List<int>> {
-                new() { 5, 3, 2, 4, 6, 7  },
-                new() { 8, 6, 5, 7, 9, 10 },
-                new() { 11, 9, 8, 10, 12, 13 }
-            }))
+    // ✅ 추가: 패널 상태에 따라 자동 일시정지 토글
+    private void UpdatePanelPause()
     {
-        SetAlpha(firstLockCanvas, 0.1f);
-        firstLockCleared = true;
+        bool shouldPause =
+            IsAtOriginAndActive(settingPanel) ||
+            IsAtOriginAndActive(firstPanel);
+
+        // 상태 변화시에만 플래그 갱신 (원한다면 여기서 로그)
+        if (pausedByPanels != shouldPause)
+            pausedByPanels = shouldPause;
     }
 
-    // 3) 최종: 타일 번호 {3,6,7,8,10,11,12} 가 아래 매핑 중 하나와 "정확히" 일치
-    if (hairpinCleared && firstLockCleared && !finalCleared &&
-        MatchAnyExactMapping(
-            new List<int> { 3, 6, 7, 8, 10, 11, 12 },
-            new List<List<int>> {
-                new() { 7, 3, 4, 2, 10, 5, 6 },
-                new() { 10, 6, 7, 5, 13, 8, 9 }
-            }))
+    void CheckClearConditions()
     {
-        SetAlpha(doorLockCanvas, 0.1f);
-        SetAlpha(secondLockCanvas, 0.1f);
-        finalCleared = true;
-        LoadSuccessScene();
+        // 1) 머리핀: 타일 [3,5,8,9] 가 아래 후보와 "정확히" 매핑될 때만 통과
+        if (!hairpinCleared && MatchAnyExactMapping(
+                new List<int> { 3, 5, 8, 9 },
+                new List<List<int>> {
+                    new() { 2, 3, 5, 6 },
+                    new() { 3, 4, 6, 7 },
+                    new() { 5, 6, 8, 9 },
+                    new() { 6, 7, 9, 10 },
+                    new() { 8, 9, 11, 12 },
+                    new() { 9, 10, 12, 13 }
+                }))
+        {
+            SetAlpha(hairpinCanvas, 0.1f);
+            hairpinCleared = true;
+        }
+
+        // 2) 1차 자물쇠: 타일 [1,2,5,6,7,12] 가 후보와 "정확히" 매핑
+        if (!firstLockCleared && MatchAnyExactMapping(
+                new List<int> { 1, 2, 5, 6, 7, 12 },
+                new List<List<int>> {
+                    new() { 5, 3, 2, 4, 6, 7  },
+                    new() { 8, 6, 5, 7, 9, 10 },
+                    new() { 11, 9, 8, 10, 12, 13 }
+                }))
+        {
+            SetAlpha(firstLockCanvas, 0.1f);
+            firstLockCleared = true;
+        }
+
+        // 3) 최종: 타일 [3,6,7,8,10,11,12] 가 후보와 "정확히" 매핑
+        if (hairpinCleared && firstLockCleared && !finalCleared &&
+            MatchAnyExactMapping(
+                new List<int> { 3, 6, 7, 8, 10, 11, 12 },
+                new List<List<int>> {
+                    new() { 7, 3, 4, 2, 10, 5, 6 },
+                    new() { 10, 6, 7, 5, 13, 8, 9 }
+                }))
+        {
+            SetAlpha(doorLockCanvas, 0.1f);
+            SetAlpha(secondLockCanvas, 0.1f);
+            finalCleared = true;
+            LoadSuccessScene();
+        }
     }
-}
+
 
 /* ===== 보조 함수들 ===== */
 

@@ -1,5 +1,6 @@
 using UnityEngine;
-using UnityEngine.EventSystems; // 클릭 오브젝트 비활성화용
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
 
     public GameObject hairpinAfterDeath, firstLockAfterDeath, doorLockAfterDeath, secondLockAfterDeath;
     public GameObject DrugBagAfterDeath, JusaAfterDeath, coffeeAfterDeath, fluteAfterDeath;
-    private bool sceneLoading = false;   // 씬 중복 로딩 방지
+    private bool sceneLoading = false;
 
     public CanvasGroup hairpinCanvasAfterDeath, firstLockCanvasAfterDeath, doorLockCanvasAfterDeath, secondLockCanvasAfterDeath;
     public CanvasGroup goatCanvasAfterDeath;
@@ -22,15 +23,14 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
     public TextMeshProUGUI timerTextAfterDeath;
 
     private float timer = 600f;
-    private float goatElapsed = 0f; // 염소 전용 경과 시간
+    private float goatElapsed = 0f;
 
-    private readonly Dictionary<CanvasGroup, float> _lockedAlpha = new(); // 알파 고정
+    private readonly Dictionary<CanvasGroup, float> _lockedAlpha = new();
     private readonly Dictionary<int, int> puzzlePositionMapAfterDeath = new();
     private readonly Dictionary<int, SlidingPuzzle1ScriptAfterDeath> positionToPuzzleAfterDeath = new();
 
     private bool hairpinCleared = false, firstLockCleared = false, finalCleared = false;
 
-    // 허용 세트(정답) 캐시
     private HashSet<string> _hairpinAllowed, _firstLockAllowed, _finalAllowed;
 
     private readonly Dictionary<int, List<int>> moveRulesAfterDeath = new()
@@ -41,19 +41,26 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
         {10, new() {7,9,13}}, {11, new() {8,12}}, {12, new() {9,11,13}}, {13, new() {10,12}}
     };
 
-    #region ⏸ UI 패널 원점일 때 일시정지
-    [Header("일시정지 트리거 패널(원점(0,0,0)일 때 타이머/염소 멈춤)")]
-    [SerializeField] private RectTransform firstPanel;   // FirstPanel
-    [SerializeField] private RectTransform settingPanel; // SettingPanel
-    [Tooltip("패널이 활성(ActiveInHierarchy)일 때만 일시정지 판정할지 여부")]
+    // ===== UI 패널이 열려있을 때(활성 + 원점) 일시정지 & 입력 차단 =====
+    [Header("일시정지 트리거 패널(원점(0,0,0)일 때 타이머/염소/입력 모두 멈춤)")]
+    [SerializeField] private RectTransform firstPanel;
+    [SerializeField] private RectTransform settingPanel;
     [SerializeField] private bool requireActiveForPause = true;
+
+    [Header("입력 차단 대상(패널 열릴 때 자동 비활성)")]
+    [SerializeField] private CanvasGroup[] uiRootsToBlock;          // 퍼즐/아이템 UI 루트에 CanvasGroup 달아서 등록
+    [SerializeField] private Selectable[] selectablesToDisable;     // 버튼/슬라이더 등
+    [SerializeField] private Behaviour[] behavioursToDisable;       // Hover 스크립트, EventTrigger 등
+    [SerializeField] private Collider[] colliders3DToDisable;       // 3D 콜라이더
+    [SerializeField] private Collider2D[] colliders2DToDisable;     // 2D 콜라이더
+
+    private bool lastPaused = false;
 
     private bool IsRectAtOrigin(RectTransform rt)
     {
         if (rt == null) return false;
         if (requireActiveForPause && !rt.gameObject.activeInHierarchy) return false;
 
-        // anchoredPosition(캔버스) / localPosition(예외) 둘 다 체크, 오차 허용
         const float eps = 0.01f;
         Vector2 ap = rt.anchoredPosition;
         Vector3 lp = rt.localPosition;
@@ -66,7 +73,32 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
     {
         return IsRectAtOrigin(firstPanel) || IsRectAtOrigin(settingPanel);
     }
-    #endregion
+
+    private void ApplyInputBlock(bool block)
+    {
+        if (uiRootsToBlock != null)
+        {
+            foreach (var cg in uiRootsToBlock)
+            {
+                if (!cg) continue;
+                cg.blocksRaycasts = !block;
+                cg.interactable   = !block;
+                // alpha는 그대로 둡니다(보이기는 하되 입력만 차단).
+            }
+        }
+        if (selectablesToDisable != null)
+            foreach (var s in selectablesToDisable) if (s) s.interactable = !block;
+
+        if (behavioursToDisable != null)
+            foreach (var b in behavioursToDisable) if (b) b.enabled = !block;
+
+        if (colliders3DToDisable != null)
+            foreach (var c in colliders3DToDisable) if (c) c.enabled = !block;
+
+        if (colliders2DToDisable != null)
+            foreach (var c in colliders2DToDisable) if (c) c.enabled = !block;
+    }
+    // =============================================================
 
     void Awake()
     {
@@ -79,7 +111,6 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
 
         InitializeBoardAfterDeath();
 
-        // 정답 세트 키 캐싱
         _hairpinAllowed = new HashSet<string>(new[]
         {
             MakeKey(new[]{2,3,5,6}),
@@ -102,12 +133,15 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
             MakeKey(new[]{2,3,4,5,6,7,10}),
             MakeKey(new[]{5,6,7,8,9,10,13})
         });
+
+        // 시작 시 현재 상태에 맞춰 입력 차단 적용
+        ApplyInputBlock(IsUIPaused());
     }
 
     void InitializeBoardAfterDeath()
     {
         positionToPuzzleAfterDeath.Clear();
-        puzzlePositionMapAfterDeath.Clear(); // ← 추가
+        puzzlePositionMapAfterDeath.Clear();
 
         foreach (var puzzle in puzzleScriptsAfterDeath)
         {
@@ -118,9 +152,11 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
         }
     }
 
-
     public void TryMovePuzzle(SlidingPuzzle1ScriptAfterDeath clicked)
     {
+        // 패널 열려 있을 때 입력 차단
+        if (IsUIPaused()) return;
+
         int emptyPos = puzzlePositionMapAfterDeath[0];
         int clickedPos = clicked.currentPositionIndex;
 
@@ -150,16 +186,21 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
     {
         if (finalCleared || sceneLoading) return;
 
-        // 🔒 패널이 (0,0,0)에 있으면 시간/염소 경과를 멈춤
         bool uiPaused = IsUIPaused();
+
+        // 상태 변동 시 입력 차단 토글
+        if (uiPaused != lastPaused)
+        {
+            ApplyInputBlock(uiPaused);
+            lastPaused = uiPaused;
+        }
 
         if (!uiPaused)
         {
             timer -= Time.deltaTime;
-            goatElapsed += Time.deltaTime; // 염소는 타이머와 무관하지만 같은 조건으로 일시정지
+            goatElapsed += Time.deltaTime;
         }
 
-        // 타이머 텍스트(정지 중이면 값 유지)
         int min = Mathf.FloorToInt(Mathf.Max(0f, timer) / 60f);
         int sec = Mathf.FloorToInt(Mathf.Max(0f, timer) % 60f);
         if (timerTextAfterDeath != null)
@@ -167,7 +208,6 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
 
         UpdateGoatAlphaAfterDeath();
 
-        // 시간 초과(단, UI에 의해 일시정지였다면 timer가 줄지 않으니 여기 안 들어옴)
         if (timer <= 0f && !sceneLoading)
         {
             if (!finalCleared)
@@ -190,83 +230,76 @@ public class SlidingGameManager1ScriptAfterDeath : MonoBehaviour
     }
 
     // ---- 안정적인 클리어 판정 + 디버그 로그 ----
-void CheckClearConditionsAfterDeath()
-{
-    // 1) 머리핀: 타일 [3,5,8,9] 이 아래 후보 위치와 "정확히" 일치해야 함
-    if (!hairpinCleared && MatchAnyExactMapping(
-            new List<int> { 3, 5, 8, 9 },
-            new List<List<int>> {
-                new() { 2, 3, 5, 6 },
-                new() { 3, 4, 6, 7 },
-                new() { 5, 6, 8, 9 },
-                new() { 6, 7, 9, 10 },
-                new() { 8, 9, 11, 12 },
-                new() { 9, 10, 12, 13 }
-            }))
+    void CheckClearConditionsAfterDeath()
     {
-        Debug.Log("[HAIRPIN] OK");
-        SetAlphaAfterDeath(hairpinCanvasAfterDeath, 0.1f, lockIt: true, raycast: false, interact: false, ignoreParents: true);
-        hairpinCleared = true;
+        if (!hairpinCleared && MatchAnyExactMapping(
+                new List<int> { 3, 5, 8, 9 },
+                new List<List<int>> {
+                    new() { 2, 3, 5, 6 },
+                    new() { 3, 4, 6, 7 },
+                    new() { 5, 6, 8, 9 },
+                    new() { 6, 7, 9, 10 },
+                    new() { 8, 9, 11, 12 },
+                    new() { 9, 10, 12, 13 }
+                }))
+        {
+            Debug.Log("[HAIRPIN] OK");
+            SetAlphaAfterDeath(hairpinCanvasAfterDeath, 0.1f, lockIt: true, raycast: false, interact: false, ignoreParents: true);
+            hairpinCleared = true;
+        }
+
+        if (!firstLockCleared && MatchAnyExactMapping(
+                new List<int> { 1, 2, 5, 6, 7, 12 },
+                new List<List<int>> {
+                    new() { 5, 3, 2, 4, 6, 7  },
+                    new() { 8, 6, 5, 7, 9, 10 },
+                    new() { 11, 9, 8, 10, 12, 13 }
+                }))
+        {
+            Debug.Log("[FIRST] OK");
+            SetAlphaAfterDeath(firstLockCanvasAfterDeath, 0.1f, lockIt: true, raycast: false, interact: false, ignoreParents: true);
+            firstLockCleared = true;
+        }
+
+        if (hairpinCleared && firstLockCleared && !finalCleared &&
+            MatchAnyExactMapping(
+                new List<int> { 3, 6, 7, 8, 10, 11, 12 },
+                new List<List<int>> {
+                    new() { 7, 3, 4, 2, 10, 5, 6 },
+                    new() { 10, 6, 7, 5, 13, 8, 9 }
+                }))
+        {
+            Debug.Log("[FINAL] OK -> Success transition");
+            SetAlphaAfterDeath(doorLockCanvasAfterDeath,   0.1f, lockIt: true, raycast: false, interact: false, ignoreParents: true);
+            SetAlphaAfterDeath(secondLockCanvasAfterDeath, 0.1f, lockIt: true, raycast: false, interact: false, ignoreParents: true);
+            finalCleared = true;
+
+            TransitionToSuccess(1.5f);
+        }
     }
 
-    // 2) 1차 자물쇠: 타일 [1,2,5,6,7,12] 이 아래 후보 위치와 "정확히" 일치해야 함
-    if (!firstLockCleared && MatchAnyExactMapping(
-            new List<int> { 1, 2, 5, 6, 7, 12 },
-            new List<List<int>> {
-                new() { 5, 3, 2, 4, 6, 7  },
-                new() { 8, 6, 5, 7, 9, 10 },
-                new() { 11, 9, 8, 10, 12, 13 }
-            }))
+    bool MatchExactMapping(IList<int> tilesInOrder, IList<int> positionsInOrder)
     {
-        Debug.Log("[FIRST] OK");
-        SetAlphaAfterDeath(firstLockCanvasAfterDeath, 0.1f, lockIt: true, raycast: false, interact: false, ignoreParents: true);
-        firstLockCleared = true;
-    }
-
-    // 3) 최종: 타일 [3,6,7,8,10,11,12] 이 아래 후보 위치와 "정확히" 일치해야 함
-    if (hairpinCleared && firstLockCleared && !finalCleared &&
-        MatchAnyExactMapping(
-            new List<int> { 3, 6, 7, 8, 10, 11, 12 },
-            new List<List<int>> {
-                new() { 7, 3, 4, 2, 10, 5, 6 },
-                new() { 10, 6, 7, 5, 13, 8, 9 }
-            }))
-    {
-        Debug.Log("[FINAL] OK -> Success transition");
-        SetAlphaAfterDeath(doorLockCanvasAfterDeath,   0.1f, lockIt: true, raycast: false, interact: false, ignoreParents: true);
-        SetAlphaAfterDeath(secondLockCanvasAfterDeath, 0.1f, lockIt: true, raycast: false, interact: false, ignoreParents: true);
-        finalCleared = true;
-
-        TransitionToSuccess(1.5f);
-    }
-}
-
-// ===== 정확 매핑 헬퍼 =====
-// 타일 목록(순서 고정)의 각 타일이 positionsInOrder[i] 위치에 정확히 있어야 true
-bool MatchExactMapping(IList<int> tilesInOrder, IList<int> positionsInOrder)
-{
-    if (tilesInOrder == null || positionsInOrder == null || tilesInOrder.Count != positionsInOrder.Count)
-        return false;
-
-    for (int i = 0; i < tilesInOrder.Count; i++)
-    {
-        int tile = tilesInOrder[i];
-        int wantPos = positionsInOrder[i];
-        if (!puzzlePositionMapAfterDeath.TryGetValue(tile, out int curPos) || curPos != wantPos)
+        if (tilesInOrder == null || positionsInOrder == null || tilesInOrder.Count != positionsInOrder.Count)
             return false;
+
+        for (int i = 0; i < tilesInOrder.Count; i++)
+        {
+            int tile = tilesInOrder[i];
+            int wantPos = positionsInOrder[i];
+            if (!puzzlePositionMapAfterDeath.TryGetValue(tile, out int curPos) || curPos != wantPos)
+                return false;
+        }
+        return true;
     }
-    return true;
-}
 
-bool MatchAnyExactMapping(IList<int> tilesInOrder, List<List<int>> mappingCandidates)
-{
-    foreach (var candidate in mappingCandidates)
-        if (MatchExactMapping(tilesInOrder, candidate)) return true;
-    return false;
-}
+    bool MatchAnyExactMapping(IList<int> tilesInOrder, List<List<int>> mappingCandidates)
+    {
+        foreach (var candidate in mappingCandidates)
+            if (MatchExactMapping(tilesInOrder, candidate)) return true;
+        return false;
+    }
 
-
-    // 현재 타일들 위치 키 만들기(안전 가드)
     private bool TryGetPositionsKeyForTiles(int[] tileNums, out string key)
     {
         key = null;
@@ -288,7 +321,6 @@ bool MatchAnyExactMapping(IList<int> tilesInOrder, List<List<int>> mappingCandid
         return string.Join(",", list);
     }
 
-    // ---- 알파 설정(잠금 옵션 지원) ----
     void SetAlphaAfterDeath(CanvasGroup group, float alpha, bool lockIt = false, bool raycast = true, bool interact = true, bool ignoreParents = false)
     {
         if (group == null) return;
@@ -301,7 +333,6 @@ bool MatchAnyExactMapping(IList<int> tilesInOrder, List<List<int>> mappingCandid
         else _lockedAlpha.Remove(group);
     }
 
-    // 염소 알파는 goatElapsed만 사용
     void UpdateGoatAlphaAfterDeath()
     {
         float elapsedTime = goatElapsed;
@@ -311,25 +342,23 @@ bool MatchAnyExactMapping(IList<int> tilesInOrder, List<List<int>> mappingCandid
         else                          goatCanvasAfterDeath.alpha = 1f;
     }
 
-    // 클릭한 오브젝트 비활성화
     private void DisableClickedObject(GameObject clicked = null)
     {
         var go = clicked != null ? clicked : EventSystem.current?.currentSelectedGameObject;
         if (go != null) go.SetActive(false);
     }
 
-    // ===== 아이템: 공개 API (버튼에 그대로 연결) =====
-    public void UseDrugBagAfterDeath()              { DoUseDrugBag(); DisableClickedObject(); }
-    public void UseJusaAfterDeath()                 { DoUseJusa();    DisableClickedObject(); }
-    public void UseCoffeeAfterDeath()               { DoUseCoffee();  DisableClickedObject(); }
-    public void UseFluteAfterDeath()                { DoUseFlute();   DisableClickedObject(); }
+    // ===== 아이템: 버튼에서 직접 연결되는 API (패널 열려 있으면 무시) =====
+    public void UseDrugBagAfterDeath()              { if (IsUIPaused()) return; DoUseDrugBag(); DisableClickedObject(); }
+    public void UseJusaAfterDeath()                 { if (IsUIPaused()) return; DoUseJusa();    DisableClickedObject(); }
+    public void UseCoffeeAfterDeath()               { if (IsUIPaused()) return; DoUseCoffee();  DisableClickedObject(); }
+    public void UseFluteAfterDeath()                { if (IsUIPaused()) return; DoUseFlute();   DisableClickedObject(); }
 
-    public void UseDrugBagAfterDeath(GameObject go) { DoUseDrugBag(); DisableClickedObject(go); }
-    public void UseJusaAfterDeath(GameObject go)    { DoUseJusa();    DisableClickedObject(go); }
-    public void UseCoffeeAfterDeath(GameObject go)  { DoUseCoffee();  DisableClickedObject(go); }
-    public void UseFluteAfterDeath(GameObject go)   { DoUseFlute();   DisableClickedObject(go); }
+    public void UseDrugBagAfterDeath(GameObject go) { if (IsUIPaused()) return; DoUseDrugBag(); DisableClickedObject(go); }
+    public void UseJusaAfterDeath(GameObject go)    { if (IsUIPaused()) return; DoUseJusa();    DisableClickedObject(go); }
+    public void UseCoffeeAfterDeath(GameObject go)  { if (IsUIPaused()) return; DoUseCoffee();  DisableClickedObject(go); }
+    public void UseFluteAfterDeath(GameObject go)   { if (IsUIPaused()) return; DoUseFlute();   DisableClickedObject(go); }
 
-    // ===== 실제 동작 =====
     private void DoUseDrugBag()
     {
         SetAlphaAfterDeath(hairpinCanvasAfterDeath, 1f);
@@ -397,7 +426,6 @@ bool MatchAnyExactMapping(IList<int> tilesInOrder, List<List<int>> mappingCandid
         }
     }
 
-    // 잠금 알파 재적용(외부 덮어쓰기 무력화)
     void LateUpdate()
     {
         if (_lockedAlpha.Count == 0) return;

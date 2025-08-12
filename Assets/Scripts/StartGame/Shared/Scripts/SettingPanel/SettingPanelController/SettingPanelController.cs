@@ -8,13 +8,18 @@ public class SettingPanelController : MonoBehaviour
     public GameObject settingPanel;
     public GameObject firstPanel;
 
+    [Header("초기화 옵션")]
+    public bool autoDisableOnAwake = true;   // 시작 시 자동으로 둘 다 비활성화
+
     [Header("Hold Options")]
     public float unitsPerSecond = 7f;
 
     [Tooltip("길게 누른 것으로 판정되는 시간(초)")]
     public float longPressThreshold = 0.5f;
 
+    [Header("패널 위치")]
     public Vector3 settingPanelOrigin = new Vector3(-3100, 727, 0);
+    public Vector3 firstPanelOrigin   = new Vector3(-2066, 727, 0); // 필요 시 사용
     public Vector3 center = Vector3.zero;
 
     [Header("Display (TMP)")]
@@ -43,8 +48,52 @@ public class SettingPanelController : MonoBehaviour
     private bool  sfxThreshold = false;
     private float sfxAccum = 0f;
 
+    // ============================================================
+    // 공용 패널 제어
+    // ============================================================
+    private void OpenPanel(GameObject panel)
+    {
+        if (!panel) return;
+        panel.transform.localPosition = center;
+        panel.SetActive(true);
+    }
+
+    private void ClosePanel(GameObject panel, Vector3? moveTo = null)
+    {
+        if (!panel) return;
+        if (moveTo.HasValue) panel.transform.localPosition = moveTo.Value;
+        panel.SetActive(false);
+    }
+
+    // 외부에서 호출할 API
+    public void OpenSetting()
+    {
+        ClosePanel(firstPanel, firstPanelOrigin);
+        OpenPanel(settingPanel);
+    }
+
+    public void OpenFirst()
+    {
+        ClosePanel(settingPanel, settingPanelOrigin);
+        OpenPanel(firstPanel);
+    }
+
+    public void CloseAll()
+    {
+        ClosePanel(settingPanel, settingPanelOrigin);
+        ClosePanel(firstPanel, firstPanelOrigin);
+    }
+    // ============================================================
+
     void Awake()
     {
+        // 시작 시 자동 비활성화(실수 방지). 필요 없으면 인스펙터에서 체크 해제하세요.
+        if (autoDisableOnAwake)
+        {
+            if (settingPanel) settingPanel.SetActive(false);
+            if (firstPanel)   firstPanel.SetActive(false);
+        }
+
         // 베이스 볼륨 백업
         if (backgroundMusicSources != null && backgroundMusicSources.Length > 0)
         {
@@ -249,19 +298,10 @@ public class SettingPanelController : MonoBehaviour
             sfxValueText.text = MusicVolumeManager.currentSoundEffectVolume.ToString();
     }
 
-
-    // ===== 패널 닫기 =====
+    // ===== 버튼용: 기존 닫기 로직을 안전하게 래핑 =====
     public void OnCloseSetting()
     {
-        if (settingPanel)
-        {
-            settingPanel.transform.localPosition = settingPanelOrigin;
-            settingPanel.SetActive(false);
-        }
-        if (firstPanel)
-        {
-            firstPanel.SetActive(true);
-            firstPanel.transform.localPosition = center;
-        }
+        ClosePanel(settingPanel, settingPanelOrigin);
+        OpenPanel(firstPanel);
     }
 }

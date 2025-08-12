@@ -44,13 +44,21 @@ public class DialogueManager3_1 : MonoBehaviour
     [Header("대사/이름 소스")]
     public LanguageCollector3_1 languageCollector;
 
+    [Header("진행 차단 패널(활성 + 원점일 때 차단)")]
+    [SerializeField] private RectTransform FirstPanel;
+    [SerializeField] private RectTransform SettingPanel;
+    [SerializeField] private bool requireActiveForBlock = true;
+
     private string[] lines;
     private int index;
     private Coroutine typingCoroutine;
 
+    private bool isTyping = false;       // 현재 줄 타이핑 중?
+    private bool isFullyShown = false;   // 현재 줄이 완전히 출력됨?
+    private bool blocked = false;        // 패널로 인해 진행이 차단 중?
+
     // === 언어 헬퍼 ===
     private string CurrentLanguage => NormalizeLang(LanguageManager.GetLanguage());
-
     private string NormalizeLang(string raw)
     {
         string s = (raw ?? "korean").Trim().ToLowerInvariant();
@@ -58,7 +66,7 @@ public class DialogueManager3_1 : MonoBehaviour
         if (s.StartsWith("ko")) return "korean";
         if (s.StartsWith("ja")) return "japanese";
         if (s.StartsWith("zh")) return "chinese";
-        if (s.StartsWith("ka") || s.Contains("kaza") || s.Contains("kazah")) return "kaza"; // kazakh 변형 포함
+        if (s.StartsWith("ka") || s.Contains("kaza") || s.Contains("kazah")) return "kaza";
         return s;
     }
 
@@ -92,6 +100,31 @@ public class DialogueManager3_1 : MonoBehaviour
         yield return StartCoroutine(ShowLineSequence());
     }
 
+    private void Update()
+    {
+        bool nowBlocked = IsBlockingOpen();
+        if (nowBlocked && !blocked)
+        {
+            // 막히는 순간: 현재 줄을 즉시 완성(인덱스 유지)
+            ForceCompleteCurrentLine();
+        }
+        blocked = nowBlocked;
+    }
+
+    // ===== 패널 차단 판정 =====
+    private bool IsRectAtOrigin(RectTransform rt)
+    {
+        if (rt == null) return false;
+        if (requireActiveForBlock && !rt.gameObject.activeInHierarchy) return false;
+        const float eps = 0.01f;
+        Vector2 ap = rt.anchoredPosition;
+        Vector3 lp = rt.localPosition;
+        bool apZero = Mathf.Abs(ap.x) <= eps && Mathf.Abs(ap.y) <= eps;
+        bool lpZero = Mathf.Abs(lp.x) <= eps && Mathf.Abs(lp.y) <= eps && Mathf.Abs(lp.z) <= eps;
+        return apZero || lpZero;
+    }
+    private bool IsBlockingOpen() => IsRectAtOrigin(FirstPanel) || IsRectAtOrigin(SettingPanel);
+
     private void LoadLinesForCurrentLanguage()
     {
         string lang = CurrentLanguage;
@@ -107,6 +140,7 @@ public class DialogueManager3_1 : MonoBehaviour
                 lines = languageCollector.KoreanLines3_1;
                 break;
         }
+        if (lines == null || lines.Length == 0) lines = new[] { "" };
     }
 
     private IEnumerator ShowLineSequence()
@@ -120,19 +154,105 @@ public class DialogueManager3_1 : MonoBehaviour
         UpdateCharacterFace(index);
         yield return new WaitForSeconds(0.5f);
 
-        if (typingCoroutine != null)
-            StopCoroutine(typingCoroutine);
+        // 새 줄 시작 전에 버튼 숨김
+        nextButton?.gameObject.SetActive(false);
 
-        typingCoroutine = StartCoroutine(TypeText(lines[index]));
-        yield return typingCoroutine;
+        // 타이핑 시작
+        StartTyping(lines[index]);
 
+        // 타이핑이 끝날 때까지 대기(중간에 ForceComplete될 수 있음)
+        while (isTyping) yield return null;
+
+        // 줄이 완성되면 Next 노출
         nextButton?.gameObject.SetActive(true);
+        nextButton.interactable = true;
     }
 
-    // ===== 화자명: 언어별 AboveLine[0/1] 사용 =====
+    private void StartTyping(string text)
+    {
+        StopTyping();
+        typingCoroutine = StartCoroutine(TypeText(text ?? ""));
+    }
+
+    private void StopTyping()
+    {
+        if (typingCoroutine != null)
+        {
+            StopCoroutine(typingCoroutine);
+            typingCoroutine = null;
+        }
+        isTyping = false;
+    }
+
+    private void ForceCompleteCurrentLine()
+    {
+        if (lines == null || index < 0 || index >= lines.Length) return;
+
+        StopTyping();
+        if (storyText != null) storyText.text = lines[index]; // 현재 줄 즉시 완성
+        isFullyShown = true;
+        nextButton?.gameObject.SetActive(true);
+        if (nextButton != null) nextButton.interactable = true;
+    }
+
+    private IEnumerator TypeText(string fullText)
+    {
+        isTyping = true;
+        isFullyShown = false;
+
+        if (storyText != null) storyText.text = string.Empty;
+
+        foreach (char c in fullText)
+        {
+            // 중간에 막히면 즉시 완성 로직으로 넘겨서 종료
+            if (IsBlockingOpen())
+            {
+                break;
+            }
+            if (storyText != null) storyText.text += c;
+            yield return new WaitForSeconds(typingSpeed);
+        }
+
+        // 막혔든 끝났든 최종 정리
+        if (storyText != null) storyText.text = fullText;
+        isTyping = false;
+        isFullyShown = true;
+        typingCoroutine = null;
+    }
+
+    // Next 버튼
+    private void OnNext()
+    {
+        // 1) 막힌 상태면 진행 금지. (타이핑 중이라면 강제 완성만)
+        if (IsBlockingOpen())
+        {
+            if (isTyping) ForceCompleteCurrentLine();
+            return; // 인덱스 유지
+        }
+
+        // 2) 타이핑 중이면 먼저 완성하고 종료(인덱스 유지)
+        if (isTyping)
+        {
+            ForceCompleteCurrentLine();
+            return;
+        }
+
+        // 3) 이미 완성된 상태 → 다음 줄로
+        nextButton?.gameObject.SetActive(false);
+        index++;
+
+        if (lines == null || index >= lines.Length)
+        {
+            SceneManager.LoadScene("SlidingGameSecond");
+            return;
+        }
+
+        StartCoroutine(ShowLineSequence());
+    }
+
+    // ===== 화자/표정 =====
     private void UpdateCharacterFace(int idx)
     {
-        // 표정 초기화
         Eco_eyeclosedObj?.SetActive(false);
         Eco_defaultObj?.SetActive(false);
         Eco_readyObj?.SetActive(false);
@@ -141,49 +261,28 @@ public class DialogueManager3_1 : MonoBehaviour
         Pan_defaultObj?.SetActive(false);
         Pan_4eyeclosedObj?.SetActive(false);
 
-        // 기존 연출 유지
         switch (idx)
         {
-            case 0:
-                Eco_surprisedObj?.SetActive(true);
-                break;
-
+            case 0:  Eco_surprisedObj?.SetActive(true); break;
             case 1:
             case 7:
             case 8:
             case 11:
-            case 19:
-                Pan_defaultObj?.SetActive(true);
-                break;
-
+            case 19: Pan_defaultObj?.SetActive(true); break;
             case 9:
-            case 17:
-                Pan_4eyeclosedObj?.SetActive(true);
-                break;
-
+            case 17: Pan_4eyeclosedObj?.SetActive(true); break;
             case 2:
             case 3:
             case 6:
             case 12:
             case 13:
-            case 15:
-                Eco_readyObj?.SetActive(true);
-                break;
-
+            case 15: Eco_readyObj?.SetActive(true); break;
             case 4:
-            case 18:
-                Eco_defaultObj?.SetActive(true);
-                break;
-
+            case 18: Eco_defaultObj?.SetActive(true); break;
             case 5:
             case 10:
-            case 16:
-                Eco_eyeclosedObj?.SetActive(true);
-                break;
-
-            case 14:
-                Eco_smiledObj?.SetActive(true);
-                break;
+            case 16: Eco_eyeclosedObj?.SetActive(true); break;
+            case 14: Eco_smiledObj?.SetActive(true); break;
         }
 
         bool isPan = IsPanLine(idx);
@@ -192,7 +291,6 @@ public class DialogueManager3_1 : MonoBehaviour
             aboveText.text = speakerName;
     }
 
-    // 이 인덱스가 판의 대사인가?
     private bool IsPanLine(int idx)
     {
         switch (idx)
@@ -206,11 +304,10 @@ public class DialogueManager3_1 : MonoBehaviour
             case 19:
                 return true;
             default:
-                return false; // 나머지는 에코
+                return false;
         }
     }
 
-    // 현재 언어의 화자명: [0]=에코, [1]=판
     private string GetSpeakerName(bool isPan)
     {
         if (languageCollector == null)
@@ -226,34 +323,10 @@ public class DialogueManager3_1 : MonoBehaviour
             case "kaza":     names = languageCollector.KazaAbove1_2;     break;
             default:         names = languageCollector.EnglishAbove1_2;  break;
         }
-
         if (names == null || names.Length < 2)
             return isPan ? "Pan" : "Echo";
 
         return isPan ? (names[1] ?? "Pan") : (names[0] ?? "Echo");
-    }
-
-    private IEnumerator TypeText(string fullText)
-    {
-        if (storyText == null) yield break;
-        storyText.text = string.Empty;
-        foreach (char c in fullText)
-        {
-            storyText.text += c;
-            yield return new WaitForSeconds(typingSpeed);
-        }
-    }
-
-    private void OnNext()
-    {
-        nextButton?.gameObject.SetActive(false);
-        index++;
-        if (index >= lines.Length)
-        {
-            SceneManager.LoadScene("Stage3_2");
-            return;
-        }
-        StartCoroutine(ShowLineSequence());
     }
 
     private void SetupLanguageUI()
@@ -285,7 +358,6 @@ public class DialogueManager3_1 : MonoBehaviour
             above.anchoredPosition = AboPo;
             story.anchoredPosition = StoPo;
 
-            // 언어별 TMP 재바인딩 (영어 미출력 이슈 해결)
             aboveText = FindTMP(above);
             storyText = FindTMP(story);
 
@@ -304,12 +376,14 @@ public class DialogueManager3_1 : MonoBehaviour
 
     private void OnLanguageChanged(string newLang)
     {
-        // 언어 바뀌면 먼저 UI 패널 교체/재바인딩 후 라인 로드
         SetupLanguageUI();
         LoadLinesForCurrentLanguage();
 
+        // 현재 인덱스 유지 + 현재 줄 재표시(막혀있으면 강제완성)
         StopAllCoroutines();
         StartCoroutine(ShowLineSequence());
+        if (IsBlockingOpen())
+            ForceCompleteCurrentLine();
     }
 
     private void OnDestroy()

@@ -33,8 +33,8 @@ public class DialogueManagerStage1_1 : MonoBehaviour
     public GameObject Real_echo_5;
 
     [Header("오디오")]
-    public AudioSource bgmSource;
-    public AudioSource FestivalSound;
+    public AudioSource bgmSource;       // BGM
+    public AudioSource FestivalSound;   // 축제 사운드
 
     [Header("타이핑 속도")]
     public float typingSpeed = 0.04f;
@@ -46,6 +46,42 @@ public class DialogueManagerStage1_1 : MonoBehaviour
     private int index;
     private Coroutine typingCoroutine;
 
+    // ====== 오디오 헬퍼들 ======
+    void PlayBGM()
+    {
+        if (bgmSource == null) return;
+        bgmSource.loop = true;
+        // Pause 상태면 이어서, 아니면 새로 재생
+        if (bgmSource.isPlaying) return;
+        bgmSource.UnPause(); // Pause 상태면 이어서
+        if (!bgmSource.isPlaying) bgmSource.Play(); // 완전 정지 상태면 Play
+    }
+
+    void PauseBGM()
+    {
+        if (bgmSource == null) return;
+        if (bgmSource.isPlaying) bgmSource.Pause();
+    }
+
+    void StopBGM()
+    {
+        if (bgmSource == null) return;
+        if (bgmSource.isPlaying) bgmSource.Stop();
+    }
+
+    void PlayFestival()
+    {
+        if (FestivalSound == null) return;
+        if (!FestivalSound.isPlaying) FestivalSound.Play();
+    }
+
+    void StopFestival()
+    {
+        if (FestivalSound == null) return;
+        if (FestivalSound.isPlaying) FestivalSound.Stop();
+    }
+    // ==========================
+
     private void Awake()
     {
         if (nextButton != null)
@@ -55,6 +91,10 @@ public class DialogueManagerStage1_1 : MonoBehaviour
             nextButton.gameObject.SetActive(false);
         }
 
+        // 시작 시 모든 사운드 꺼두기(요구사항: 첫 대사엔 사운드 없음)
+        StopBGM();
+        StopFestival();
+
         LanguageManager.Initialize();
         LanguageManager.OnLanguageChanged += OnLanguageChanged;
     }
@@ -62,7 +102,6 @@ public class DialogueManagerStage1_1 : MonoBehaviour
     private void Start()
     {
         SetupLanguageUI();
-
         LoadLinesForCurrentLanguage();
 
         index = 0;
@@ -78,14 +117,13 @@ public class DialogueManagerStage1_1 : MonoBehaviour
             case "english":  lines = languageCollector.EnglishLines1_1;  break;
             case "japanese": lines = languageCollector.JapaneseLines1_1; break;
             case "chinese":  lines = languageCollector.ChineseLines1_1;  break;
-            case "kazakh":   lines = languageCollector.KazaLines1_1;     break; // ✅ 표준키
+            case "kazakh":   lines = languageCollector.KazaLines1_1;     break;
             default:
                 Debug.LogWarning($"Unknown language: {lang}. Fallback to Korean.");
                 lines = languageCollector.KoreanLines1_1;
                 break;
         }
     }
-
 
     private IEnumerator ShowLineSequence()
     {
@@ -102,115 +140,78 @@ public class DialogueManagerStage1_1 : MonoBehaviour
 
     private IEnumerator UpdateVisuals(int idx)
     {
-        // 배경 초기화 - 둘 다 끔
-        if (BlackImage != null) BlackImage.SetActive(false);
+        // ===== 공통 초기화: 화면 연출만 초기화(오디오는 각 케이스에서 명확히 제어) =====
         if (Real_bg1_Image != null)
         {
             Real_bg1_Image.gameObject.SetActive(false);
-            // 투명도 1로 초기화 (페이드인 시작 전)
-            Color c = Real_bg1_Image.color;
-            c.a = 1f;
-            Real_bg1_Image.color = c;
+            Color c = Real_bg1_Image.color; c.a = 1f; Real_bg1_Image.color = c;
         }
+        if (BlackImage != null) BlackImage.SetActive(false);
 
-        // 캐릭터 초기화
         if (Real_echo_default != null) Real_echo_default.SetActive(false);
         if (Real_echo_2 != null) Real_echo_2.SetActive(false);
         if (Real_echo_5 != null) Real_echo_5.SetActive(false);
-
-        // 사운드 초기화
-        if (bgmSource != null)
-        {
-            if (idx < 2 && bgmSource.isPlaying) bgmSource.Stop();
-        }
-        if (FestivalSound != null)
-        {
-            if (idx != 2 && FestivalSound.isPlaying) FestivalSound.Stop();
-        }
+        // ======================================================================
 
         switch (idx)
         {
             case 0:
-                // BlackImage 켜고 Real_bg1 꺼짐
+                // 첫 대사: 사운드/연출 없음 (요구사항)
+                StopFestival();
+                StopBGM();
                 if (BlackImage != null) BlackImage.SetActive(true);
                 break;
 
             case 1:
-                // BlackImage 켠 상태에서 2초 대기
+                // 두 번째 대사: BGM 시작, 배경 서서히 등장
                 if (BlackImage != null) BlackImage.SetActive(true);
-
-                // 2초 대기
                 yield return new WaitForSeconds(2f);
-
-               
 
                 if (Real_bg1_Image != null)
                 {
                     Real_bg1_Image.gameObject.SetActive(true);
                     Real_bg1_Image.sprite = Real_bg1_Sprite;
-
-                    // 페이드인 코루틴 실행
                     yield return StartCoroutine(FadeInImage(Real_bg1_Image, 1.5f));
                 }
-
-                // 캐릭터 등장
                 if (Real_echo_default != null) Real_echo_default.SetActive(true);
+
+                StopFestival();
+                PlayBGM(); // ★ BGM 시작
                 break;
 
             case 2:
+                // 세 번째 대사: 축제 사운드 재생 + BGM 잠시 멈춤
                 if (Real_bg1_Image != null)
                 {
                     Real_bg1_Image.gameObject.SetActive(true);
                     Real_bg1_Image.sprite = Real_bg1_Sprite;
-
-                    Color c = Real_bg1_Image.color;
-                    c.a = 1f;
-                    Real_bg1_Image.color = c;
+                    var c = Real_bg1_Image.color; c.a = 1f; Real_bg1_Image.color = c;
                 }
                 if (Real_echo_2 != null) Real_echo_2.SetActive(true);
-                if (bgmSource != null && !bgmSource.isPlaying)
-                {
-                    bgmSource.loop = true;
-                    bgmSource.Play();
-                }
-                if (FestivalSound != null && !FestivalSound.isPlaying)
-                {
-                    FestivalSound.Play();
-                }
+
+                PlayFestival(); // ★ 축제 사운드 켜기
+                PauseBGM();     // ★ BGM 잠시 멈춤
                 break;
 
             case 3:
+                // 네 번째 대사: 축제 사운드 정지 + BGM 다시 재생(이어듣기)
                 if (Real_bg1_Image != null)
                 {
                     Real_bg1_Image.gameObject.SetActive(true);
                     Real_bg1_Image.sprite = Real_bg1_Sprite;
-
-                    Color c = Real_bg1_Image.color;
-                    c.a = 1f;
-                    Real_bg1_Image.color = c;
+                    var c = Real_bg1_Image.color; c.a = 1f; Real_bg1_Image.color = c;
                 }
                 if (Real_echo_5 != null) Real_echo_5.SetActive(true);
-                if (FestivalSound != null && FestivalSound.isPlaying)
-                {
-                    FestivalSound.Stop();
-                }
-                if (bgmSource != null && !bgmSource.isPlaying)
-                {
-                    bgmSource.loop = true;
-                    bgmSource.Play();
-                }
+
+                StopFestival();
+                PlayBGM(); // ★ BGM 재개(일시정지 상태면 UnPause, 아니면 Play)
                 break;
         }
-
-        yield break;
     }
 
     private IEnumerator FadeInImage(Image img, float duration)
     {
-        Color c = img.color;
-        c.a = 0f;
-        img.color = c;
-
+        Color c = img.color; c.a = 0f; img.color = c;
         img.gameObject.SetActive(true);
 
         float timer = 0f;
@@ -228,9 +229,9 @@ public class DialogueManagerStage1_1 : MonoBehaviour
         if (storyText == null) yield break;
 
         storyText.text = "";
-        foreach (char c in fullText)
+        foreach (char ch in fullText)
         {
-            storyText.text += c;
+            storyText.text += ch;
             yield return new WaitForSeconds(typingSpeed);
         }
     }
@@ -267,7 +268,7 @@ public class DialogueManagerStage1_1 : MonoBehaviour
             case "english":  above = English_Above;  story = English_Story;  break;
             case "japanese": above = Japanese_Above; story = Japanese_Story; break;
             case "chinese":  above = Chinese_Above;  story = Chinese_Story;  break;
-            case "kazakh":   above = Kaza_Above;     story = Kaza_Story;     break; // ✅ 표준키
+            case "kazakh":   above = Kaza_Above;     story = Kaza_Story;     break;
             // default: Korean
         }
 
@@ -283,17 +284,14 @@ public class DialogueManagerStage1_1 : MonoBehaviour
         }
     }
 
-
-
     private void OnLanguageChanged(string newLang)
     {
         LoadLinesForCurrentLanguage();
-        SetupLanguageUI();            // <- 추가: 레퍼런스 재바인딩
+        SetupLanguageUI();
         StopAllCoroutines();
-        index = 0;                    // 선택사항: 처음부터 다시 보여주고 싶다면 리셋
+        index = 0;
         StartCoroutine(ShowLineSequence());
     }
-
 
     private void OnDestroy()
     {
