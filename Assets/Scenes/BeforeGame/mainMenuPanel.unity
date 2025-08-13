@@ -592,6 +592,10 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4306703994837622136, guid: 6420b7a5af884e8409bc1930d8108348, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4306703994837622136, guid: 6420b7a5af884e8409bc1930d8108348, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1374832550}
@@ -1505,7 +1509,7 @@ MonoBehaviour:
         m_Calls:
         - m_Target: {fileID: 1374832550}
           m_TargetAssemblyTypeName: SettingPanelForMainMenu, Assembly-CSharp
-          m_MethodName: OnBgmArrowLeftDown
+          m_MethodName: OnSfxArrowLeftDown
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -1521,7 +1525,7 @@ MonoBehaviour:
         m_Calls:
         - m_Target: {fileID: 1374832550}
           m_TargetAssemblyTypeName: SettingPanelForMainMenu, Assembly-CSharp
-          m_MethodName: OnBgmArrowLeftUp
+          m_MethodName: OnSfxArrowLeftUp
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}

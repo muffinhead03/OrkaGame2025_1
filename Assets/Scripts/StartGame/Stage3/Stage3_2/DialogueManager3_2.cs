@@ -1,8 +1,15 @@
+// DialogueManager3_2 (복붙용)
+// - FirstPanel/SettingPanel 이 (0,0)에서 활성일 때, 모든 호버/클릭 차단
+// - UI 차단: CanvasGroup[] uiBlockers (투명 Panel + CanvasGroup + Image(raycastTarget ON, alpha 0.001))
+// - 3D/2D 차단: worldBlockers 활성화 + PhysicsRaycaster/Physics2DRaycaster 자동 비활성
+// - 필요 시 hoverBehavioursToDisable / collidersToDisable3D/2D 도 함께 비활성
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine.EventSystems;
 
 public class DialogueManager3_2 : MonoBehaviour
 {
@@ -31,7 +38,6 @@ public class DialogueManager3_2 : MonoBehaviour
         if (scene.name == "Stage3_2")
         {
             // 필요 시 외부에서 ChangeCase 호출해 시작 지점 바꿔주세요.
-            // 여기서는 자동 점프 안 함
         }
     }
 
@@ -84,6 +90,38 @@ public class DialogueManager3_2 : MonoBehaviour
     public GameObject[] chineseObjects;
     public GameObject[] kazaObjects;
 
+    // ===== 패널 오픈 시 호버/클릭 차단 =====
+    [Header("패널 가드")]
+    public GameObject FirstPanel;
+    public GameObject SettingPanel;
+    [SerializeField] private float centerTolerance = 0.5f; // (0,0,0) 허용 오차
+
+    [Header("호버/입력 차단(여러 개 지정 가능)")]
+    [Tooltip("UI용 CanvasGroup(투명 Panel + Image raycastTarget ON). 여러 개 드래그")]
+    [SerializeField] private CanvasGroup[] uiBlockers;
+
+    [Tooltip("3D/2D용 블로커(투명 쿼드 등). 활성/비활성 전환로 차단. 여러 개 가능")]
+    [SerializeField] private GameObject[] worldBlockers;
+
+    [Tooltip("패널 열릴 때 비활성화할 Raycaster/커스텀 Hover 스크립트들")]
+    [SerializeField] private Behaviour[] hoverBehavioursToDisable;
+
+    [Tooltip("패널 열릴 때 끌 콜라이더들(3D)")]
+    [SerializeField] private Collider[] collidersToDisable3D;
+    [Tooltip("패널 열릴 때 끌 콜라이더들(2D)")]
+    [SerializeField] private Collider2D[] collidersToDisable2D;
+
+    // 원복을 위한 초기 상태 스냅샷
+    private readonly Dictionary<CanvasGroup, (bool blocks, bool interact)> _cgInit = new();
+    private readonly Dictionary<GameObject, bool> _worldBlockerInit = new();
+    private readonly Dictionary<Behaviour, bool> _behaviourInit = new();
+    private readonly Dictionary<Collider, bool> _col3DInit = new();
+    private readonly Dictionary<Collider2D, bool> _col2DInit = new();
+
+    private List<Behaviour> _autoFoundPhysicsRaycasters; // PhysicsRaycaster/2D 자동 수집
+    private bool _lastBlockApplied = false;
+    private bool _stateCaptured = false;
+
     private string[] lines;
     private int index;
     private Coroutine typingCoroutine;
@@ -119,6 +157,8 @@ public class DialogueManager3_2 : MonoBehaviour
 
     private void Start()
     {
+        ConfigureUiBlockers();        // UI 블로커 자동 세팅
+
         SetupLanguageUI();
 
         if (backgroundImage != null && backGroundSprite != null)
@@ -135,6 +175,10 @@ public class DialogueManager3_2 : MonoBehaviour
             Debug.LogError("[DialogueManager3_2] 대사가 없습니다.");
             return;
         }
+
+        // 최초 상태 스냅샷 + 차단 적용
+        CaptureInitialBlockerStates();
+        ApplyHoverBlock(IsPanelBlocking());
 
         StopAllCoroutines();
         StartCoroutine(ShowLineSequence());
@@ -484,9 +528,18 @@ public class DialogueManager3_2 : MonoBehaviour
 
     private void Update()
     {
+        // BGM 안전망
         if (bgmSource != null && !bgmSource.isPlaying && index != 1)
         {
             bgmSource.Play();
+        }
+
+        // 🔒 패널 상태에 따라 호버/클릭 차단 적용 (변화 있을 때만 반영)
+        bool block = IsPanelBlocking();
+        if (block != _lastBlockApplied)
+        {
+            ApplyHoverBlock(block);
+            _lastBlockApplied = block;
         }
     }
 
@@ -502,6 +555,209 @@ public class DialogueManager3_2 : MonoBehaviour
     private void LoadScene(string sceneName)
     {
         SceneManager.LoadScene(sceneName);
+    }
+
+    // ====== 호버/입력 차단 유틸 ======
+    private void ConfigureUiBlockers()
+    {
+        if (uiBlockers == null) return;
+        foreach (var cg in uiBlockers)
+        {
+            if (!cg) continue;
+
+            // 최상단 보장 (Screen Space Overlay 권장)
+            var canvas = cg.GetComponent<Canvas>();
+            if (!canvas) canvas = cg.gameObject.AddComponent<Canvas>();
+            canvas.overrideSorting = true;
+            canvas.sortingOrder = 32767;
+
+            // Graphic 확보 + Raycast 받도록
+            var img = cg.GetComponent<Image>();
+            if (!img) img = cg.gameObject.AddComponent<Image>();
+            img.raycastTarget = true;
+            var c = img.color; c.a = Mathf.Max(c.a, 0.001f); img.color = c; // 0 알파 대신 0.001
+
+            // 기본 비차단
+            cg.blocksRaycasts = false;
+            cg.interactable   = false;
+
+            // 계층 최상단
+            cg.transform.SetAsLastSibling();
+        }
+    }
+
+    private bool IsPanelAtCenterAndActive(GameObject panel)
+    {
+        if (panel == null || !panel.activeInHierarchy) return false;
+
+        var rt = panel.transform as RectTransform;
+        float tol = centerTolerance;
+
+        if (rt != null)
+        {
+            return rt.anchoredPosition.sqrMagnitude <= tol * tol;
+        }
+        else
+        {
+            return panel.transform.localPosition.sqrMagnitude <= tol * tol;
+        }
+    }
+
+    private bool IsPanelBlocking()
+    {
+        return IsPanelAtCenterAndActive(FirstPanel) || IsPanelAtCenterAndActive(SettingPanel);
+    }
+
+    private void CaptureInitialBlockerStates()
+    {
+        if (_stateCaptured) return;
+
+        if (uiBlockers != null)
+        {
+            foreach (var cg in uiBlockers)
+            {
+                if (!cg) continue;
+                _cgInit[cg] = (cg.blocksRaycasts, cg.interactable);
+            }
+        }
+
+        if (worldBlockers != null)
+        {
+            foreach (var go in worldBlockers)
+            {
+                if (!go) continue;
+                _worldBlockerInit[go] = go.activeSelf;
+            }
+        }
+
+        if (hoverBehavioursToDisable != null)
+        {
+            foreach (var b in hoverBehavioursToDisable)
+            {
+                if (!b) continue;
+                _behaviourInit[b] = b.enabled;
+            }
+        }
+
+        if (collidersToDisable3D != null)
+        {
+            foreach (var c in collidersToDisable3D)
+            {
+                if (!c) continue;
+                _col3DInit[c] = c.enabled;
+            }
+        }
+
+        if (collidersToDisable2D != null)
+        {
+            foreach (var c in collidersToDisable2D)
+            {
+                if (!c) continue;
+                _col2DInit[c] = c.enabled;
+            }
+        }
+
+        _stateCaptured = true;
+    }
+
+    private void ApplyHoverBlock(bool block)
+    {
+        // 0) 자동으로 씬의 PhysicsRaycaster/2DRaycaster 수집 (한 번만)
+        if (_autoFoundPhysicsRaycasters == null)
+        {
+            _autoFoundPhysicsRaycasters = new List<Behaviour>();
+            _autoFoundPhysicsRaycasters.AddRange(FindObjectsOfType<PhysicsRaycaster>(true));
+            _autoFoundPhysicsRaycasters.AddRange(FindObjectsOfType<Physics2DRaycaster>(true));
+        }
+
+        // 1) UI 블로커(CanvasGroup들): 클릭/호버 레이캐스트 차단
+        if (uiBlockers != null)
+        {
+            foreach (var cg in uiBlockers)
+            {
+                if (!cg) continue;
+                // 항상 최상단 유지
+                var canvas = cg.GetComponent<Canvas>();
+                if (canvas)
+                {
+                    canvas.overrideSorting = true;
+                    if (canvas.sortingOrder < 32000) canvas.sortingOrder = 32767;
+                }
+                cg.transform.SetAsLastSibling();
+
+                if (block)
+                {
+                    cg.blocksRaycasts = true;
+                    cg.interactable   = true;   // 필요시 false로
+                }
+                else
+                {
+                    if (_cgInit.TryGetValue(cg, out var init))
+                    {
+                        cg.blocksRaycasts = init.blocks;
+                        cg.interactable   = init.interact;
+                    }
+                    else
+                    {
+                        cg.blocksRaycasts = false;
+                        cg.interactable   = false;
+                    }
+                }
+            }
+        }
+
+        // 2) 월드 블로커 On/Off
+        if (worldBlockers != null)
+        {
+            foreach (var go in worldBlockers)
+            {
+                if (!go) continue;
+                if (block) go.SetActive(true);
+                else if (_worldBlockerInit.TryGetValue(go, out bool wasActive)) go.SetActive(wasActive);
+                else go.SetActive(false);
+            }
+        }
+
+        // 3) 지정한 Raycaster/커스텀 Hover 스크립트 비활성
+        if (hoverBehavioursToDisable != null)
+        {
+            foreach (var b in hoverBehavioursToDisable)
+            {
+                if (!b) continue;
+                if (block) b.enabled = false;
+                else if (_behaviourInit.TryGetValue(b, out bool wasEnabled)) b.enabled = wasEnabled;
+                else b.enabled = true;
+            }
+        }
+
+        // 3-1) 자동 수집한 물리 레이캐스터(3D/2D) 끄기
+        if (_autoFoundPhysicsRaycasters != null)
+        {
+            foreach (var b in _autoFoundPhysicsRaycasters)
+                if (b) b.enabled = !block;
+        }
+
+        // 4) Collider 끄기
+        if (collidersToDisable3D != null)
+        {
+            foreach (var c in collidersToDisable3D)
+            {
+                if (!c) continue;
+                if (block) c.enabled = false;
+                else if (_col3DInit.TryGetValue(c, out bool wasEnabled)) c.enabled = wasEnabled;
+                else c.enabled = true;
+            }
+        }
+        if (collidersToDisable2D != null)
+        {
+            foreach (var c in collidersToDisable2D)
+            {
+                if (!c) continue;
+                if (block) c.enabled = false;
+                else if (_col2DInit.TryGetValue(c, out bool wasEnabled)) c.enabled = wasEnabled;
+                else c.enabled = true;
+            }
+        }
     }
 
     // ===== Debug helpers =====

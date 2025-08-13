@@ -53,17 +53,21 @@ public class SettingPanelController : MonoBehaviour
     // ============================================================
     private void OpenPanel(GameObject panel)
     {
-        if (!panel) return;
+        if (!panel) { Debug.LogWarning("[SettingPanelController] OpenPanel: panel is NULL"); return; }
         panel.transform.localPosition = center;
         panel.SetActive(true);
+        Debug.Log($"[SettingPanelController] OpenPanel -> {panel.name} (activeInHierarchy={panel.activeInHierarchy})");
     }
+
 
     private void ClosePanel(GameObject panel, Vector3? moveTo = null)
     {
-        if (!panel) return;
+        if (!panel) { Debug.LogWarning("[SettingPanelController] ClosePanel: panel is NULL"); return; }
         if (moveTo.HasValue) panel.transform.localPosition = moveTo.Value;
         panel.SetActive(false);
+        Debug.Log($"[SettingPanelController] ClosePanel -> {panel.name}");
     }
+
 
     // 외부에서 호출할 API
     public void OpenSetting()
@@ -87,6 +91,7 @@ public class SettingPanelController : MonoBehaviour
 
     void Awake()
     {
+        Debug.Log($"[SettingPanelController/Awake] self={name}, settingPanel={(settingPanel?settingPanel.name:"NULL")}, firstPanel={(firstPanel?firstPanel.name:"NULL")}");
         // 시작 시 자동 비활성화(실수 방지). 필요 없으면 인스펙터에서 체크 해제하세요.
         if (autoDisableOnAwake)
         {
@@ -301,7 +306,37 @@ public class SettingPanelController : MonoBehaviour
     // ===== 버튼용: 기존 닫기 로직을 안전하게 래핑 =====
     public void OnCloseSetting()
     {
+        // 누가 호출했는지 버튼 경로도 찍기
+        var caller = UnityEngine.EventSystems.EventSystem.current ?
+            UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject : null;
+        Debug.Log($"[SettingPanelController] OnCloseSetting CALLED by {(caller?caller.name:"NULL")}");
+
+        // 방어: settingPanel이 null이거나 현재 활성 패널이 따로 있으면 씬에서 재탐색
+        if (settingPanel == null || !settingPanel.activeInHierarchy)
+        {
+            var activePanel = FindActivePanelByNameHint("Setting");
+            if (activePanel) { settingPanel = activePanel; Debug.Log($"[SettingPanelController] Rebind settingPanel -> {activePanel.name}"); }
+        }
+        if (firstPanel == null || !firstPanel.scene.IsValid())
+        {
+            var fp = FindActivePanelByNameHint("First");
+            if (fp) { firstPanel = fp; Debug.Log($"[SettingPanelController] Rebind firstPanel -> {fp.name}"); }
+        }
+
         ClosePanel(settingPanel, settingPanelOrigin);
         OpenPanel(firstPanel);
+    }
+    
+    private GameObject FindActivePanelByNameHint(string hint)
+    {
+        var all = GameObject.FindObjectsOfType<RectTransform>(true);
+        foreach (var rt in all)
+        {
+            var go = rt.gameObject;
+            if (!go.activeInHierarchy) continue;
+            if (go.name.ToLower().Contains(hint.ToLower()))
+                return go;
+        }
+        return null;
     }
 }

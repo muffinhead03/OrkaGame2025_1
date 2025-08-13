@@ -39,13 +39,15 @@ public class DialogueManager3_3 : MonoBehaviour
     public GameObject SettingPanel;
     public GameObject blackCoverPanel;
 
+    [Header("영상 UI (RawImage 루트, 처음엔 비활성)")]
+    public GameObject endingRawImageRoot;
+
     [Header("오디오")]
     public AudioSource bgmSource;
 
     [Header("대사 소스")]
     public LanguageCollector3_3 languageCollector;
 
-    // ===== Debug 옵션 =====
     [Header("Debug")]
     [SerializeField] private bool logDebug = true;
     [SerializeField] private bool logFullLine = false;
@@ -60,6 +62,10 @@ public class DialogueManager3_3 : MonoBehaviour
     private float jumpTimer = 0f;
     private float jumpDuration = 0.3f;
     private Vector3 pan2TargetScale = Vector3.one;
+
+    // 당근 버튼 제어
+    private Button carrotBtn;
+    private CanvasGroup carrotCg;
 
     // === 언어 헬퍼 ===
     private string currentLangKey = "korean";
@@ -84,6 +90,15 @@ public class DialogueManager3_3 : MonoBehaviour
             nextButton.gameObject.SetActive(false);
         }
 
+        // 당근 버튼 캐시(보이는 건 유지, 클릭만 제어)
+        if (CarrotButton != null)
+        {
+            carrotBtn = CarrotButton.GetComponent<Button>();
+            carrotCg  = CarrotButton.GetComponent<CanvasGroup>();
+            if (carrotCg == null) carrotCg = CarrotButton.AddComponent<CanvasGroup>();
+            SetCarrotClickable(true);
+        }
+
         LanguageManager.Initialize();
         LanguageManager.OnLanguageChanged += OnLanguageChanged;
     }
@@ -91,10 +106,8 @@ public class DialogueManager3_3 : MonoBehaviour
     private void Start()
     {
         SetupLanguageUI();
-
         LoadLinesForCurrentLanguage();
 
-        // 이 장면은 판(Pan) 대사만 나오므로 스피커명 = Pan으로 설정
         if (aboveText != null) aboveText.text = GetSpeakerNamePan();
 
         index = 0;
@@ -128,36 +141,26 @@ public class DialogueManager3_3 : MonoBehaviour
             yield break;
         }
 
-        // 활성 언어 TMP가 끊겼을 수 있으므로 보증
         EnsureTMPBound();
-
         UpdateVisuals(index);
 
         yield return new WaitForSeconds(0.5f);
 
         if (typingCoroutine != null) StopCoroutine(typingCoroutine);
 
-        // 디버그: 라인 시작
         Debug_LogLine("BEGIN", index, lines[index]);
-
         typingCoroutine = StartCoroutine(TypeText(lines[index]));
         yield return typingCoroutine;
-
-        // 디버그: 라인 완료
         Debug_LogLine("END", index, lines[index]);
 
         nextButton?.gameObject.SetActive(true);
 
-        // 1번(두 번째 줄) 이후에 영상 재생 트리거
-        if ((index == 1 || index == lines.Length - 1) && Pan_2Obj != null)
+        // ✅ 엔딩은 "마지막 줄"에서만 트리거
+        if (index == lines.Length - 1 && Pan_2Obj != null)
         {
             yield return StartCoroutine(JumpScaleInOut(Pan_2Obj, 0.5f));
-
-            if (index == 1)
-            {
-                yield return new WaitForSeconds(0.5f);
-                PlayEndingVideo();
-            }
+            yield return new WaitForSeconds(0.5f);
+            StartCoroutine(PrepareAndPlayEnding());   // 비디오 준비+재생(비동기)
         }
     }
 
@@ -170,7 +173,6 @@ public class DialogueManager3_3 : MonoBehaviour
         Pan_2Obj?.SetActive(false);
         if (idx == 0) Pan_4eyeclosedObj?.SetActive(true);
 
-        // 스피커명: 이 장면은 계속 Pan
         if (aboveText != null) aboveText.text = GetSpeakerNamePan();
 
         if (bgmSource != null)
@@ -187,36 +189,75 @@ public class DialogueManager3_3 : MonoBehaviour
         }
     }
 
-    private void PlayEndingVideo()
+    // === 엔딩 준비 + 재생 ===
+    private IEnumerator PrepareAndPlayEnding()
     {
         if (endingVideoPlayer == null)
         {
-            Debug.LogWarning("[D3_3] endingVideoPlayer가 설정되지 않았습니다.");
-            return;
+            Debug.LogWarning("[D3_3] endingVideoPlayer is NULL.");
+            yield break;
         }
 
-        if (blackCoverPanel != null) blackCoverPanel.SetActive(true);
+        // 당근 클릭 차단
+        SetCarrotClickable(false);
 
+        // 화면 정리
+        if (blackCoverPanel != null) blackCoverPanel.SetActive(true);
         if (backgroundImage != null) backgroundImage.enabled = false;
         if (blackImageObj != null) blackImageObj.SetActive(false);
         if (Pan_4eyeclosedObj != null) Pan_4eyeclosedObj.SetActive(false);
         if (Pan_2Obj != null) Pan_2Obj.SetActive(false);
-
-        
         if (DialogueImage != null) DialogueImage.SetActive(false);
         if (FirstPanel != null) FirstPanel.SetActive(false);
         if (SettingPanel != null) SettingPanel.SetActive(false);
+        nextButton?.gameObject.SetActive(false);
 
-        endingVideoPlayer.gameObject.SetActive(true);
-        endingVideoPlayer.loopPointReached -= OnVideoFinished; // 중복 방지
+        // 이벤트 바인딩
+        endingVideoPlayer.errorReceived -= OnVideoError;
+        endingVideoPlayer.errorReceived += OnVideoError;
+        endingVideoPlayer.loopPointReached -= OnVideoFinished;
         endingVideoPlayer.loopPointReached += OnVideoFinished;
+
+        // 준비 & 재생
+        endingVideoPlayer.gameObject.SetActive(true);
+        endingVideoPlayer.Prepare();
+        float safety = 5f; // 최대 5초 대기
+        while (!endingVideoPlayer.isPrepared && safety > 0f)
+        {
+            safety -= Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        if (!endingVideoPlayer.isPrepared)
+        {
+            Debug.LogError("[D3_3] Video prepare timeout. Check clip/url, codec, target texture.");
+            yield break;
+        }
+
+        // ✅ RawImage 루트 활성화(처음엔 비활로 두고, 여기서 켜줌)
+        if (endingRawImageRoot != null) endingRawImageRoot.SetActive(true);
+
+        // (RawImage/RenderTexture 사용 시 연결 상태 점검 필요)
         endingVideoPlayer.Play();
+        Debug.Log("[D3_3] Ending video PLAY");
+    }
+
+    private void PlayEndingVideo() { StartCoroutine(PrepareAndPlayEnding()); } // 호환용
+
+    private void OnVideoError(VideoPlayer vp, string msg)
+    {
+        Debug.LogError($"[D3_3] Video error: {msg}");
     }
 
     private void OnVideoFinished(VideoPlayer vp)
     {
         Debug.Log("[D3_3] Ending video finished.");
         if (blackCoverPanel != null) blackCoverPanel.SetActive(false);
+
+        // ✅ 재생 종료 후 RawImage 다시 끔(원하면 유지 가능)
+        if (endingRawImageRoot != null) endingRawImageRoot.SetActive(false);
+
+        // 필요 시 당근 다시 활성: SetCarrotClickable(true);
         SceneManager.LoadScene("Stage3_2");
     }
 
@@ -267,19 +308,15 @@ public class DialogueManager3_3 : MonoBehaviour
 
     private void OnNext()
     {
-        // 영상 재생 중이면 대사 넘기기 막기
+        // 영상 중이면 진행 막기
         if (endingVideoPlayer != null && endingVideoPlayer.isPlaying)
             return;
 
         nextButton?.gameObject.SetActive(false);
         index++;
-        if (index >= lines.Length)
-        {
-            return;
-        }
+        if (index >= lines.Length) return;
         StartCoroutine(ShowLineSequence());
     }
-
 
     private void SetupLanguageUI()
     {
@@ -302,7 +339,6 @@ public class DialogueManager3_3 : MonoBehaviour
             case "japanese":  above = Japanese_Above;  story = Japanese_Story;  break;
             case "chinese":   above = Chinese_Above;   story = Chinese_Story;   break;
             case "kaza":      above = Kaza_Above;      story = Kaza_Story;      break;
-            // default: korean
         }
 
         if (above != null && story != null)
@@ -312,7 +348,6 @@ public class DialogueManager3_3 : MonoBehaviour
             above.anchoredPosition = AboPo;
             story.anchoredPosition = StoPo;
 
-            // 언어별 TMP 재바인딩
             aboveText = FindTMP(above);
             storyText = FindTMP(story);
 
@@ -324,7 +359,6 @@ public class DialogueManager3_3 : MonoBehaviour
         }
     }
 
-    // 활성 언어 패널에서 TMP를 재탐색(안전망)
     private void EnsureTMPBound()
     {
         if (aboveText != null && storyText != null &&
@@ -365,14 +399,12 @@ public class DialogueManager3_3 : MonoBehaviour
         SetupLanguageUI();
         LoadLinesForCurrentLanguage();
 
-        // 인덱스가 벗어나면 0으로
         if (index >= (lines?.Length ?? 0)) index = 0;
 
         StopAllCoroutines();
         StartCoroutine(ShowLineSequence());
     }
 
-    // ===== 화자명(언어별) : Pan (Above1_2[1]) =====
     private string GetSpeakerNamePan()
     {
         switch (CurrentLanguage)
@@ -385,13 +417,13 @@ public class DialogueManager3_3 : MonoBehaviour
             default:         return "Pan";
         }
     }
+
     private string SafeName(string[] arr, int idx, string fallback)
     {
         if (arr != null && arr.Length > idx && !string.IsNullOrEmpty(arr[idx])) return arr[idx];
         return fallback;
     }
 
-    // ===== Debug helpers =====
     private void Debug_LogLangSelected(int totalLines)
     {
         if (!logDebug) return;
@@ -412,5 +444,17 @@ public class DialogueManager3_3 : MonoBehaviour
         if (!logDebug) return;
         string name = tmp ? tmp.gameObject.name : "NULL";
         Debug.Log($"[D3_3][BIND] {which} -> {name}");
+    }
+
+    private void SetCarrotClickable(bool on)
+    {
+        if (CarrotButton == null) return;
+        if (carrotCg != null)
+        {
+            carrotCg.blocksRaycasts = on; // 클릭/호버 차단
+            carrotCg.interactable   = on; // 네비게이션 차단
+        }
+        if (carrotBtn != null)
+            carrotBtn.interactable = on;  // (회색 변하면 원치 않으면 이 줄은 주석)
     }
 }

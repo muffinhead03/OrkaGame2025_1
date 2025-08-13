@@ -1742,7 +1742,7 @@ PrefabInstance:
     - target: {fileID: 4322015574077119998, guid: 1d5c6a14d43687a4da4a0c479663e7a5, type: 3}
       propertyPath: settingPanel
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 999159156}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2596,6 +2596,9 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8222644807500192251, guid: 6420b7a5af884e8409bc1930d8108348, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1533807489}
     - targetCorrespondingSourceObject: {fileID: 7435846456030681667, guid: 6420b7a5af884e8409bc1930d8108348, type: 3}
       insertIndex: -1
       addedObject: {fileID: 999159164}
@@ -4854,7 +4857,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3946182027645135661, guid: 0bd57cc8034161d498fe426cc0951fff, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1516097524}
   m_SourcePrefab: {fileID: 100100000, guid: 0bd57cc8034161d498fe426cc0951fff, type: 3}
 --- !u!224 &1516097520 stripped
 RectTransform:
@@ -4866,6 +4872,30 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 3946182027645135661, guid: 0bd57cc8034161d498fe426cc0951fff, type: 3}
   m_PrefabInstance: {fileID: 1516097519}
   m_PrefabAsset: {fileID: 0}
+--- !u!225 &1516097524
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1516097521}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!225 &1533807489
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 999159156}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1593060745
 GameObject:
   m_ObjectHideFlags: 0
@@ -6021,6 +6051,16 @@ MonoBehaviour:
   kazaObjects:
   - {fileID: 1748747227}
   - {fileID: 1307538143}
+  FirstPanel: {fileID: 1516097521}
+  SettingPanel: {fileID: 999159156}
+  centerTolerance: 0.5
+  uiBlockers: []
+  worldBlockers: []
+  hoverBehavioursToDisable:
+  - {fileID: 0}
+  - {fileID: 0}
+  collidersToDisable3D: []
+  collidersToDisable2D: []
 --- !u!114 &2079865716 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1324263261642270740, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}

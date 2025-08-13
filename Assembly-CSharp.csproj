@@ -70,6 +70,7 @@
     <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage1\250802Update\FirstCardClickOnCard.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage3\SlidingSecond\SlidingGameManager2AfterDeath.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage3\Stage3_4\DialogueManager3_4.cs" />
+    <Compile Include="Assets\Scripts\StartGame\Stage3\SlidingSecond\SlidingPuzzle2AfterDeath.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage1\SlidingGame\SlidingGameManager1BeforeDeath\SlidingPuzzle1Script.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage3\Stage3_1\LanguageCollector3_1.cs" />
     <Compile Include="Assets\Scripts\StartGame\Shared\Scripts\typeWriter\TypewriterEffect.cs" />
@@ -103,6 +104,7 @@
     <Compile Include="Assets\Scripts\StartGame\Stage3\Stage3_2\DialogueManager3_2.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage3\NarkeBurstEffect.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\CardGame\Stage3\FullScreenGlitchEffect.cs" />
+    <Compile Include="Assets\Scripts\StartGame\Stage3\SlidingSecond\EmptyPuzzle2AfterDeath.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage1\SlidingGame\SlidingGameManager1BeforeDeath\SlidingGameRuleExplainLines.cs" />
     <Compile Include="Assets\BGMPlayer.cs" />
     <Compile Include="Assets\Scripts\StartGame\Stage2\Stage2_5\LanguageDialogue2_5.cs" />

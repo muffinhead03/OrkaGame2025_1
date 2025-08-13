@@ -494,7 +494,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &592156902
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1466,6 +1466,7 @@ MonoBehaviour:
   FirstPanel: {fileID: 818168850}
   SettingPanel: {fileID: 2095174871}
   blackCoverPanel: {fileID: 602486019}
+  endingRawImageRoot: {fileID: 592156901}
   bgmSource: {fileID: 1287770385}
   languageCollector: {fileID: 45156679}
   logDebug: 1

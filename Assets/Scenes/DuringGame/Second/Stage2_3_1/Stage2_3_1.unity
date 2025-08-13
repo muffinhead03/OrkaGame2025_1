@@ -902,7 +902,7 @@ PrefabInstance:
       objectReference: {fileID: 1460797602}
     - target: {fileID: 5912203471475485353, guid: 915f869e57a1e564f80bdc8a6f854660, type: 3}
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnSfxArrowRightDown
+      value: OnSfxArrowLeftDown
       objectReference: {fileID: 0}
     - target: {fileID: 5912203471475485353, guid: 915f869e57a1e564f80bdc8a6f854660, type: 3}
       propertyPath: m_Delegates.Array.data[1].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
@@ -1218,7 +1218,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: b8e878f5b976af548986b96407f18e6c, type: 3}
   m_Resource: {fileID: 8300000, guid: b8e878f5b976af548986b96407f18e6c, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 0.606
   m_Pitch: 1
   Loop: 0

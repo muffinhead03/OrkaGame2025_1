@@ -127,6 +127,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1543984108}
     m_Modifications:
+    - target: {fileID: 2838239068922001307, guid: 915f869e57a1e564f80bdc8a6f854660, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2838239068922001307, guid: 915f869e57a1e564f80bdc8a6f854660, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1323086219}
+    - target: {fileID: 2838239068922001307, guid: 915f869e57a1e564f80bdc8a6f854660, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnCloseSetting
+      objectReference: {fileID: 0}
+    - target: {fileID: 2838239068922001307, guid: 915f869e57a1e564f80bdc8a6f854660, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: SettingPanelController, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 5083485335991883847, guid: 915f869e57a1e564f80bdc8a6f854660, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -91
@@ -345,6 +361,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 909306515804224714, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
+      propertyPath: m_text
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 909306515804224714, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
       propertyPath: m_fontAsset
       value: 
       objectReference: {fileID: 11400000, guid: bced7b6dfbd292949856996d16406339, type: 2}
@@ -357,6 +377,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2481171214768527986, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
+      propertyPath: m_text
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2481171214768527986, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
       propertyPath: m_fontAsset
       value: 
       objectReference: {fileID: 11400000, guid: 68e4049e9a2057d4b99eaa2432b3f4d5, type: 2}
@@ -367,6 +391,10 @@ PrefabInstance:
     - target: {fileID: 2481171214768527986, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
       propertyPath: m_hasFontAssetChanged
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2820389943096050488, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
+      propertyPath: m_text
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 2820389943096050488, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
       propertyPath: m_fontAsset
@@ -391,6 +419,14 @@ PrefabInstance:
     - target: {fileID: 3909544239928108003, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
       propertyPath: m_hasFontAssetChanged
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4659127942958734456, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
+      propertyPath: m_text
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5324262836787134540, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
+      propertyPath: m_text
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5324262836787134540, guid: 063f2c03050c3bb47b1eacdfe69a9aab, type: 3}
       propertyPath: m_fontAsset
@@ -2054,7 +2090,7 @@ PrefabInstance:
     - target: {fileID: 4694964627515387331, guid: 3d19d32c8e411964b8388bd1b3ab8dad, type: 3}
       propertyPath: settingPanel
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 51686160}
     - target: {fileID: 4694964627515387331, guid: 3d19d32c8e411964b8388bd1b3ab8dad, type: 3}
       propertyPath: sfxValueText
       value: 
@@ -2079,6 +2115,10 @@ PrefabInstance:
       propertyPath: backgroundMusicSources.Array.size
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4694964627515387331, guid: 3d19d32c8e411964b8388bd1b3ab8dad, type: 3}
+      propertyPath: 'backgroundMusicSources.Array.data[0]'
+      value: 
+      objectReference: {fileID: 364166385}
     - target: {fileID: 6493119606004853297, guid: 3d19d32c8e411964b8388bd1b3ab8dad, type: 3}
       propertyPath: m_Name
       value: SettingPanelController

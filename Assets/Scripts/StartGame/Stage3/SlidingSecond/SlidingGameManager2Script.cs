@@ -67,32 +67,27 @@ public class SlidingGameManager2Script : MonoBehaviour
     private bool lock1Cleared = false; // 첫 번째 자물쇠(열쇠 후)
     private bool lock2Cleared = false; // 두 번째 자물쇠(열쇠+첫자물쇠 후)
 
-    // ---- 판정 규칙 (첫 칸을 0으로 보는 위치 인덱스 기준) ----
-    // 열쇠: 타일 {2,4,9} 가 아래 3칸 세트 중 하나에 위치하면 클리어
-    private readonly int[] keyTiles = {2, 4, 9};
-    private readonly List<HashSet<int>> keyValidSets = new()
+    // ---- 열쇠(순서 매핑, 4가지 중 하나) ----
+    private static readonly int[] keyTilesOrdered = { 2, 4, 9 };
+    private static readonly int[][] keyTargetPositionOptions =
     {
-        new HashSet<int>{2,3,5},
-        new HashSet<int>{1,2,4},
-        new HashSet<int>{4,5,7},
-        new HashSet<int>{5,6,8},
+        new int[] { 1, 2, 4 }, // 2→1, 4→2, 9→4
+        new int[] { 2, 3, 5 }, // 2→2, 4→3, 9→5
+        new int[] { 4, 5, 7 }, // 2→4, 4→5, 9→7
+        new int[] { 5, 6, 8 }, // 2→5, 4→6, 9→8
     };
 
-    // ★ 변경된 1차 자물쇠 규칙:
-    // (열쇠 클리어 상태에서) 타일 {1,3,4,5,7} 이 위치 {2,5,3,8,4} 집합과 정확히 일치하면 클리어
-    private readonly int[] lock1Tiles = {1, 3, 4, 5, 7};
-    private readonly List<HashSet<int>> lock1ValidSets = new()
-    {
-        new HashSet<int>{2,5,3,8,4},
-    };
+    // ---- Lock1(순서 매핑, 두 가지 패턴 허용: A/B) ----
+    [Header("Ordered Match — Lock1 (열쇠 후)")]
+    [SerializeField] private int[] lock1TilesOrdered = { 1, 3, 5, 7 };
+    [SerializeField] private int[] lock1TargetPositionsOrderedA = { 2, 5, 8, 4 }; // 1→2, 3→5, 5→8, 7→4
+    [SerializeField] private int[] lock1TargetPositionsOrderedB = { 3, 6, 9, 5 }; // 1→3, 3→6, 5→9, 7→5
 
-    // 2차 자물쇠: (열쇠+1차 클리어 상태에서) 타일 {1,3,5,6} 이 아래 4칸 세트 중 하나면 클리어
-    private readonly int[] lock2Tiles = {1, 3, 5, 6};
-    private readonly List<HashSet<int>> lock2ValidSets = new()
-    {
-        new HashSet<int>{7,1,4,5},
-        new HashSet<int>{8,2,5,6},
-    };
+    // ---- Lock2(순서 매핑, 두 가지 패턴 허용: A/B) ----
+    [Header("Ordered Match — Lock2 (열쇠+Lock1 후)")]
+    [SerializeField] private int[] lock2TilesOrdered = { 1, 3, 5, 6 };
+    [SerializeField] private int[] lock2TargetPositionsOrderedA = { 7, 1, 4, 5 }; // A: 1→7,3→1,5→4,6→5
+    [SerializeField] private int[] lock2TargetPositionsOrderedB = { 8, 2, 5, 6 }; // B: 1→8,3→2,5→5,6→6
 
     // --------------------------
 
@@ -248,45 +243,65 @@ public class SlidingGameManager2Script : MonoBehaviour
         timerText.text = $"{min:00}:{sec:00}";
     }
 
-    // ===== 판정 로직 =====
+    // ===== 판정 로직 (모두 '순서 정확 매칭') =====
     private void CheckJudgements()
     {
-        // 1) Key
-        if (!keyCleared && MatchSet(keyTiles, keyValidSets))
+        // 1) Key: 4가지 옵션 중 하나라도 '정확 매핑'이면 클리어
+        if (!keyCleared && MatchOrderedAny(keyTilesOrdered, keyTargetPositionOptions))
         {
             keyCleared = true;
-            SetAlpha(keyIcon, clearedAlpha); // 유지
-            if (debugLogs) Debug.Log("[JUDGE] Key CLEARED");
+            SetAlpha(keyIcon, clearedAlpha);
+            if (debugLogs) Debug.Log("[JUDGE] Key CLEARED (ordered options)");
         }
 
-        // 2) Lock1 (열쇠 클리어 후에만)
-        if (keyCleared && !lock1Cleared && MatchSet(lock1Tiles, lock1ValidSets))
+        // 2) Lock1: 열쇠 후 + A/B 중 하나 '정확 매핑'
+        if (keyCleared && !lock1Cleared &&
+            (MatchOrderedSingle(lock1TilesOrdered, lock1TargetPositionsOrderedA) ||
+             MatchOrderedSingle(lock1TilesOrdered, lock1TargetPositionsOrderedB)))
         {
             lock1Cleared = true;
-            SetAlpha(lock1Icon, clearedAlpha); // 유지
-            if (debugLogs) Debug.Log("[JUDGE] Lock1 CLEARED");
+            SetAlpha(lock1Icon, clearedAlpha);
+            if (debugLogs) Debug.Log("[JUDGE] Lock1 CLEARED (ordered A/B)");
         }
 
-        // 3) Lock2 (열쇠 + 1차 클리어 후에만)
-        if (keyCleared && lock1Cleared && !lock2Cleared && MatchSet(lock2Tiles, lock2ValidSets))
+        // 3) Lock2: 열쇠+Lock1 후 + A/B 중 하나 '정확 매핑'
+        if (keyCleared && lock1Cleared && !lock2Cleared &&
+            (MatchOrderedSingle(lock2TilesOrdered, lock2TargetPositionsOrderedA) ||
+             MatchOrderedSingle(lock2TilesOrdered, lock2TargetPositionsOrderedB)))
         {
             lock2Cleared = true;
-            SetAlpha(lock2Icon, clearedAlpha); // 유지
-            if (debugLogs) Debug.Log("[JUDGE] Lock2 CLEARED (ALL DONE)");
+            SetAlpha(lock2Icon, clearedAlpha);
+            if (debugLogs) Debug.Log("[JUDGE] Lock2 CLEARED (ordered, ALL DONE)");
         }
     }
 
-    // 모두 클리어했는지?
-    private bool IsAllCleared()
+    private bool IsAllCleared() => keyCleared && lock1Cleared && lock2Cleared;
+
+    // --- helpers: ordered matching ---
+    private bool MatchOrderedAny(int[] tiles, int[][] options)
     {
-        return keyCleared && lock1Cleared && lock2Cleared;
+        if (tiles == null || options == null || options.Length == 0) return false;
+        foreach (var opt in options)
+            if (MatchOrderedSingle(tiles, opt)) return true;
+        return false;
     }
 
-    // tiles: 체크할 퍼즐 번호 모음 -> 현재 위치들의 집합과 validSets(집합) 비교
-    private bool MatchSet(int[] tiles, List<HashSet<int>> validSets)
+    // 타일 i 가 targetPositions[i] 에 '정확히' 있어야 true
+    private bool MatchOrderedSingle(int[] tiles, int[] targetPositions)
     {
-        var current = new HashSet<int>(tiles.Select(t => puzzlePositionMap.TryGetValue(t, out var pos) ? pos : -1));
-        return validSets.Any(set => set.SetEquals(current));
+        if (tiles == null || targetPositions == null) return false;
+        if (tiles.Length == 0 || targetPositions.Length == 0) return false;
+        if (tiles.Length != targetPositions.Length) return false;
+
+        for (int i = 0; i < tiles.Length; i++)
+        {
+            int tile = tiles[i];
+            int want = targetPositions[i];
+
+            if (!puzzlePositionMap.TryGetValue(tile, out var curPos)) return false;
+            if (curPos != want) return false;
+        }
+        return true;
     }
 
     // ===================== 유틸/디버그 =====================

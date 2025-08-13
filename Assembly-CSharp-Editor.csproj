@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="Assets\Editor\AddressablesCleaner.cs" />
     <Compile Include="Assets\Editor\TMPFontGenerator.cs" />
+    <Compile Include="Assets\Editor\MacBuildFix.cs" />
     <Reference Include="UnityEngine">
       <HintPath>C:\Program Files\Unity\Hub\Editor\6000.0.36f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
     </Reference>
