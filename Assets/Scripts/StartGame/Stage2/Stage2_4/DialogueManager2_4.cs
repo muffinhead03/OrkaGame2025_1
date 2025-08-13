@@ -7,23 +7,24 @@ using System.Linq;
 
 public class DialogueManager2_4 : MonoBehaviour
 {
-    [Header("Early End (optional)")]
-    [SerializeField] private bool endAfterFirstNext = false;     // 첫 줄 다음버튼에서 바로 엔딩
-    [SerializeField] private bool earlyEndBreathOnly = true;     // 플루트 스킵하고 숨소리만 재생
-    [SerializeField] private bool loadSceneAfterEarlyEnd = true; // 검은 화면 후 씬 전환 여부
-    [SerializeField] private float earlyFadeDelay = 0.2f;        // 숨소리 시작 전에 잠깐 딜레이
-    [SerializeField] private float earlyFadeDuration = 0f;       // 조기엔딩 페이드(0이면 즉시 전환)
-
+    // ====== Ending / Scene (엔딩 연출용) ======
     [Header("Ending / Scene")]
-    [SerializeField] private string endingSceneName = "Credits"; // 크레딧 씬 이름
-    [SerializeField] private bool setPlayerPrefsIndex = false;   // 인덱스 저장 여부(선택)
+    [SerializeField] private float endingFadeDelay = 3f;      // 숨소리 시작 후 몇 초 뒤에 이미지 페이드인 시작
+    [SerializeField] private float endingFadeDuration = 2f;   // 엔딩 이미지가 서서히 뜨는 시간
+    [SerializeField] private string endingSceneName = "Stage2_3_1"; // ← 바로 다음 씬으로 수정
+    [SerializeField] private bool setPlayerPrefsIndex = false;
     [SerializeField] private string playerPrefsKey = "StartFromIndex";
     [SerializeField] private int playerPrefsIndexValue = 4;
 
-    [Header("마지막 줄 엔딩 옵션")]
-    [SerializeField] private bool forceBreathOnlyAtEnd = false;  // 마지막에서도 숨소리만 재생하고 바로 전환
-    [SerializeField] private float endFadeDuration = 2.0f;       // 마지막 줄 일반 엔딩용 페이드
+    // ====== Early End (옵션) ======
+    [Header("Early End (optional)")]
+    [SerializeField] private bool endAfterFirstNext = false;
+    [SerializeField] private bool earlyEndBreathOnly = true;
+    [SerializeField] private bool loadSceneAfterEarlyEnd = true;
+    [SerializeField] private float earlyFadeDelay = 0.2f;
+    [SerializeField] private float earlyFadeDuration = 0f;
 
+    // ====== 언어별 컨테이너 ======
     [Header("언어별 컨테이너")]
     public RectTransform Korean_Above, Korean_Story;
     public RectTransform English_Above, English_Story;
@@ -35,33 +36,37 @@ public class DialogueManager2_4 : MonoBehaviour
     public Vector2 AboPo = new Vector2(-750f, 160f);
     public Vector2 StoPo = new Vector2(-250f, -20f);
 
+    // ====== UI & 타이핑 ======
     [Header("UI")]
     public TextMeshProUGUI aboveText;
     public TextMeshProUGUI storyText;
     public Image backgroundImage;
     public Sprite backGroundSprite;
-    public GameObject Narke_2Obj;   // 말풍선 캐릭터(나르케)
+    public GameObject Narke_2Obj;
     public Image endingImage;
 
     [Header("타이핑")]
     public float typingSpeed = 0.04f;
 
+    // ====== 오디오 ======
     [Header("오디오")]
     public AudioSource fluteSource;
     public AudioSource breathSource;
 
+    // ====== 데이터 ======
     [Header("대사 소스")]
     public LanguageCollector2_4 languageCollector;
 
     [Header("Next 버튼(선택사항)")]
-    public GameObject nextButton;   // 있으면 클릭 시 OnNextClicked 연결
+    public GameObject nextButton;
 
     private string[] lines;
     private int index;
     private Coroutine typingCoroutine;
 
-    // 실행 가드
+    // 상태/가드
     private bool soundSequenceStarted = false;
+    private bool introFlutePlayed = false;
 
     // ===== 언어 헬퍼 =====
     private string CurrentLanguage => NormalizeLang(LanguageManager.GetLanguage());
@@ -82,7 +87,6 @@ public class DialogueManager2_4 : MonoBehaviour
         LanguageManager.Initialize();
         LanguageManager.OnLanguageChanged += OnLanguageChanged;
 
-        // Next 버튼 연결
         var btn = nextButton ? nextButton.GetComponent<Button>() : null;
         if (btn != null)
         {
@@ -108,6 +112,12 @@ public class DialogueManager2_4 : MonoBehaviour
         LoadLinesForCurrentLanguage();
         index = 0;
 
+        if (!introFlutePlayed && fluteSource != null && !fluteSource.isPlaying)
+        {
+            fluteSource.Play();
+            introFlutePlayed = true;
+        }
+
         StartCoroutine(ShowLineSequence());
     }
 
@@ -116,7 +126,7 @@ public class DialogueManager2_4 : MonoBehaviour
         LanguageManager.OnLanguageChanged -= OnLanguageChanged;
     }
 
-    // ===== 대사 로드 (언어별 명시 선택) =====
+    // ===== 대사 로드 =====
     private void LoadLinesForCurrentLanguage()
     {
         if (languageCollector == null)
@@ -126,8 +136,7 @@ public class DialogueManager2_4 : MonoBehaviour
             return;
         }
 
-        string lang = CurrentLanguage;
-        switch (lang)
+        switch (CurrentLanguage)
         {
             case "korean":   lines = languageCollector.KoreanLines2_4;   break;
             case "english":  lines = languageCollector.EnglishLines2_4;  break;
@@ -135,20 +144,21 @@ public class DialogueManager2_4 : MonoBehaviour
             case "chinese":  lines = languageCollector.ChineseLines2_4;  break;
             case "kazakh":   lines = languageCollector.KazaLines2_4;     break;
             default:
-                Debug.LogWarning($"[DialogueManager2_4] Unknown lang '{lang}', fallback=Korean");
+                Debug.LogWarning("[DialogueManager2_4] Unknown lang, fallback Korean");
                 lines = languageCollector.KoreanLines2_4;
                 break;
         }
 
         if (lines == null || lines.Length == 0)
         {
-            Debug.LogWarning("[DialogueManager2_4] 선택 언어 대사가 비어있습니다. 인스펙터에서 입력해 주세요.");
+            Debug.LogWarning("[DialogueManager2_4] 선택 언어 대사가 비어있습니다.");
             lines = new[] { " " };
         }
 
         Debug_LogLine("LOAD", -1, $"loaded={lines.Length}");
     }
 
+    // ===== 표시/타이핑 =====
     private IEnumerator ShowLineSequence()
     {
         if (lines == null || index < 0 || index >= lines.Length)
@@ -157,11 +167,8 @@ public class DialogueManager2_4 : MonoBehaviour
             yield break;
         }
 
-        // 화자명(나르케) 언어별 표시
-        if (aboveText != null)
-            aboveText.text = GetSpeakerNameNarke();
+        if (aboveText != null) aboveText.text = GetSpeakerNameNarke();
 
-        // 타이핑
         if (typingCoroutine != null) StopCoroutine(typingCoroutine);
         string line = lines[index] ?? "";
         Debug_LogLine("BEGIN", index, line);
@@ -189,17 +196,15 @@ public class DialogueManager2_4 : MonoBehaviour
     // ===== Next =====
     public void OnNextClicked()
     {
-        // ⬇️ 첫 줄에서 바로 엔딩을 원할 때
+        if (nextButton != null) nextButton.SetActive(false);
+
         if (endAfterFirstNext && index == 0 && !soundSequenceStarted)
         {
-            if (nextButton != null) nextButton.SetActive(false);
             if (typingCoroutine != null) StopCoroutine(typingCoroutine);
-            storyText?.SetText(lines?[index] ?? string.Empty); // 현재 줄은 완성해서 보여주기(선택)
+            storyText?.SetText(lines?[index] ?? string.Empty);
             StartCoroutine(EarlyEndSequence());
             return;
         }
-
-        if (nextButton != null) nextButton.SetActive(false);
 
         index++;
         if (index < (lines?.Length ?? 0))
@@ -209,88 +214,65 @@ public class DialogueManager2_4 : MonoBehaviour
         }
         else
         {
-            // 마지막 줄에서 엔딩 트리거
-            if (forceBreathOnlyAtEnd)
-                StartCoroutine(BreathOnlyThenCredits());
-            else
-                StartEndingIfNeeded();
+            // 마지막 줄에서: 숨소리 재생 + (지연) 이미지 페이드인 → 즉시 다음 씬
+            StartCoroutine(BreathThenShowEndingImage());
         }
     }
 
-    // ===== 사운드 + 엔딩 페이드 (한 번만) =====
-    private void StartEndingIfNeeded()
-    {
-        if (soundSequenceStarted) return;
-        soundSequenceStarted = true;
-        StartCoroutine(PlaySoundSequenceAndFade());
-    }
-
-    private IEnumerator PlaySoundSequenceAndFade()
-    {
-        // 1) 플루트 재생
-        if (fluteSource != null)
-        {
-            fluteSource.Play();
-            yield return new WaitWhile(() => fluteSource.isPlaying);
-        }
-
-        // 2) 숨소리
-        if (breathSource != null) breathSource.Play();
-
-        // 3) 잠깐 대기 후 엔딩 이미지 페이드 인
-        yield return new WaitForSeconds(2f);
-        yield return StartCoroutine(FadeInEndingImage(endFadeDuration));
-
-        // 4) 씬 전환
-        LoadEndingScene();
-    }
-
-    private IEnumerator BreathOnlyThenCredits()
+    // ===== 숨소리 → (지연) → 엔딩 이미지 페이드인 → 바로 다음 씬 =====
+    private IEnumerator BreathThenShowEndingImage()
     {
         if (soundSequenceStarted) yield break;
         soundSequenceStarted = true;
 
-        if (breathSource != null)
-        {
+        if (fluteSource != null && fluteSource.isPlaying)
+            fluteSource.Stop();
+
+        if (breathSource != null && !breathSource.isPlaying)
             breathSource.Play();
-            yield return new WaitWhile(() => breathSource.isPlaying);
-        }
 
-        // 숨소리만 듣고 바로(혹은 페이드 후) 전환하고 싶다면 earlyFadeDuration 사용
-        if (earlyFadeDuration > 0f)
-            yield return FadeToBlack(earlyFadeDuration);
+        // 지연 후 페이드인 실행 및 완료까지 대기
+        yield return StartCoroutine(FadeInEndingImageAfterDelay(endingFadeDelay, endingFadeDuration));
 
+        // 필요하면 숨소리 종료까지 기다리기
+        // if (breathSource != null && !breathSource.loop)
+        //     yield return new WaitWhile(() => breathSource.isPlaying);
+
+        // 비디오 없이 바로 씬 이동
         LoadEndingScene();
     }
 
+    private IEnumerator FadeInEndingImageAfterDelay(float delay, float duration)
+    {
+        if (delay > 0f) yield return new WaitForSeconds(delay);
+        yield return FadeInEndingImage(duration);
+    }
+
+    // ===== 조기 엔딩(옵션) =====
     private IEnumerator EarlyEndSequence()
     {
-        soundSequenceStarted = true; // 중복 방지
+        soundSequenceStarted = true;
 
-        // (선택) 플루트 재생
         if (!earlyEndBreathOnly && fluteSource != null)
         {
             fluteSource.Play();
-            yield return new WaitWhile(() => fluteSource.isPlaying);
+            if (!fluteSource.loop) yield return new WaitWhile(() => fluteSource.isPlaying);
         }
 
-        yield return new WaitForSeconds(earlyFadeDelay);
+        if (earlyFadeDelay > 0f) yield return new WaitForSeconds(earlyFadeDelay);
 
-        // 숨소리 재생
         if (breathSource != null)
         {
             breathSource.Play();
-            yield return new WaitWhile(() => breathSource.isPlaying);
+            if (!breathSource.loop) yield return new WaitWhile(() => breathSource.isPlaying);
         }
 
-        // 검은 화면 페이드(0이면 건너뜀)
-        if (earlyFadeDuration > 0f)
-            yield return FadeToBlack(earlyFadeDuration);
+        if (earlyFadeDuration > 0f) yield return FadeToBlack(earlyFadeDuration);
 
-        if (loadSceneAfterEarlyEnd)
-            LoadEndingScene();
+        if (loadSceneAfterEarlyEnd) LoadEndingScene();
     }
 
+    // ===== 공통 유틸 =====
     private void LoadEndingScene()
     {
         if (setPlayerPrefsIndex)
@@ -302,33 +284,30 @@ public class DialogueManager2_4 : MonoBehaviour
             Debug.LogError("[DialogueManager2_4] endingSceneName 이 비어있습니다.");
     }
 
-    private IEnumerator FadeInEndingImage(float fadeDuration = 2.0f)
+    private IEnumerator FadeInEndingImage(float fadeDuration)
     {
         if (endingImage == null || fadeDuration <= 0f) yield break;
 
-        Color color = endingImage.color;
-        color.a = 0f;
-        endingImage.color = color;
+        Color start = endingImage.color;
+        start.a = 0f;
+        endingImage.color = start;
         endingImage.gameObject.SetActive(true);
 
         float t = 0f;
         while (t < fadeDuration)
         {
             t += Time.deltaTime;
-            float a = Mathf.Lerp(0f, 1f, t / fadeDuration);
-            endingImage.color = new Color(color.r, color.g, color.b, a);
+            float a = Mathf.Clamp01(t / fadeDuration);
+            endingImage.color = new Color(start.r, start.g, start.b, a);
             yield return null;
         }
-
-        yield return new WaitForSeconds(2f);
     }
 
-    private IEnumerator FadeToBlack(float duration = 2f)
+    private IEnumerator FadeToBlack(float duration)
     {
         if (endingImage == null || duration <= 0f) yield break;
 
-        // 순수 블랙 오버레이로 사용
-        endingImage.sprite = null; // 스프라이트 제거(단색)
+        endingImage.sprite = null;
         var c = Color.black; c.a = 0f;
         endingImage.color = c;
         endingImage.gameObject.SetActive(true);
@@ -362,7 +341,6 @@ public class DialogueManager2_4 : MonoBehaviour
             case "japanese": above = Japanese_Above; story = Japanese_Story; break;
             case "chinese":  above = Chinese_Above;  story = Chinese_Story;  break;
             case "kazakh":   above = Kaza_Above;     story = Kaza_Story;     break;
-            // default: korean
         }
 
         if (above != null && story != null)
@@ -383,20 +361,17 @@ public class DialogueManager2_4 : MonoBehaviour
 
     private void OnLanguageChanged(string newLang)
     {
-        // 언어 바뀌면: UI 재바인딩 → 대사 재로드 → 인덱스 초기화 → 시퀀스 재시작
         SetupLanguageUI();
         LoadLinesForCurrentLanguage();
 
         StopAllCoroutines();
         index = 0;
-
-        // 언어 바뀌면 사운드 시퀀스 가드 해제
         soundSequenceStarted = false;
 
         StartCoroutine(ShowLineSequence());
     }
 
-    // ===== 화자명(나르케) 언어별 =====
+    // ===== 화자명 =====
     private string GetSpeakerNameNarke()
     {
         if (languageCollector == null) return "Narke";

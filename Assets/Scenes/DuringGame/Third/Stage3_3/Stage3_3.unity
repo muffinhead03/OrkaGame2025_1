@@ -334,13 +334,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2081894663}
     - target: {fileID: 4559963982282970157, guid: bc1b80eaae1b8004b959869af38b8c25, type: 3}
+      propertyPath: nextButton
+      value: 
+      objectReference: {fileID: 1903651767}
+    - target: {fileID: 4559963982282970157, guid: bc1b80eaae1b8004b959869af38b8c25, type: 3}
       propertyPath: Korean_Story
       value: 
       objectReference: {fileID: 2081894671}
     - target: {fileID: 4559963982282970157, guid: bc1b80eaae1b8004b959869af38b8c25, type: 3}
       propertyPath: SettingPanel
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 2095174871}
     - target: {fileID: 4559963982282970157, guid: bc1b80eaae1b8004b959869af38b8c25, type: 3}
       propertyPath: Chinese_Above
       value: 
@@ -1045,7 +1049,6 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1281183890}
   - {fileID: 2120534741}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1141,11 +1144,11 @@ Transform:
   m_GameObject: {fileID: 1281183887}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1280, y: -720, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1185940215}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1281183891
 MonoBehaviour:
@@ -1448,7 +1451,7 @@ MonoBehaviour:
   Kaza_Above: {fileID: 2081894668}
   Kaza_Story: {fileID: 2081894663}
   AboPo: {x: -750, y: 160}
-  StoPo: {x: -250, y: -20}
+  StoPo: {x: -250, y: -35}
   aboveText: {fileID: 1903651768}
   storyText: {fileID: 2081894676}
   nextButton: {fileID: 1903651767}
@@ -1461,7 +1464,7 @@ MonoBehaviour:
   CarrotButton: {fileID: 505859604}
   DialogueImage: {fileID: 1390689258}
   FirstPanel: {fileID: 818168850}
-  SettingPanel: {fileID: 0}
+  SettingPanel: {fileID: 2095174871}
   blackCoverPanel: {fileID: 602486019}
   bgmSource: {fileID: 1287770385}
   languageCollector: {fileID: 45156679}
@@ -2344,6 +2347,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 21015215}
     m_Modifications:
+    - target: {fileID: 198063384720592438, guid: 6420b7a5af884e8409bc1930d8108348, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -91
+      objectReference: {fileID: 0}
     - target: {fileID: 644880577101344825, guid: 6420b7a5af884e8409bc1930d8108348, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 0
@@ -2428,6 +2435,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 2376865077524530113, guid: 6420b7a5af884e8409bc1930d8108348, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 125
+      objectReference: {fileID: 0}
     - target: {fileID: 3959718451161483752, guid: 6420b7a5af884e8409bc1930d8108348, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 0
@@ -2455,6 +2466,22 @@ PrefabInstance:
     - target: {fileID: 3959718451161483752, guid: 6420b7a5af884e8409bc1930d8108348, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 4306703994837622136, guid: 6420b7a5af884e8409bc1930d8108348, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4306703994837622136, guid: 6420b7a5af884e8409bc1930d8108348, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 796683361}
+    - target: {fileID: 4306703994837622136, guid: 6420b7a5af884e8409bc1930d8108348, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnCloseSetting
+      objectReference: {fileID: 0}
+    - target: {fileID: 4306703994837622136, guid: 6420b7a5af884e8409bc1930d8108348, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: SettingPanelController, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 4746326533077152227, guid: 6420b7a5af884e8409bc1930d8108348, type: 3}
       propertyPath: m_Pivot.x
@@ -2821,6 +2848,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 361772030}
+  - {fileID: 1281183890}
   - {fileID: 1185940215}
   - {fileID: 1071941365}
   - {fileID: 796683360}

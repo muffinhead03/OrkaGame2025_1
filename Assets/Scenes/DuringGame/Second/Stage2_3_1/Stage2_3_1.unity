@@ -781,6 +781,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 2007724421}
     m_Modifications:
     - target: {fileID: 2838239068922001307, guid: 915f869e57a1e564f80bdc8a6f854660, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2838239068922001307, guid: 915f869e57a1e564f80bdc8a6f854660, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1460797602}
@@ -803,6 +807,10 @@ PrefabInstance:
     - target: {fileID: 2838239068922001307, guid: 915f869e57a1e564f80bdc8a6f854660, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
       value: FirstPanelController, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5083485335991883847, guid: 915f869e57a1e564f80bdc8a6f854660, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -91
       objectReference: {fileID: 0}
     - target: {fileID: 5634415960272455375, guid: 915f869e57a1e564f80bdc8a6f854660, type: 3}
       propertyPath: m_Pivot.x
@@ -915,6 +923,10 @@ PrefabInstance:
     - target: {fileID: 6667855126186141014, guid: 915f869e57a1e564f80bdc8a6f854660, type: 3}
       propertyPath: m_Delegates.Array.data[1].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: OnBgmArrowLeftUp
+      objectReference: {fileID: 0}
+    - target: {fileID: 8050356293234582521, guid: 915f869e57a1e564f80bdc8a6f854660, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 125
       objectReference: {fileID: 0}
     - target: {fileID: 8451348445395514186, guid: 915f869e57a1e564f80bdc8a6f854660, type: 3}
       propertyPath: m_Name
@@ -1033,7 +1045,7 @@ MonoBehaviour:
   Kaza_Above: {fileID: 1068426941}
   Kaza_Story: {fileID: 1068426939}
   AboPo: {x: -750, y: 160}
-  StoPo: {x: -250, y: -20}
+  StoPo: {x: -250, y: -35}
   aboveText: {fileID: 1068426938}
   storyText: {fileID: 1068426937}
   nextButton: {fileID: 1068426936}
@@ -3652,8 +3664,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 498.504, y: -150.628}
-  m_SizeDelta: {x: 535.879, y: 1138.743}
+  m_AnchoredPosition: {x: 498.504, y: -148.9}
+  m_SizeDelta: {x: 493, y: 1140}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1214347493
 MonoBehaviour:
@@ -4561,13 +4573,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1068426939}
     - target: {fileID: 4559963982282970157, guid: bc1b80eaae1b8004b959869af38b8c25, type: 3}
+      propertyPath: nextButton
+      value: 
+      objectReference: {fileID: 1068426936}
+    - target: {fileID: 4559963982282970157, guid: bc1b80eaae1b8004b959869af38b8c25, type: 3}
       propertyPath: Korean_Story
       value: 
       objectReference: {fileID: 1068426951}
     - target: {fileID: 4559963982282970157, guid: bc1b80eaae1b8004b959869af38b8c25, type: 3}
       propertyPath: SettingPanel
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 403919303}
     - target: {fileID: 4559963982282970157, guid: bc1b80eaae1b8004b959869af38b8c25, type: 3}
       propertyPath: Chinese_Above
       value: 

@@ -15,11 +15,19 @@ public class CardGameSecondManager : MonoBehaviour
     public CanvasGroup blackPanel;
     public GameObject carrotObject;
 
-    // ✅ 25 → 120초로 변경
+    // ✅ 일시정지 기준 패널들
+    [Header("일시정지 트리거 패널들")]
+    public RectTransform firstPanel;     // 인스펙터에 할당
+    public RectTransform settingPanel;   // 인스펙터에 할당
+    [Tooltip("패널이 (0,0,0)에 있는 것으로 간주할 허용 오차(픽셀)")]
+    public float centerTolerance = 1f;
+
+    // ✅ 25 → 120초
     private float timeRemaining = 120f; 
     private bool isGameOver = false;
     private bool isClearing = false;
     private bool isClearConditionMet = false;
+
     void Start()
     {
         if (blackPanel != null)
@@ -41,10 +49,17 @@ public class CardGameSecondManager : MonoBehaviour
         UpdateTimerDisplay();
     }
 
-
     void Update()
     {
         if (isGameOver || isClearing) return;
+
+        // 🔴 여기서 패널 상태를 보고 타이머/클리어 체크를 멈춤
+        if (IsPausedByPanel())
+        {
+            // 멈춘 상태에서도 표시만 업데이트하고 종료
+            UpdateTimerDisplay();
+            return;
+        }
 
         timeRemaining -= Time.deltaTime;
 
@@ -75,9 +90,26 @@ public class CardGameSecondManager : MonoBehaviour
         }
     }
 
+    // ✅ 패널이 활성 & 중앙이면 true
+    bool IsPausedByPanel()
+    {
+        return IsPanelBlocking(firstPanel) || IsPanelBlocking(settingPanel);
+    }
+
+    bool IsPanelBlocking(RectTransform rt)
+    {
+        if (rt == null) return false;
+        if (!rt.gameObject.activeInHierarchy) return false;
+
+        // UI 기준 중앙 여부 체크(허용 오차 포함)
+        Vector3 p = rt.anchoredPosition3D;
+        return p.sqrMagnitude <= centerTolerance * centerTolerance;
+    }
+
     public void OnCarrotClicked()
     {
-        if (!isClearConditionMet || isClearing) return;
+        // 일시정지 중에는 클릭 무시
+        if (!isClearConditionMet || isClearing || IsPausedByPanel()) return;
 
         Debug.Log("🥕 당근 클릭됨 → 연출 및 씬 전환 시작");
         StartCoroutine(CarrotShakeAndLoadScene());
@@ -97,7 +129,8 @@ public class CardGameSecondManager : MonoBehaviour
         carrotObject.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
 
         yield return new WaitForSeconds(0.5f);
-        yield return StartCoroutine(FlashBlack());
+        if (blackPanel != null)
+            yield return StartCoroutine(FlashBlack());
 
         SceneManager.LoadScene("Stage2_3_1");
     }
@@ -139,6 +172,7 @@ public class CardGameSecondManager : MonoBehaviour
         }
         blackPanel.alpha = 0f;
     }
+
     void UpdateTimerDisplay()
     {
         int totalSeconds = Mathf.CeilToInt(timeRemaining);
@@ -149,8 +183,11 @@ public class CardGameSecondManager : MonoBehaviour
         float t = 1f - (timeRemaining / 120f);
         Color newColor = Color.Lerp(Color.white, Color.red, t);
 
-        timerText.color = newColor;
-        timerText.text = $"{minutes:00}:{seconds:00}";
+        if (timerText != null)
+        {
+            timerText.color = newColor;
+            timerText.text = $"{minutes:00}:{seconds:00}";
+        }
     }
 
     bool CheckClearCondition()
@@ -165,5 +202,4 @@ public class CardGameSecondManager : MonoBehaviour
         }
         return true;
     }
-
 }

@@ -3,6 +3,7 @@ using TMPro;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI; // Graphic, Image
 
 public class SlidingGameManager2Script : MonoBehaviour
 {
@@ -47,51 +48,50 @@ public class SlidingGameManager2Script : MonoBehaviour
     private readonly Dictionary<int, SlidingPuzzle2Script> positionToPuzzle = new();
 
     // ===== 이동 규칙(대칭 보장) =====
-    // 기존 문제: 0<->2는 있었지만 2쪽에 0이 빠져 있었습니다.
-    // 아래는 모든 간선이 양방향이 되도록 보정한 버전입니다.
     private readonly Dictionary<int, List<int>> moveRules = new()
     {
         {0, new(){2}},                // 0 <-> 2
         {1, new(){2,4}},              // 1 <-> 2,4
-        {2, new(){0,1,3,5}},          // 2 <-> 0,1,3,5  ★ 0 추가
-        {3, new(){2,6,7}},            // 3 <-> 2,6,7   ★ 7 추가(7가 3을 가리키므로 대칭)
+        {2, new(){0,1,3,5}},          // 2 <-> 0,1,3,5
+        {3, new(){2,6,7}},            // 3 <-> 2,6,7
         {4, new(){1,5,7}},            // 4 <-> 1,5,7
         {5, new(){2,4,6,8}},          // 5 <-> 2,4,6,8
         {6, new(){3,5,9}},            // 6 <-> 3,5,9
-        {7, new(){3,4,8}},            // 7 <-> 3,4,8   ★ 4 추가(4가 7을 가리키므로 대칭)
+        {7, new(){3,4,8}},            // 7 <-> 3,4,8
         {8, new(){5,7,9}},            // 8 <-> 5,7,9
         {9, new(){6,8}},              // 9 <-> 6,8
     };
 
     // ---- 판정 상태 ----
-    private bool keyCleared   = false;
-    private bool lock1Cleared = false;
-    private bool lock2Cleared = false;
+    private bool keyCleared   = false; // 열쇠(선행)
+    private bool lock1Cleared = false; // 첫 번째 자물쇠(열쇠 후)
+    private bool lock2Cleared = false; // 두 번째 자물쇠(열쇠+첫자물쇠 후)
 
-    // ---- 판정 규칙 ----
-    // 열쇠: 타일 2,4,6,9 -> (0,1,4,3), (1,2,5,4), (3,4,7,6), (4,5,8,7)
-    private readonly int[] keyTiles = {2,4,6,9};
+    // ---- 판정 규칙 (첫 칸을 0으로 보는 위치 인덱스 기준) ----
+    // 열쇠: 타일 {2,4,9} 가 아래 3칸 세트 중 하나에 위치하면 클리어
+    private readonly int[] keyTiles = {2, 4, 9};
     private readonly List<HashSet<int>> keyValidSets = new()
     {
-        new HashSet<int>{0,1,4,3},
-        new HashSet<int>{1,2,5,4},
-        new HashSet<int>{3,4,7,6},
-        new HashSet<int>{4,5,8,7},
+        new HashSet<int>{2,3,5},
+        new HashSet<int>{1,2,4},
+        new HashSet<int>{4,5,7},
+        new HashSet<int>{5,6,8},
     };
 
-    // 1차 자물쇠: 타일 1,3,5,7 -> (2,5,8,4), (1,4,7,3)
-    private readonly int[] lockTiles = {1,3,5,7};
+    // ★ 변경된 1차 자물쇠 규칙:
+    // (열쇠 클리어 상태에서) 타일 {1,3,4,5,7} 이 위치 {2,5,3,8,4} 집합과 정확히 일치하면 클리어
+    private readonly int[] lock1Tiles = {1, 3, 4, 5, 7};
     private readonly List<HashSet<int>> lock1ValidSets = new()
     {
-        new HashSet<int>{2,5,8,4},
-        new HashSet<int>{1,4,7,3},
+        new HashSet<int>{2,5,3,8,4},
     };
 
-    // 2차 자물쇠: 타일 1,3,5,7 -> (6,0,3,4), (7,1,4,5)
+    // 2차 자물쇠: (열쇠+1차 클리어 상태에서) 타일 {1,3,5,6} 이 아래 4칸 세트 중 하나면 클리어
+    private readonly int[] lock2Tiles = {1, 3, 5, 6};
     private readonly List<HashSet<int>> lock2ValidSets = new()
     {
-        new HashSet<int>{6,0,3,4},
         new HashSet<int>{7,1,4,5},
+        new HashSet<int>{8,2,5,6},
     };
 
     // --------------------------
@@ -103,7 +103,7 @@ public class SlidingGameManager2Script : MonoBehaviour
         ApplyTimerSettings();
         ResetTimer();
 
-        // 아이콘 알파 초기화(미지정이면 무시)
+        // 아이콘 알파 초기화
         SetAlpha(keyIcon,   1f);
         SetAlpha(lock1Icon, 1f);
         SetAlpha(lock2Icon, 1f);
@@ -111,13 +111,13 @@ public class SlidingGameManager2Script : MonoBehaviour
         InitializeBoard();
 
         ValidateSetup();
-        ValidateMoveRulesSymmetric();   // ★ 이동 규칙 대칭성 검증
+        ValidateMoveRulesSymmetric();
 
         if (debugLogs)
         {
-            PrintNeighborTable();       // ★ 빈칸이 0~9일 때 교체 가능한 위치 테이블
+            PrintNeighborTable();
             if (puzzlePositionMap.ContainsKey(0))
-                LogNeighborsForEmpty(puzzlePositionMap[0]); // 현재 빈칸 기준 안내
+                LogNeighborsForEmpty(puzzlePositionMap[0]);
             DumpState("[Init Dump]");
         }
     }
@@ -126,6 +126,7 @@ public class SlidingGameManager2Script : MonoBehaviour
     {
         totalDurationSeconds = Mathf.Max(0f, startMinutes * 60f);
     }
+
     public void ResetTimer()
     {
         timer = totalDurationSeconds;
@@ -182,42 +183,39 @@ public class SlidingGameManager2Script : MonoBehaviour
             if (debugLogs)
             {
                 Debug.Log($"[BLOCKED] empty:{emptyPos} <-/-> clicked:{clickedPos}");
-                LogNeighborsForEmpty(emptyPos); // ★ 어떤 위치로만 이동 가능한지 안내
+                LogNeighborsForEmpty(emptyPos);
             }
             return;
         }
 
-        // 스왑(빈칸 오브젝트가 없더라도 방어적으로 처리)
+        // 스왑
         positionToPuzzle.TryGetValue(emptyPos, out var empty);
 
         if (debugLogs)
             Debug.Log($"[MOVE] empty:{emptyPos} <-> clicked:{clickedPos}  | tile#{clicked.puzzleNumber}");
 
-        // 클릭한 타일을 빈칸 자리로 이동
         clicked.SetPosition(emptyPos, boardPositions[emptyPos]);
 
         if (empty != null)
         {
-            // 빈칸 오브젝트가 있으면 그걸 클릭 위치로 이동
             empty.SetPosition(clickedPos, boardPositions[clickedPos]);
             positionToPuzzle[clickedPos] = empty;
         }
         else
         {
-            // 빈칸 오브젝트가 없으면, 클릭 자리는 "비어있음"으로 두기
             positionToPuzzle.Remove(clickedPos);
             if (debugLogs) Debug.LogWarning("[SlidingGM2] 빈칸 오브젝트가 없어 clickedPos를 비워둡니다.");
         }
 
         // 맵 갱신
         puzzlePositionMap[clicked.puzzleNumber] = emptyPos;
-        puzzlePositionMap[0] = clickedPos; // 빈칸은 클릭한 자리로 이동
+        puzzlePositionMap[0] = clickedPos;
         positionToPuzzle[emptyPos] = clicked;
 
         if (debugLogs)
         {
             DumpState("[After Swap]");
-            LogNeighborsForEmpty(clickedPos); // ★ 새 빈칸 기준 안내
+            LogNeighborsForEmpty(clickedPos);
         }
 
         // 이동 후 판정
@@ -232,7 +230,13 @@ public class SlidingGameManager2Script : MonoBehaviour
         timer -= Time.deltaTime;
         UpdateTimerUI();
 
-        if (timer <= 0f) LoadFailScene();
+        if (timer <= 0f)
+        {
+            // 시간 종료 시: 모두 클리어면 성공, 아니면 실패
+            if (IsAllCleared()) LoadSuccessScene();
+            else LoadFailScene();
+            return;
+        }
     }
 
     private void UpdateTimerUI()
@@ -251,38 +255,42 @@ public class SlidingGameManager2Script : MonoBehaviour
         if (!keyCleared && MatchSet(keyTiles, keyValidSets))
         {
             keyCleared = true;
-            SetAlpha(keyIcon, clearedAlpha);
+            SetAlpha(keyIcon, clearedAlpha); // 유지
             if (debugLogs) Debug.Log("[JUDGE] Key CLEARED");
         }
 
-        // 2) Lock1 (Key 선행)
-        if (keyCleared && !lock1Cleared && MatchSet(lockTiles, lock1ValidSets))
+        // 2) Lock1 (열쇠 클리어 후에만)
+        if (keyCleared && !lock1Cleared && MatchSet(lock1Tiles, lock1ValidSets))
         {
             lock1Cleared = true;
-            SetAlpha(lock1Icon, clearedAlpha);
+            SetAlpha(lock1Icon, clearedAlpha); // 유지
             if (debugLogs) Debug.Log("[JUDGE] Lock1 CLEARED");
         }
 
-        // 3) Lock2 (Lock1 선행)
-        if (keyCleared && lock1Cleared && !lock2Cleared && MatchSet(lockTiles, lock2ValidSets))
+        // 3) Lock2 (열쇠 + 1차 클리어 후에만)
+        if (keyCleared && lock1Cleared && !lock2Cleared && MatchSet(lock2Tiles, lock2ValidSets))
         {
             lock2Cleared = true;
-            SetAlpha(lock2Icon, clearedAlpha);
+            SetAlpha(lock2Icon, clearedAlpha); // 유지
             if (debugLogs) Debug.Log("[JUDGE] Lock2 CLEARED (ALL DONE)");
         }
     }
 
-    // tiles: 체크할 퍼즐 번호 모음 (예: 2,4,6,9)
-    // validSets: 허용 위치 "집합" 목록 (순서 무시)
+    // 모두 클리어했는지?
+    private bool IsAllCleared()
+    {
+        return keyCleared && lock1Cleared && lock2Cleared;
+    }
+
+    // tiles: 체크할 퍼즐 번호 모음 -> 현재 위치들의 집합과 validSets(집합) 비교
     private bool MatchSet(int[] tiles, List<HashSet<int>> validSets)
     {
-        var current = new HashSet<int>(tiles.Select(t => puzzlePositionMap[t]));
+        var current = new HashSet<int>(tiles.Select(t => puzzlePositionMap.TryGetValue(t, out var pos) ? pos : -1));
         return validSets.Any(set => set.SetEquals(current));
     }
 
     // ===================== 유틸/디버그 =====================
 
-    // ★ 이동 규칙 대칭성 검증
     private void ValidateMoveRulesSymmetric()
     {
         foreach (var kv in moveRules)
@@ -296,7 +304,6 @@ public class SlidingGameManager2Script : MonoBehaviour
         }
     }
 
-    // ★ “빈칸이 X일 때 어디와 교체 가능한가?” 로그
     private void LogNeighborsForEmpty(int emptyPos)
     {
         if (!moveRules.TryGetValue(emptyPos, out var nbs))
@@ -305,7 +312,6 @@ public class SlidingGameManager2Script : MonoBehaviour
             return;
         }
 
-        // 각 이웃 칸에 현재 어떤 타일이 있는지도 함께 출력
         string info = string.Join(", ", nbs.Select(p =>
         {
             string who = positionToPuzzle.TryGetValue(p, out var piece) ? $"tile#{piece.puzzleNumber}" : "empty";
@@ -315,7 +321,6 @@ public class SlidingGameManager2Script : MonoBehaviour
         Debug.Log($"[NEIGHBORS] empty@{emptyPos} -> can swap with [{string.Join(",", nbs)}]  | occupants: {info}");
     }
 
-    // ★ 전체 테이블 출력(빈칸이 0~9일 때 이동 가능 위치)
     private void PrintNeighborTable()
     {
         Debug.Log("====== SlidingGM2 Neighbor Table (emptyPos -> neighbors) ======");
@@ -364,9 +369,35 @@ public class SlidingGameManager2Script : MonoBehaviour
         Debug.Log($"{tag} {line}");
     }
 
+    // CanvasGroup + UI Graphic + SpriteRenderer 모두 알파 적용
     private void SetAlpha(CanvasGroup g, float a)
     {
-        if (g == null) return;
-        g.alpha = a;
+        a = Mathf.Clamp01(a);
+        bool touched = false;
+
+        if (g != null)
+        {
+            g.alpha = a;
+            touched = true;
+
+            var graphics = g.GetComponentsInChildren<Graphic>(true);
+            foreach (var gr in graphics)
+            {
+                var c = gr.color; c.a = a; gr.color = c;
+            }
+
+            var srs = g.GetComponentsInChildren<SpriteRenderer>(true);
+            foreach (var sr in srs)
+            {
+                var c = sr.color; c.a = a; sr.color = c;
+            }
+        }
+        else
+        {
+            if (debugLogs) Debug.LogWarning("[SlidingGM2] SetAlpha 대상(CanvasGroup) 미할당 – 인스펙터 연결 필요");
+        }
+
+        if (!touched && debugLogs)
+            Debug.LogWarning("[SlidingGM2] SetAlpha 적용 대상이 없습니다.");
     }
 }

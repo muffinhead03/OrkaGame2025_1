@@ -12,26 +12,27 @@ public class SecondCardClickManager : MonoBehaviour
     [SerializeField] private string successScene = "Stage2_3_1";
     [SerializeField] private string failScene    = "EtInArcadiaEgoAfterSecondCardGame";
     [SerializeField] private bool startTimerOnFirstInput = true;
-    
+
     private bool carrotShaken = false;
     private bool gameEnded = false;
     private Coroutine timerCo;
     private HashSet<int> visitedCaptionCards = new HashSet<int>(); // 1-based (1,2,3,7,8,10)
     private static readonly int[] CaptionCards = { 1, 2, 3, 7, 8, 10 };
-    [Header("입력 타이밍 옵션")]
-    [SerializeField] private bool startMusicOnPointerDown = true; // ↓ 누르는 즉시 음악 재생
 
-// 같은 카드를 Down 직후 Up 할 때 재시작 튕김 방지용
+    [Header("입력 타이밍 옵션")]
+    [SerializeField] private bool startMusicOnPointerDown = true;
+
     private int lastMusicCard = -1;
     private float lastMusicTime = -999f;
-    [SerializeField] private float reTriggerBlockWindow = 0.2f; // 초
-    [Header("CardClick 루트 (초기 비활성 추천)")]
+    [SerializeField] private float reTriggerBlockWindow = 0.2f;
+
+    [Header("CardClick 루트(말풍선) - 초기 비활성")]
     [SerializeField] private GameObject cardClickRoot;
 
     [Header("자막 데이터 (SecondCardClickKeyedLinesMB 참조)")]
     [SerializeField] private SecondCardClickKeyedLinesMB secondLinesMB;
 
-    [Header("언어별 컨테이너 (각 컨테이너 안에 TMP 1개 + 해당 언어 폰트 에셋 지정)")]
+    [Header("언어별 컨테이너 (각 컨테이너 안에 TMP 1개)")]
     [SerializeField] private GameObject koreanClick;
     [SerializeField] private GameObject japaneseClick;
     [SerializeField] private GameObject englishClick;
@@ -42,43 +43,35 @@ public class SecondCardClickManager : MonoBehaviour
     [SerializeField] private SecondCardClickLinesDB linesDB;
 
     [Header("오디오 (카드별 AudioSource)")]
-    [Tooltip("카드별 오디오 소스(1~10번, 인덱스 0=1번 카드). 비어있으면 해당 카드 음악 없음으로 간주")]
     [SerializeField] private AudioSource[] cardAudioSources = new AudioSource[10];
-
-    [Tooltip("7번 카드의 '지속되는' 사운드 전용(AudioSource). Stop하지 않음.")]
     [SerializeField] private AudioSource persistentSource7;
+    [SerializeField] private AudioSource sfxSource; // 미사용
 
-    [Tooltip("효과음/원샷 재생용(필요 없으면 비워둬도 됨)")]
-    [SerializeField] private AudioSource sfxSource; // 현재 스크립트에서는 미사용
-
-    [Header("7번 카드 전용 SFX (0.5초 지연 재생) - AudioSource 직접 재생")]
+    [Header("7번 카드 전용 SFX (0.5초 지연)")]
     [SerializeField] private AudioSource specialSfx7Source;
 
     [Header("9번 카드 전용 화면 물들임 패널")]
-    [Tooltip("Image가 달린 패널(최상단 캔버스 추천). 알파/컬러를 4초 동안 변화시킴")]
     [SerializeField] private Image tintPanelImage;
     [SerializeField] private Color tintColor = new Color(1f, 0f, 0f, 0.6f);
     [SerializeField] private float tintTotalDuration = 4f;
 
-    [Header("디버그 옵션 (콘솔 전용 로그)")]
+    [Header("디버그 옵션")]
     [SerializeField] private bool verboseLog = true;
 
     [Header("편의 옵션")]
-    [Tooltip("처음 클릭하면 자동으로 UI를 풀고(Unlock) 즉시 처리까지 진행")]
     [SerializeField] private bool autoUnlockOnFirstClick = true;
-
-    [Tooltip("테스트용. 시작하자마자 UnlockAndShow() 호출")]
     [SerializeField] private bool unlockOnStartForTest = false;
 
     // 내부 상태
-    private string currentLang;              // normalized: korean/japanese/english/chinese/kazakh
+    private string currentLang;              // normalized
     private TextMeshProUGUI activeTMP;       // 현재 언어 컨테이너 안의 TMP
-    private bool uiLocked = true;            // 대사 끝날 때 풀기
+    private bool uiLocked = true;            // 처음엔 잠금
 
-    // 음악 동작 카드(1-based 기준)
+    // 음악 동작 카드(1-based)
     private static readonly int[] CardsWithMusic = { 1, 2, 3, 4, 5, 7, 8, 10 };
 
-    // 자막 적용 카드 고정 인덱스 매핑 (1,2,3,7,8,10 → 0~5)
+    // ============= 유틸 =============
+
     private static bool TryGetFixedIndexForCard(int cardNumberOneBased, out int fixedIndex)
     {
         switch (cardNumberOneBased)
@@ -89,10 +82,338 @@ public class SecondCardClickManager : MonoBehaviour
             case 7:  fixedIndex = 3; return true;
             case 8:  fixedIndex = 4; return true;
             case 10: fixedIndex = 5; return true;
-            default:
-                fixedIndex = -1; return false; // 4,5,6,9 → 자막 없음
+            default: fixedIndex = -1; return false; // 4,5,6,9 → 자막 없음
         }
     }
+
+    private static bool Contains(int[] arr, int val)
+    {
+        if (arr == null) return false;
+        for (int i = 0; i < arr.Length; i++)
+            if (arr[i] == val) return true;
+        return false;
+    }
+
+    // 루트의 활성/비활성만 담당 (언어 컨테이너는 건드리지 않음)
+    private void SetBalloonRootActive(bool on)
+    {
+        if (!cardClickRoot) return;
+        if (on)
+        {
+            if (!cardClickRoot.activeInHierarchy) EnableHierarchy(cardClickRoot);
+            else if (!cardClickRoot.activeSelf)   cardClickRoot.SetActive(true);
+        }
+        else
+        {
+            if (cardClickRoot.activeSelf) cardClickRoot.SetActive(false);
+        }
+    }
+
+    // 언어 컨테이너만 토글 (루트는 절대 건드리지 않음)
+    private void ShowOnlyLanguageContainer(string lang)
+    {
+        if (koreanClick)   koreanClick.SetActive(false);
+        if (japaneseClick) japaneseClick.SetActive(false);
+        if (englishClick)  englishClick.SetActive(false);
+        if (chineseClick)  chineseClick.SetActive(false);
+        if (kazakhClick)   kazakhClick.SetActive(false);
+
+        GameObject target = englishClick;
+        switch (lang)
+        {
+            case "korean":   target = koreanClick;   break;
+            case "japanese": target = japaneseClick; break;
+            case "chinese":  target = chineseClick;  break;
+            case "kazakh":   target = kazakhClick;   break;
+        }
+
+        if (target) target.SetActive(true);
+
+        // TMP 재바인딩
+        activeTMP = target ? target.GetComponentInChildren<TextMeshProUGUI>(true) : null;
+        if (activeTMP == null && cardClickRoot != null)
+            activeTMP = cardClickRoot.GetComponentInChildren<TextMeshProUGUI>(true);
+    }
+
+    private void EnsureActiveTMP()
+    {
+        if (activeTMP != null) return;
+        GameObject[] candidates = { koreanClick, japaneseClick, chineseClick, kazakhClick, englishClick, cardClickRoot };
+        foreach (var go in candidates)
+        {
+            if (!go) continue;
+            var tmp = go.GetComponentInChildren<TextMeshProUGUI>(true);
+            if (tmp != null) { activeTMP = tmp; break; }
+        }
+        if (activeTMP == null)
+            Debug.LogWarning("[2ndCardClick] TextMeshProUGUI를 찾지 못했습니다.");
+    }
+
+    private void SetTMPColorBlack()
+    {
+        if (activeTMP == null) return;
+        var col = activeTMP.color; col.a = 1f; col.r = 0f; col.g = 0f; col.b = 0f;
+        activeTMP.color = col;
+    }
+
+    private static string NormalizeLang(string raw)
+    {
+        if (string.IsNullOrEmpty(raw)) return "english";
+        raw = raw.ToLowerInvariant();
+        if (raw == "chinese" || raw == "zh" || raw.StartsWith("zh-") || raw.Contains("chinese"))
+            return "chinese";
+        if (raw.StartsWith("ko") || raw == "korean")                         return "korean";
+        if (raw.StartsWith("ja") || raw == "japanese")                       return "japanese";
+        if (raw.StartsWith("ka") || raw == "kazakh" || raw == "kazakhstan")  return "kazakh";
+        if (raw.StartsWith("en") || raw == "english")                        return "english";
+        return "english";
+    }
+
+    // ============= 라이프사이클 =============
+
+    void Awake()
+    {
+        // 언어 초기화
+        var raw = LanguageManager.GetLanguage();
+        currentLang = NormalizeLang(raw);
+
+        // 시작은 잠금
+        uiLocked = true;
+
+        // 말풍선 루트 강제 OFF
+        if (cardClickRoot && cardClickRoot.activeSelf)
+            cardClickRoot.SetActive(false);
+
+        // 언어 컨테이너 전부 OFF
+        if (koreanClick)   koreanClick.SetActive(false);
+        if (japaneseClick) japaneseClick.SetActive(false);
+        if (englishClick)  englishClick.SetActive(false);
+        if (chineseClick)  chineseClick.SetActive(false);
+        if (kazakhClick)   kazakhClick.SetActive(false);
+
+        activeTMP = null;
+
+        // 틴트 패널 초기화
+        if (tintPanelImage != null)
+        {
+            var c = tintPanelImage.color;
+            c.a = 0f;
+            tintPanelImage.color = c;
+            tintPanelImage.gameObject.SetActive(false);
+        }
+
+        if (verboseLog)
+            Debug.Log($"[2ndCardClick] Awake: lang={currentLang}, uiLocked={uiLocked}, rootActive={(cardClickRoot ? cardClickRoot.activeSelf : (bool?)null)}");
+
+#if UNITY_EDITOR
+        ValidateSetup();
+#endif
+    }
+
+    void Start()
+    {
+        if (unlockOnStartForTest)
+        {
+            // 테스트 옵션: 잠금만 풀고, 바로 보여주지는 않음
+            uiLocked = false;
+            if (verboseLog) Debug.Log("[2ndCardClick] Start: unlockOnStartForTest (루트는 여전히 OFF)");
+        }
+    }
+
+    void OnEnable()  { LanguageManager.OnLanguageChanged += OnLangChanged; }
+    void OnDisable() { LanguageManager.OnLanguageChanged -= OnLangChanged; }
+
+    private void OnLangChanged(string _)
+    {
+        currentLang = NormalizeLang(LanguageManager.GetLanguage());
+
+        // 잠겨있으면 아무 것도 켜지 않음
+        if (uiLocked)
+        {
+            if (verboseLog) Debug.Log($"[2ndCardClick] OnLangChanged(locked) → {currentLang}");
+            return;
+        }
+
+        // 루트 상태는 유지. 루트가 켜져 있을 때만 언어 컨테이너를 교체
+        if (cardClickRoot && cardClickRoot.activeInHierarchy && cardClickRoot.activeSelf)
+        {
+            ShowOnlyLanguageContainer(currentLang);
+            if (verboseLog) Debug.Log($"[2ndCardClick] OnLangChanged visible → {currentLang}");
+        }
+        else
+        {
+            // 루트가 꺼져있으면 언어 컨테이너도 꺼둔다
+            if (koreanClick)   koreanClick.SetActive(false);
+            if (japaneseClick) japaneseClick.SetActive(false);
+            if (englishClick)  englishClick.SetActive(false);
+            if (chineseClick)  chineseClick.SetActive(false);
+            if (kazakhClick)   kazakhClick.SetActive(false);
+            activeTMP = null;
+            if (verboseLog) Debug.Log($"[2ndCardClick] OnLangChanged hidden (root OFF) → {currentLang}");
+        }
+    }
+
+    /// 외부에서 대화 끝나고 클릭 UI를 사용할 수 있게 할 때 호출
+    public void UnlockAndShow()
+    {
+        // 잠금만 해제. 루트는 여전히 OFF
+        uiLocked = false;
+        // 언어 컨테이너는 누를 때 켜짐
+        if (verboseLog) Debug.Log("[2ndCardClick] UnlockAndShow(): uiUnlocked, root remains OFF until caption card");
+    }
+
+    // ============= 입력 =============
+
+    public void OnCardPointerDown(int slotIndexZeroBased)
+    {
+        if (uiLocked && autoUnlockOnFirstClick) UnlockAndShow();
+        if (uiLocked) return;
+
+        if (slotIndexZeroBased < 0 || slotIndexZeroBased >= 10)
+        {
+            Debug.LogWarning($"[2ndCardClick] (DOWN) invalid slot={slotIndexZeroBased}");
+            return;
+        }
+
+        // 타이머 시작
+        StartGameTimerIfNeeded();
+
+        // 자막만 즉시 표시
+        ShowCaptionForSlot(slotIndexZeroBased);
+
+        int oneBased = slotIndexZeroBased + 1;
+
+        // 음악 즉시 재생(옵션)
+        if (startMusicOnPointerDown)
+        {
+            HandleMusicForCard(oneBased);
+            lastMusicCard = oneBased;
+            lastMusicTime = Time.unscaledTime;
+        }
+
+        // 방문 체크
+        RegisterCardVisited(oneBased);
+
+        // 클리어 체크
+        if (!gameEnded && CheckClearCondition())
+            TransitionSuccess();
+    }
+
+    public void OnCardClickedBySlot(int slotIndexZeroBased)
+    {
+        if (uiLocked && autoUnlockOnFirstClick) UnlockAndShow();
+        if (uiLocked) return;
+
+        if (slotIndexZeroBased < 0 || slotIndexZeroBased >= 10)
+        {
+            Debug.LogWarning($"[2ndCardClick] invalid slot={slotIndexZeroBased}");
+            return;
+        }
+
+        int oneBased = slotIndexZeroBased + 1;
+
+        // 음악 처리
+        HandleMusicForCard(oneBased);
+
+        // 9번 특수 이펙트
+        if (oneBased == 9 && tintPanelImage != null)
+        {
+            StopCoroutine(nameof(TintRoutine));
+            StartCoroutine(TintRoutine());
+        }
+
+        // 자막 처리
+        if (TryGetFixedIndexForCard(oneBased, out int clickIdx))
+        {
+            // 1) 루트 켜기 (처음 보이는 순간)
+            SetBalloonRootActive(true);
+
+            // 2) 현재 언어 컨테이너만 ON (루트는 이미 ON)
+            ShowOnlyLanguageContainer(currentLang);
+
+            // 3) TMP 보장
+            EnsureActiveTMP();
+            if (activeTMP == null)
+            {
+                Debug.LogWarning("[2ndCardClick] activeTMP 없음");
+                return;
+            }
+
+            // 4) 텍스트 표시
+            string text = secondLinesMB ? secondLinesMB.GetLine(currentLang, clickIdx) : string.Empty;
+            if (string.IsNullOrWhiteSpace(text) && secondLinesMB != null)
+                text = secondLinesMB.GetLine("english", clickIdx);
+
+            activeTMP.gameObject.SetActive(true);
+            SetTMPColorBlack();
+            activeTMP.SetText(text ?? string.Empty, true);
+
+            if (verboseLog) Debug.Log($"[2ndCardClick] Caption shown: card={oneBased}, idx={clickIdx}, len={text?.Length}");
+        }
+        else
+        {
+            // 자막 없는 카드 → 루트 OFF
+            SetBalloonRootActive(false);
+            // 언어 컨테이너도 다 OFF (루트와 분리된 묶음이므로 확실히 내림)
+            if (koreanClick)   koreanClick.SetActive(false);
+            if (japaneseClick) japaneseClick.SetActive(false);
+            if (englishClick)  englishClick.SetActive(false);
+            if (chineseClick)  chineseClick.SetActive(false);
+            if (kazakhClick)   kazakhClick.SetActive(false);
+            activeTMP = null;
+
+            if (verboseLog) Debug.Log($"[2ndCardClick] No caption for card {oneBased}");
+        }
+    }
+
+    // 자막만 표시(음악/틴트 없음)
+    private void ShowCaptionForSlot(int slotIndexZeroBased)
+    {
+        if (uiLocked && autoUnlockOnFirstClick) UnlockAndShow();
+        if (uiLocked) return;
+
+        int oneBased = slotIndexZeroBased + 1;
+
+        if (TryGetFixedIndexForCard(oneBased, out int clickIdx))
+        {
+            // 루트 켜고 언어 컨테이너 선택
+            SetBalloonRootActive(true);
+            ShowOnlyLanguageContainer(currentLang);
+
+            EnsureActiveTMP();
+            if (activeTMP == null)
+            {
+                Debug.LogWarning("[2ndCardClick] (DOWN) activeTMP가 없습니다.");
+                return;
+            }
+
+            string text = secondLinesMB ? secondLinesMB.GetLine(currentLang, clickIdx) : string.Empty;
+            if (string.IsNullOrWhiteSpace(text) && secondLinesMB != null)
+                text = secondLinesMB.GetLine("english", clickIdx);
+
+            activeTMP.gameObject.SetActive(true);
+            SetTMPColorBlack();
+            activeTMP.SetText(text ?? string.Empty, true);
+
+            if (verboseLog) Debug.Log($"[2ndCardClick] (DOWN) caption card={oneBased}, idx={clickIdx}, len={text?.Length}");
+        }
+        else
+        {
+            // 자막 없음 → 루트/컨테이너 OFF
+            SetBalloonRootActive(false);
+            if (koreanClick)   koreanClick.SetActive(false);
+            if (japaneseClick) japaneseClick.SetActive(false);
+            if (englishClick)  englishClick.SetActive(false);
+            if (chineseClick)  chineseClick.SetActive(false);
+            if (kazakhClick)   kazakhClick.SetActive(false);
+            activeTMP = null;
+
+            if (verboseLog) Debug.Log($"[2ndCardClick] (DOWN) no caption for card {oneBased}");
+        }
+    }
+
+    // ============= 게임 흐름 =============
+
     private void StartGameTimerIfNeeded()
     {
         if (gameEnded) return;
@@ -107,25 +428,21 @@ public class SecondCardClickManager : MonoBehaviour
         float t = timeLimitSeconds;
         while (t > 0f && !gameEnded)
         {
-            t -= Time.unscaledDeltaTime; // 일시정지 무시하고 돌리려면 unscaled 사용
+            t -= Time.unscaledDeltaTime; // 일시정지 무시
             yield return null;
         }
         if (gameEnded) yield break;
-
-        // 타임오버 → 실패 전환
         TransitionFail();
     }
 
     private void RegisterCardVisited(int oneBased)
     {
-        // 자막 대상 카드만 카운트
         for (int i = 0; i < CaptionCards.Length; i++)
             if (CaptionCards[i] == oneBased) { visitedCaptionCards.Add(oneBased); break; }
     }
 
     private bool IsAllCaptionCardsVisited()
     {
-        // 1,2,3,7,8,10이 모두 눌렸는지
         for (int i = 0; i < CaptionCards.Length; i++)
             if (!visitedCaptionCards.Contains(CaptionCards[i])) return false;
         return true;
@@ -133,7 +450,6 @@ public class SecondCardClickManager : MonoBehaviour
 
     private bool CheckClearCondition()
     {
-        // 조건: 모든 자막 카드 방문 + 당근 흔들기 완료
         return IsAllCaptionCardsVisited() && carrotShaken;
     }
 
@@ -162,136 +478,7 @@ public class SecondCardClickManager : MonoBehaviour
         SceneManager.LoadScene(failScene);
     }
 
-    void Awake()
-    {
-        var raw = LanguageManager.GetLanguage();
-        currentLang = NormalizeLang(raw);
-
-        if (cardClickRoot) cardClickRoot.SetActive(false);
-
-        // tintPanel 초기 세팅 (처음엔 투명)
-        if (tintPanelImage != null)
-        {
-            var c = tintPanelImage.color;
-            c.a = 0f;
-            tintPanelImage.color = c;
-            tintPanelImage.gameObject.SetActive(false);
-        }
-
-        if (verboseLog)
-            Debug.Log($"[2ndCardClick] Awake: lang={currentLang}, rootActive={cardClickRoot?.activeSelf}");
-
-#if UNITY_EDITOR
-        ValidateSetup();
-#endif
-    }
-
-    void Start()
-    {
-        if (unlockOnStartForTest)
-        {
-            UnlockAndShow();
-            if (verboseLog) Debug.Log("[2ndCardClick] Start: unlockOnStartForTest → UnlockAndShow()");
-        }
-    }
-
-    void OnEnable()  { LanguageManager.OnLanguageChanged += OnLangChanged; }
-    void OnDisable() { LanguageManager.OnLanguageChanged -= OnLangChanged; }
-
-    private void OnLangChanged(string _)
-    {
-        currentLang = NormalizeLang(LanguageManager.GetLanguage());
-        if (!uiLocked && cardClickRoot && cardClickRoot.activeInHierarchy)
-            ActivateUIForCurrentLanguage();
-        else
-            RebindTMPOnly();
-
-        if (verboseLog) Debug.Log($"[2ndCardClick] OnLangChanged → {currentLang}");
-    }
-
-    /// 대사/클릭 UI를 사용할 시점에 호출 (대화 끝난 뒤 등)
-    public void UnlockAndShow()
-    {
-        uiLocked = false;
-        ActivateUIForCurrentLanguage();
-
-        if (activeTMP != null)
-        {
-            activeTMP.text = ""; // READY 같은 표시 제거
-            SetTMPColorBlack();
-        }
-
-        if (verboseLog) Debug.Log("[2ndCardClick] UnlockAndShow()");
-    }
-
-    /// 슬롯(0~9) 클릭 시 호출
-    public void OnCardClickedBySlot(int slotIndexZeroBased)
-    {
-        if (uiLocked && autoUnlockOnFirstClick) UnlockAndShow();
-        if (uiLocked) return;
-
-        if (slotIndexZeroBased < 0 || slotIndexZeroBased >= 10)
-        {
-            Debug.LogWarning($"[2ndCardClick] invalid slot={slotIndexZeroBased}");
-            return;
-        }
-
-        int oneBased = slotIndexZeroBased + 1;
-
-        // === 음악 처리 ===
-        HandleMusicForCard(oneBased);
-
-        // === 9번 특수 이펙트 ===
-        if (oneBased == 9 && tintPanelImage != null)
-        {
-            StopCoroutine(nameof(TintRoutine));
-            StartCoroutine(TintRoutine());
-        }
-
-        // === 자막 처리 (고정 인덱스 매핑) ===
-        if (TryGetFixedIndexForCard(oneBased, out int clickIdx))
-        {
-            ActivateUIForCurrentLanguage();
-            EnsureActiveTMP();
-
-            if (activeTMP == null)
-            {
-                Debug.LogWarning("[2ndCardClick] activeTMP가 없습니다. 언어 컨테이너에 TextMeshProUGUI가 있는지 확인하세요.");
-                return;
-            }
-
-            // 데이터에서 현재 언어로 1줄 (MB 내부에서도 폴백하나, 보수적 안전망 유지)
-            string text = secondLinesMB ? secondLinesMB.GetLine(currentLang, clickIdx) : string.Empty;
-            if (string.IsNullOrWhiteSpace(text) && secondLinesMB != null)
-                text = secondLinesMB.GetLine("english", clickIdx);
-
-            if (string.IsNullOrWhiteSpace(text))
-            {
-                Debug.LogWarning($"[2ndCardClick] 빈 자막: card={oneBased}, idx={clickIdx}. secondLinesMB/영문 라인 채워주세요.");
-                // 이 줄을 보여주고 싶지 않으면 return; 로 바꾸세요.
-                text = ""; 
-            }
-
-            // 루트/컨테이너 보이기 + 출력
-            if (cardClickRoot && !cardClickRoot.activeInHierarchy) EnableHierarchy(cardClickRoot);
-            if (cardClickRoot && !cardClickRoot.activeSelf) cardClickRoot.SetActive(true);
-
-            activeTMP.gameObject.SetActive(true);
-            SetTMPColorBlack();
-            activeTMP.SetText(text, true);
-
-            if (verboseLog) Debug.Log($"[2ndCardClick] Caption shown: card={oneBased}, idx={clickIdx}, len={text?.Length}");
-        }
-        else
-        {
-            // 자막 없는 카드(4,5,6,9)
-            if (cardClickRoot && cardClickRoot.activeSelf)
-                cardClickRoot.SetActive(false);
-            if (verboseLog) Debug.Log($"[2ndCardClick] No caption for card {oneBased}");
-        }
-    }
-
-    // ===== Helpers =====
+    // ============= 이펙트/오디오 등 =============
 
     private void HandleMusicForCard(int oneBased)
     {
@@ -300,31 +487,26 @@ public class SecondCardClickManager : MonoBehaviour
 
         if (verboseLog) Debug.Log($"[2ndCardClick] Click card {oneBased} (needMusic={needMusic})");
 
-        // 새 카드가 '음악 카드'일 때만 기존 음악을 모두 정리하고 교체
         if (needMusic)
         {
-            // 다른 카드 소스는 정지 (7번의 persistentSource7은 건드리지 않음)
             for (int i = 0; i < cardAudioSources.Length; i++)
             {
-                if (i == idx) continue; // 현재 카드 제외
+                if (i == idx) continue;
                 var src = cardAudioSources[i];
                 if (src && src.isPlaying) src.Stop();
             }
 
-            // 현재 카드 소스 재생
             if (idx >= 0 && idx < cardAudioSources.Length)
             {
                 var src = cardAudioSources[idx];
                 if (src)
                 {
-                    if (src.isPlaying) src.Stop(); // 다시 누르면 리트리거
+                    if (src.isPlaying) src.Stop();
                     src.Play();
                 }
             }
         }
-        // 음악 없는 카드(예: 6, 9) 클릭 시에는 기존 음악 유지
 
-        // 7번 특수: 지속 소스는 계속, 보조 SFX는 지연 재생
         if (oneBased == 7)
         {
             if (persistentSource7 && !persistentSource7.isPlaying)
@@ -337,84 +519,6 @@ public class SecondCardClickManager : MonoBehaviour
             }
         }
     }
-// 마우스를/손가락을 '내리는' 순간 호출용 (자막만 표시, 연출/음향 X)
-    // 마우스를/손가락을 '내리는' 순간 호출
-    public void OnCardPointerDown(int slotIndexZeroBased)
-    {
-        if (uiLocked && autoUnlockOnFirstClick) UnlockAndShow();
-        if (uiLocked) return;
-
-        if (slotIndexZeroBased < 0 || slotIndexZeroBased >= 10)
-        {
-            Debug.LogWarning($"[2ndCardClick] (DOWN) invalid slot={slotIndexZeroBased}");
-            return;
-        }
-
-        // 1) 타이머 시작(최초 입력 시)
-        StartGameTimerIfNeeded();
-
-        // 2) 자막 즉시 표시
-        ShowCaptionForSlot(slotIndexZeroBased);
-
-        int oneBased = slotIndexZeroBased + 1;
-
-        // 3) 음악 즉시 재생(옵션)
-        if (startMusicOnPointerDown)
-        {
-            HandleMusicForCard(oneBased);
-            lastMusicCard = oneBased;                  // 업(Click) 시 중복 재생 방지용
-            lastMusicTime = Time.unscaledTime;
-        }
-
-        // 4) 방문 체크(자막 카드만 기록)
-        RegisterCardVisited(oneBased);
-
-        // 5) 전부 방문 + 당근 흔들기 완료 시 즉시 클리어
-        if (!gameEnded && CheckClearCondition())
-            TransitionSuccess();
-    }
-
-
-
-// 자막만 표시하는 내부 유틸 (음악/틴트 등 연출 없음)
-    private void ShowCaptionForSlot(int slotIndexZeroBased)
-    {
-        int oneBased = slotIndexZeroBased + 1;
-
-        if (TryGetFixedIndexForCard(oneBased, out int clickIdx))
-        {
-            ActivateUIForCurrentLanguage();
-            EnsureActiveTMP();
-
-            if (activeTMP == null)
-            {
-                Debug.LogWarning("[2ndCardClick] (DOWN) activeTMP가 없습니다. 언어 컨테이너에 TMP가 있는지 확인하세요.");
-                return;
-            }
-
-            string text = secondLinesMB ? secondLinesMB.GetLine(currentLang, clickIdx) : string.Empty;
-            if (string.IsNullOrWhiteSpace(text) && secondLinesMB != null)
-                text = secondLinesMB.GetLine("english", clickIdx);
-
-            // 비어있으면 그냥 빈 문자열 유지(디버그 문구는 자막에 안 넣음)
-            if (cardClickRoot && !cardClickRoot.activeInHierarchy) EnableHierarchy(cardClickRoot);
-            if (cardClickRoot && !cardClickRoot.activeSelf) cardClickRoot.SetActive(true);
-
-            activeTMP.gameObject.SetActive(true);
-            SetTMPColorBlack();
-            activeTMP.SetText(text ?? string.Empty, true);
-
-            if (verboseLog) Debug.Log($"[2ndCardClick] (DOWN) caption card={oneBased}, idx={clickIdx}, len={text?.Length}");
-        }
-        else
-        {
-            // 자막 없는 카드면 숨김
-            if (cardClickRoot && cardClickRoot.activeSelf)
-                cardClickRoot.SetActive(false);
-            if (verboseLog) Debug.Log($"[2ndCardClick] (DOWN) no caption for card {oneBased}");
-        }
-    }
-
 
     private IEnumerator PlayDelayedSfx7(float delay)
     {
@@ -424,11 +528,11 @@ public class SecondCardClickManager : MonoBehaviour
         if (specialSfx7Source != null)
         {
             if (specialSfx7Source.isPlaying)
-                specialSfx7Source.Stop();   // 다시 누르면 리트리거
-
+                specialSfx7Source.Stop();
             specialSfx7Source.Play();
             if (verboseLog) Debug.Log("[2ndCardClick] 7번 보조 SFX 재생 (AudioSource)");
         }
+        yield break;
     }
 
     private IEnumerator TintRoutine()
@@ -440,7 +544,6 @@ public class SecondCardClickManager : MonoBehaviour
         Color upTarget = tintColor;
         upTarget.a = tintColor.a;
 
-        // 상승(half초)
         float t = 0f;
         while (t < half)
         {
@@ -451,7 +554,6 @@ public class SecondCardClickManager : MonoBehaviour
         }
         tintPanelImage.color = upTarget;
 
-        // 복귀(half초)
         t = 0f;
         while (t < half)
         {
@@ -460,10 +562,10 @@ public class SecondCardClickManager : MonoBehaviour
             tintPanelImage.color = Color.Lerp(upTarget, new Color(upTarget.r, upTarget.g, upTarget.b, 0f), r);
             yield return null;
         }
-        // 완전 투명으로
-        var c = tintPanelImage.color; c.a = 0f; tintPanelImage.color = c;
 
+        var c = tintPanelImage.color; c.a = 0f; tintPanelImage.color = c;
         tintPanelImage.gameObject.SetActive(false);
+
         if (verboseLog) Debug.Log("[2ndCardClick] 9번 물들임 효과 종료");
     }
 
@@ -478,117 +580,23 @@ public class SecondCardClickManager : MonoBehaviour
             chain[i].gameObject.SetActive(true);
     }
 
-    private void ActivateUIForCurrentLanguage()
-    {
-        // 잠금 여부와 상관없이 '먼저' 루트를 켬 (부모까지)
-        if (cardClickRoot)
-        {
-            if (!cardClickRoot.activeInHierarchy)
-                EnableHierarchy(cardClickRoot);
-            else if (!cardClickRoot.activeSelf)
-                cardClickRoot.SetActive(true);
-        }
-
-        // 그 다음 잠금 가드
-        if (uiLocked) return;
-
-        if (koreanClick)   koreanClick.SetActive(false);
-        if (japaneseClick) japaneseClick.SetActive(false);
-        if (englishClick)  englishClick.SetActive(false);
-        if (chineseClick)  chineseClick.SetActive(false);
-        if (kazakhClick)   kazakhClick.SetActive(false);
-
-        GameObject target = englishClick;
-        switch (currentLang)
-        {
-            case "korean":   target = koreanClick;   break;
-            case "japanese": target = japaneseClick; break;
-            case "chinese":  target = chineseClick;  break;
-            case "kazakh":   target = kazakhClick;   break;
-        }
-        if (target) target.SetActive(true);
-
-        // TMP 재바인딩
-        activeTMP = target ? target.GetComponentInChildren<TextMeshProUGUI>(true) : null;
-        if (activeTMP == null && cardClickRoot != null)
-            activeTMP = cardClickRoot.GetComponentInChildren<TextMeshProUGUI>(true);
-
-        if (verboseLog)
-            Debug.Log($"[2ndCardClick] ActivateUI lang={currentLang}, target={(target?target.name:"NULL")}, tmp={(activeTMP?activeTMP.name:"NULL")}, rootActive={cardClickRoot?.activeSelf}");
-    }
-
-    private void RebindTMPOnly()
-    {
-        GameObject[] candidates = { koreanClick, japaneseClick, chineseClick, kazakhClick, englishClick, cardClickRoot };
-        activeTMP = null;
-        foreach (var go in candidates)
-        {
-            if (go == null) continue;
-            var tmp = go.GetComponentInChildren<TextMeshProUGUI>(true);
-            if (tmp != null) { activeTMP = tmp; break; }
-        }
-    }
-
-    private void EnsureActiveTMP()
-    {
-        if (activeTMP != null) return;
-        RebindTMPOnly();
-        if (activeTMP == null)
-            Debug.LogWarning("[2ndCardClick] TextMeshProUGUI를 찾지 못했습니다. 언어 컨테이너에 TMP가 들어있는지 확인하세요.");
-    }
-
-    private void SetTMPColorBlack()
-    {
-        if (activeTMP == null) return;
-        var col = activeTMP.color; col.a = 1f; col.r = 0f; col.g = 0f; col.b = 0f;
-        activeTMP.color = col;
-    }
-
-    private static string NormalizeLang(string raw)
-    {
-        if (string.IsNullOrEmpty(raw)) return "english";
-        raw = raw.ToLowerInvariant();
-
-        if (raw == "chinese" || raw == "zh" || raw.StartsWith("zh-") || raw.Contains("chinese"))
-            return "chinese";
-
-        if (raw.StartsWith("ko") || raw == "korean")                         return "korean";
-        if (raw.StartsWith("ja") || raw == "japanese")                       return "japanese";
-        if (raw.StartsWith("ka") || raw == "kazakh" || raw == "kazakhstan")  return "kazakh";
-        if (raw.StartsWith("en") || raw == "english")                        return "english";
-
-        return "english";
-    }
-
-    private static bool Contains(int[] arr, int val)
-    {
-        if (arr == null) return false;
-        for (int i = 0; i < arr.Length; i++)
-            if (arr[i] == val) return true;
-        return false;
-    }
-
 #if UNITY_EDITOR
     private void OnValidate() => ValidateSetup();
 
     private void ValidateSetup()
     {
-        // 1) 데이터 참조
         if (secondLinesMB == null)
             Debug.LogWarning("[2ndCardClick][Setup] secondLinesMB가 비었습니다. 자막이 비게 됩니다.");
 
-        // 2) 컨테이너에 TMP가 있는지 간단 체크
         CheckTMP("Korean",  koreanClick);
         CheckTMP("Japanese",japaneseClick);
         CheckTMP("English", englishClick);
         CheckTMP("Chinese", chineseClick);
         CheckTMP("Kazakh",  kazakhClick);
 
-        // 3) 카드 오디오 길이
         if (cardAudioSources == null || cardAudioSources.Length < 10)
             Debug.LogWarning("[2ndCardClick][Setup] cardAudioSources 길이는 10(카드 1~10)이어야 합니다.");
 
-        // 4) 루트 null 체크
         if (cardClickRoot == null)
             Debug.LogWarning("[2ndCardClick][Setup] cardClickRoot가 비었습니다.");
     }
@@ -602,7 +610,7 @@ public class SecondCardClickManager : MonoBehaviour
     }
 #endif
 
-    // --- 디버그 보조 (선택) ---
+    // --- 디버그 보조 ---
     [ContextMenu("DBG/Simulate Click 1")]  private void DBG_Click1()  => OnCardClickedBySlot(0);
     [ContextMenu("DBG/Simulate Click 7")]  private void DBG_Click7()  => OnCardClickedBySlot(6);
     [ContextMenu("DBG/Simulate Click 10")] private void DBG_Click10() => OnCardClickedBySlot(9);

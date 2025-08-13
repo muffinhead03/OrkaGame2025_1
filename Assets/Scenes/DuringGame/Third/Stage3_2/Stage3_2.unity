@@ -273,8 +273,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 498.504, y: -150.628}
-  m_SizeDelta: {x: 535.879, y: 1138.743}
+  m_AnchoredPosition: {x: 498.504, y: -148.9}
+  m_SizeDelta: {x: 492, y: 1140}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &186479682
 MonoBehaviour:
@@ -588,7 +588,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 498.504, y: -150.628}
+  m_AnchoredPosition: {x: 500, y: -151.1}
   m_SizeDelta: {x: 650, y: 1138.743}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &222942625
@@ -2099,8 +2099,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 498.504, y: -150.628}
-  m_SizeDelta: {x: 535.879, y: 1138.743}
+  m_AnchoredPosition: {x: 498.504, y: -149}
+  m_SizeDelta: {x: 492, y: 1138.743}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &810440089
 MonoBehaviour:
@@ -2253,13 +2253,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1165961943}
     - target: {fileID: 4559963982282970157, guid: bc1b80eaae1b8004b959869af38b8c25, type: 3}
+      propertyPath: nextButton
+      value: 
+      objectReference: {fileID: 2079865716}
+    - target: {fileID: 4559963982282970157, guid: bc1b80eaae1b8004b959869af38b8c25, type: 3}
       propertyPath: Korean_Story
       value: 
       objectReference: {fileID: 1165961951}
     - target: {fileID: 4559963982282970157, guid: bc1b80eaae1b8004b959869af38b8c25, type: 3}
       propertyPath: SettingPanel
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 999159156}
     - target: {fileID: 4559963982282970157, guid: bc1b80eaae1b8004b959869af38b8c25, type: 3}
       propertyPath: Chinese_Above
       value: 
@@ -2364,6 +2368,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1718319696}
     m_Modifications:
+    - target: {fileID: 198063384720592438, guid: 6420b7a5af884e8409bc1930d8108348, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -91
+      objectReference: {fileID: 0}
     - target: {fileID: 644880577101344825, guid: 6420b7a5af884e8409bc1930d8108348, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 0
@@ -2448,6 +2456,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 2376865077524530113, guid: 6420b7a5af884e8409bc1930d8108348, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 125
+      objectReference: {fileID: 0}
     - target: {fileID: 3959718451161483752, guid: 6420b7a5af884e8409bc1930d8108348, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 0
@@ -2475,6 +2487,22 @@ PrefabInstance:
     - target: {fileID: 3959718451161483752, guid: 6420b7a5af884e8409bc1930d8108348, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 4306703994837622136, guid: 6420b7a5af884e8409bc1930d8108348, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4306703994837622136, guid: 6420b7a5af884e8409bc1930d8108348, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1038371620}
+    - target: {fileID: 4306703994837622136, guid: 6420b7a5af884e8409bc1930d8108348, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnCloseSetting
+      objectReference: {fileID: 0}
+    - target: {fileID: 4306703994837622136, guid: 6420b7a5af884e8409bc1930d8108348, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: SettingPanelController, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 4746326533077152227, guid: 6420b7a5af884e8409bc1930d8108348, type: 3}
       propertyPath: m_Pivot.x
@@ -4141,8 +4169,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 498.504, y: -150.628}
-  m_SizeDelta: {x: 535.879, y: 1138.743}
+  m_AnchoredPosition: {x: 498.504, y: -149}
+  m_SizeDelta: {x: 491, y: 1139}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1307573641
 MonoBehaviour:
@@ -5741,8 +5769,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 498.504, y: -150.628}
-  m_SizeDelta: {x: 535.879, y: 1138.743}
+  m_AnchoredPosition: {x: 498.504, y: -150}
+  m_SizeDelta: {x: 493, y: 1138.743}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1918138065
 MonoBehaviour:
@@ -5960,7 +5988,7 @@ MonoBehaviour:
   Kaza_Above: {fileID: 1165961948}
   Kaza_Story: {fileID: 1165961943}
   AboPo: {x: -750, y: 160}
-  StoPo: {x: -250, y: -20}
+  StoPo: {x: -250, y: -35}
   aboveText: {fileID: 2079865717}
   storyText: {fileID: 1165961956}
   nextButton: {fileID: 2079865716}

@@ -202,7 +202,7 @@ public class DialogueManager3_3 : MonoBehaviour
         if (Pan_4eyeclosedObj != null) Pan_4eyeclosedObj.SetActive(false);
         if (Pan_2Obj != null) Pan_2Obj.SetActive(false);
 
-        if (CarrotButton != null) CarrotButton.SetActive(false);
+        
         if (DialogueImage != null) DialogueImage.SetActive(false);
         if (FirstPanel != null) FirstPanel.SetActive(false);
         if (SettingPanel != null) SettingPanel.SetActive(false);
@@ -267,6 +267,10 @@ public class DialogueManager3_3 : MonoBehaviour
 
     private void OnNext()
     {
+        // 영상 재생 중이면 대사 넘기기 막기
+        if (endingVideoPlayer != null && endingVideoPlayer.isPlaying)
+            return;
+
         nextButton?.gameObject.SetActive(false);
         index++;
         if (index >= lines.Length)
@@ -275,6 +279,7 @@ public class DialogueManager3_3 : MonoBehaviour
         }
         StartCoroutine(ShowLineSequence());
     }
+
 
     private void SetupLanguageUI()
     {

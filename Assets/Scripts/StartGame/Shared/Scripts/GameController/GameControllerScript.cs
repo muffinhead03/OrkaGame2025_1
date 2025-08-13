@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;   // Button, CanvasGroup
 using System.Globalization;
 
 public class GameControllerScript : MonoBehaviour
@@ -6,6 +7,16 @@ public class GameControllerScript : MonoBehaviour
     [Header("패널들")]
     public GameObject FirstPanel;
     public GameObject SettingPanel;
+
+    [Header("다음 진행 타깃(대화 컨트롤러 등)")]
+    [Tooltip("Next를 수행할 컴포넌트(예: DialogueController). SendMessage로 메서드 호출")]
+    public MonoBehaviour dialogueControllerToPause;
+    [Tooltip("대상 컴포넌트에 있는 '다음 진행' 메서드명")]
+    public string nextMethodName = "Next";
+
+    [Header("Next 버튼 (여기에 버튼 드래그)")]
+    [SerializeField] private Button nextButton;
+    private CanvasGroup nextButtonCg; // 클릭 차단용(시각 변화 없음)
 
     [Header("언어별 텍스트 박스 오브젝트 (RectTransform)")]
     public RectTransform Korean_AboveLine;
@@ -19,51 +30,63 @@ public class GameControllerScript : MonoBehaviour
     public RectTransform Kaza_Above;
     public RectTransform Kaza_Story;
 
-    [Header("타이핑 제어 (더 이상 껐다 켜지 않음)")]
-    public MonoBehaviour dialogueControllerToPause;
-
-    [Header("텍스트 위치")]
-    public Vector2 AboPo = new Vector2(-750f, 160f);
-    public Vector2 StoPo = new Vector2(-250f, -20f);
+    [Header("중앙 판정 허용 오차(픽셀)")]
+    [SerializeField] private float centerTolerance = 0.5f;
 
     private string previousNormLang = "";
 
     private void OnEnable()
     {
         LanguageManager.OnLanguageChanged += OnLanguageChanged;
+
+        // 버튼 리스너 연결
+        if (nextButton != null)
+        {
+            nextButton.onClick.AddListener(OnNextGuardedClick);
+
+            // CanvasGroup 확보(없으면 추가) → 레이캐스트만 제어
+            nextButtonCg = nextButton.GetComponent<CanvasGroup>();
+            if (nextButtonCg == null) nextButtonCg = nextButton.gameObject.AddComponent<CanvasGroup>();
+            nextButtonCg.interactable = true;        // 시각/상태 유지
+            nextButtonCg.ignoreParentGroups = false; // 상위 CG 영향 받음
+            nextButtonCg.blocksRaycasts = true;      // 기본: 클릭 허용
+        }
     }
 
     private void OnDisable()
     {
         LanguageManager.OnLanguageChanged -= OnLanguageChanged;
+
+        if (nextButton != null)
+            nextButton.onClick.RemoveListener(OnNextGuardedClick);
     }
 
     private void Start()
     {
-        // 씬 시작 시 한 번 강제 적용
         ApplyLanguageNow();
     }
 
     private void Update()
     {
-        // 패널 열림 판정 (대사 스크립트/타이핑은 건드리지 않음)
-        // bool firstOpen = FirstPanel != null && FirstPanel.activeSelf && FirstPanel.transform.localPosition == Vector3.zero;
-
         // 언어 문자열 바뀔 때만 적용
         string norm = NormalizeLang(LanguageManager.GetLanguage());
         if (norm != previousNormLang)
-        {
             ApplyLanguage(norm);
+
+        // ✅ 패널이 중앙에서 활성일 때만 버튼의 레이캐스트를 차단(시각 변화 없음)
+        if (nextButtonCg != null)
+        {
+            bool block = IsPanelBlockingNext();
+            nextButtonCg.blocksRaycasts = !block;
         }
     }
 
     private void OnLanguageChanged(string _raw)
     {
-        // 드롭다운/외부 변경에도 즉시 반응
         ApplyLanguageNow();
     }
 
-    // ===== 핵심: 항상 정규화 → 모두 끄고 → 해당 언어만 켜기 =====
+    // ===== 언어 적용 =====
     private void ApplyLanguageNow()
     {
         string norm = NormalizeLang(LanguageManager.GetLanguage());
@@ -76,16 +99,11 @@ public class GameControllerScript : MonoBehaviour
 
         switch (normLang)
         {
-            case "korean":
-                ActivateLanguage(Korean_AboveLine, Korean_Story); break;
-            case "english":
-                ActivateLanguage(English_Above, English_Story); break;
-            case "japanese":
-                ActivateLanguage(Japanese_Above, Japanese_Story); break;
-            case "chinese":
-                ActivateLanguage(Chinese_Above, Chinese_Story); break;
-            case "kazakh":
-                ActivateLanguage(Kaza_Above, Kaza_Story); break;
+            case "korean":   ActivateLanguage(Korean_AboveLine,   Korean_Story);   break;
+            case "english":  ActivateLanguage(English_Above,      English_Story);  break;
+            case "japanese": ActivateLanguage(Japanese_Above,     Japanese_Story); break;
+            case "chinese":  ActivateLanguage(Chinese_Above,      Chinese_Story);  break;
+            case "kazakh":   ActivateLanguage(Kaza_Above,         Kaza_Story);     break;
             default:
                 Debug.LogWarning($"[GameControllerScript] Unknown lang '{normLang}', fallback=korean");
                 ActivateLanguage(Korean_AboveLine, Korean_Story);
@@ -93,7 +111,6 @@ public class GameControllerScript : MonoBehaviour
         }
 
         previousNormLang = normLang;
-        Debug.Log($"[GameControllerScript] lang applied: {normLang}");
     }
 
     // ko, ko-KR, 한국어 등 → "korean"으로 통일
@@ -102,7 +119,6 @@ public class GameControllerScript : MonoBehaviour
         string s = raw ?? "";
         s = s.Trim();
 
-        // CultureInfo가 먹히면 두 자리 코드로 축약
         try
         {
             var two = new CultureInfo(s).TwoLetterISOLanguageName.ToLowerInvariant();
@@ -131,17 +147,16 @@ public class GameControllerScript : MonoBehaviour
 
     private void ActivateLanguage(RectTransform above, RectTransform story)
     {
+        // ✅ 위치(anchoredPosition) 제어 제거: 다른 코드가 담당
         if (above != null)
         {
             above.gameObject.SetActive(true);
-            above.anchoredPosition = AboPo;
             EnableTypewriterSafely(above);
         }
 
         if (story != null)
         {
             story.gameObject.SetActive(true);
-            story.anchoredPosition = StoPo;
             EnableTypewriterSafely(story);
         }
     }
@@ -160,21 +175,44 @@ public class GameControllerScript : MonoBehaviour
             if (r != null) r.gameObject.SetActive(false);
     }
 
-    // ❗ 텍스트를 지우지 않도록 '리셋' 금지. 그냥 켜기만 함.
+    // 텍스트를 지우지 않도록 '리셋' 금지. 그냥 켜기만.
     private void EnableTypewriterSafely(RectTransform obj)
     {
         var typewriter = obj.GetComponent<TypewriterEffect>();
         if (typewriter != null)
-        {
-            // typewriter.StopTyping();  // ← 금지: 내용 리셋 위험
-            typewriter.enabled = true;   // 켜기만 (이미 켜져 있으면 그대로)
-        }
+            typewriter.enabled = true;
     }
 
+    // ====== Next 버튼 가드 ======
+    private bool IsPanelAtCenterAndActive(GameObject panel)
+    {
+        if (panel == null) return false;
+        if (!panel.activeInHierarchy) return false;
+        Vector3 lp = panel.transform.localPosition;
+        return lp.sqrMagnitude <= centerTolerance * centerTolerance; // (0,0,0) 근처
+    }
+
+    private bool IsPanelBlockingNext()
+    {
+        return IsPanelAtCenterAndActive(FirstPanel) || IsPanelAtCenterAndActive(SettingPanel);
+    }
+
+    private void OnNextGuardedClick()
+    {
+        // 레이캐스트 차단으로 원천 봉쇄되지만, 혹시 다른 경로(키보드 등) 대비로 한 번 더 가드
+        if (IsPanelBlockingNext())
+        {
+            Debug.Log("[GameControllerScript] Next blocked: panel open at center.");
+            return;
+        }
+
+        if (dialogueControllerToPause != null && !string.IsNullOrEmpty(nextMethodName))
+            dialogueControllerToPause.SendMessage(nextMethodName, SendMessageOptions.DontRequireReceiver);
+    }
+
+    // ====== 예: 다른 UI에서도 호출 가능 ======
     public void CarrotButtonClicked()
     {
-        Debug.Log("🐰 Carrot button clicked!");
-
         if (FirstPanel == null)
         {
             Debug.LogError("❌ FirstPanel is NULL!");
@@ -186,9 +224,6 @@ public class GameControllerScript : MonoBehaviour
 
         if (SettingPanel != null)
             SettingPanel.SetActive(false);
-
-        // ❌ 패널 열릴 때 언어를 다시 적용하지 않음 (타이핑/텍스트 깜빡임 방지)
-        // ApplyLanguageNow();
     }
 
     public void OnLanguageDropdownChanged(int index)
@@ -203,6 +238,6 @@ public class GameControllerScript : MonoBehaviour
             _ => "english"
         };
         LanguageManager.SetLanguage(selectedLang);
-        // SetLanguage가 끝나면 OnLanguageChanged에서 ApplyLanguageNow()가 호출됨
+        // LanguageManager.OnLanguageChanged 이벤트에서 ApplyLanguageNow 호출됨
     }
 }

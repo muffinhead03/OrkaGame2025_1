@@ -17,7 +17,7 @@ public class MainScreen : MonoBehaviour
     // Start 버튼
     public void OnStartButtonClicked()
     {
-        SceneManager.LoadScene("SldingPuzzle");
+        SceneManager.LoadScene("CardGameFirstStage");
     }
 
     // Quit 버튼
