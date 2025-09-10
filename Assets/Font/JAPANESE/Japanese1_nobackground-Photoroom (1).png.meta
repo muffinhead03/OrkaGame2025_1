@@ -1,0 +1,884 @@
+fileFormatVersion: 2
+guid: 607991f21f621524d8cdc6fd992941c4
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -2070227678613618844
+    second: Japanese1_nobackground-Photoroom (1)_0
+  - first:
+      213: 7077724351226254963
+    second: Japanese1_nobackground-Photoroom (1)_1
+  - first:
+      213: 4662871075395017840
+    second: Japanese1_nobackground-Photoroom (1)_2
+  - first:
+      213: -353939708305051602
+    second: Japanese1_nobackground-Photoroom (1)_3
+  - first:
+      213: 155113883712566350
+    second: Japanese1_nobackground-Photoroom (1)_4
+  - first:
+      213: -3028043267738058123
+    second: Japanese1_nobackground-Photoroom (1)_5
+  - first:
+      213: -8235366901017249059
+    second: Japanese1_nobackground-Photoroom (1)_6
+  - first:
+      213: 1880005526627589167
+    second: Japanese1_nobackground-Photoroom (1)_7
+  - first:
+      213: 970510434389501434
+    second: Japanese1_nobackground-Photoroom (1)_8
+  - first:
+      213: 7399359094229815995
+    second: Japanese1_nobackground-Photoroom (1)_9
+  - first:
+      213: 6545387326992219224
+    second: Japanese1_nobackground-Photoroom (1)_10
+  - first:
+      213: -2126759427719822820
+    second: Japanese1_nobackground-Photoroom (1)_11
+  - first:
+      213: 2088250080290518386
+    second: Japanese1_nobackground-Photoroom (1)_12
+  - first:
+      213: -7758379686033158968
+    second: Japanese1_nobackground-Photoroom (1)_13
+  - first:
+      213: 7557500221297122997
+    second: Japanese1_nobackground-Photoroom (1)_14
+  - first:
+      213: -6854835887273369783
+    second: Japanese1_nobackground-Photoroom (1)_15
+  - first:
+      213: 6233921337477537659
+    second: Japanese1_nobackground-Photoroom (1)_16
+  - first:
+      213: 7932889136420738133
+    second: Japanese1_nobackground-Photoroom (1)_17
+  - first:
+      213: -4474388705854785239
+    second: Japanese1_nobackground-Photoroom (1)_18
+  - first:
+      213: -128731905057178756
+    second: Japanese1_nobackground-Photoroom (1)_19
+  - first:
+      213: -6955238589978261146
+    second: Japanese1_nobackground-Photoroom (1)_20
+  - first:
+      213: -6480782463032157430
+    second: Japanese1_nobackground-Photoroom (1)_21
+  - first:
+      213: -5172714631562052509
+    second: Japanese1_nobackground-Photoroom (1)_22
+  - first:
+      213: 57592530930265851
+    second: Japanese1_nobackground-Photoroom (1)_23
+  - first:
+      213: -8776494936541625191
+    second: Japanese1_nobackground-Photoroom (1)_24
+  - first:
+      213: 8670960350560750153
+    second: Japanese1_nobackground-Photoroom (1)_25
+  - first:
+      213: 5770513410290274900
+    second: Japanese1_nobackground-Photoroom (1)_26
+  - first:
+      213: 6205046487122362468
+    second: Japanese1_nobackground-Photoroom (1)_27
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: tvOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Japanese1_nobackground-Photoroom (1)_0
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 144
+        width: 30
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46fbd0415e21543e0800000000000000
+      internalID: -2070227678613618844
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Japanese1_nobackground-Photoroom (1)_1
+      rect:
+        serializedVersion: 2
+        x: 43
+        y: 145
+        width: 37
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 37619fc4cc0293260800000000000000
+      internalID: 7077724351226254963
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Japanese1_nobackground-Photoroom (1)_2
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 144
+        width: 39
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07c1d52c988d5b040800000000000000
+      internalID: 4662871075395017840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Japanese1_nobackground-Photoroom (1)_3
+      rect:
+        serializedVersion: 2
+        x: 117
+        y: 144
+        width: 39
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e207296e5bd861bf0800000000000000
+      internalID: -353939708305051602
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Japanese1_nobackground-Photoroom (1)_4
+      rect:
+        serializedVersion: 2
+        x: 161
+        y: 146
+        width: 23
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e443b626143172200800000000000000
+      internalID: 155113883712566350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Japanese1_nobackground-Photoroom (1)_5
+      rect:
+        serializedVersion: 2
+        x: 195
+        y: 146
+        width: 33
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 572c5f5f0ba3af5d0800000000000000
+      internalID: -3028043267738058123
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Japanese1_nobackground-Photoroom (1)_6
+      rect:
+        serializedVersion: 2
+        x: 233
+        y: 146
+        width: 30
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dda7bd5bf6916bd80800000000000000
+      internalID: -8235366901017249059
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Japanese1_nobackground-Photoroom (1)_7
+      rect:
+        serializedVersion: 2
+        x: 267
+        y: 144
+        width: 39
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2c9866d01f171a10800000000000000
+      internalID: 1880005526627589167
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Japanese1_nobackground-Photoroom (1)_8
+      rect:
+        serializedVersion: 2
+        x: 304
+        y: 144
+        width: 39
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af5a89c1912f77d00800000000000000
+      internalID: 970510434389501434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Japanese1_nobackground-Photoroom (1)_9
+      rect:
+        serializedVersion: 2
+        x: 346
+        y: 146
+        width: 31
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb2df1984edcfa660800000000000000
+      internalID: 7399359094229815995
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Japanese1_nobackground-Photoroom (1)_10
+      rect:
+        serializedVersion: 2
+        x: 387
+        y: 146
+        width: 24
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 85cf6be4813e5da50800000000000000
+      internalID: 6545387326992219224
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Japanese1_nobackground-Photoroom (1)_11
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 170
+        width: 15
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c120c0c819b3c72e0800000000000000
+      internalID: -2126759427719822820
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Japanese1_nobackground-Photoroom (1)_12
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 81
+        width: 38
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 275b5ed4264fafc10800000000000000
+      internalID: 2088250080290518386
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Japanese1_nobackground-Photoroom (1)_13
+      rect:
+        serializedVersion: 2
+        x: 45
+        y: 81
+        width: 35
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8cc036df7c2b45490800000000000000
+      internalID: -7758379686033158968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Japanese1_nobackground-Photoroom (1)_14
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 83
+        width: 24
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5bed950f862a1e860800000000000000
+      internalID: 7557500221297122997
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Japanese1_nobackground-Photoroom (1)_15
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 83
+        width: 24
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94f9879341bbed0a0800000000000000
+      internalID: -6854835887273369783
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Japanese1_nobackground-Photoroom (1)_16
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 81
+        width: 29
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b7f931e7d66538650800000000000000
+      internalID: 6233921337477537659
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Japanese1_nobackground-Photoroom (1)_17
+      rect:
+        serializedVersion: 2
+        x: 193
+        y: 81
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 554d9eaa3a8471e60800000000000000
+      internalID: 7932889136420738133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Japanese1_nobackground-Photoroom (1)_18
+      rect:
+        serializedVersion: 2
+        x: 229
+        y: 81
+        width: 40
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9297188ad27c7e1c0800000000000000
+      internalID: -4474388705854785239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Japanese1_nobackground-Photoroom (1)_19
+      rect:
+        serializedVersion: 2
+        x: 269
+        y: 81
+        width: 34
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7bbecfa307a63ef0800000000000000
+      internalID: -128731905057178756
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Japanese1_nobackground-Photoroom (1)_20
+      rect:
+        serializedVersion: 2
+        x: 311
+        y: 85
+        width: 26
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 669c1445a570a7f90800000000000000
+      internalID: -6955238589978261146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Japanese1_nobackground-Photoroom (1)_21
+      rect:
+        serializedVersion: 2
+        x: 342
+        y: 81
+        width: 38
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0b1360cfa2af06a0800000000000000
+      internalID: -6480782463032157430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Japanese1_nobackground-Photoroom (1)_22
+      rect:
+        serializedVersion: 2
+        x: 383
+        y: 81
+        width: 30
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36c3745e273d638b0800000000000000
+      internalID: -5172714631562052509
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Japanese1_nobackground-Photoroom (1)_23
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 18
+        width: 24
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bfe60db0a1c9cc000800000000000000
+      internalID: 57592530930265851
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Japanese1_nobackground-Photoroom (1)_24
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 18
+        width: 24
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9940c66ea50a33680800000000000000
+      internalID: -8776494936541625191
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Japanese1_nobackground-Photoroom (1)_25
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 17
+        width: 29
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94a8ba48f70755870800000000000000
+      internalID: 8670960350560750153
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Japanese1_nobackground-Photoroom (1)_26
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 18
+        width: 31
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 452daf78f5bf41050800000000000000
+      internalID: 5770513410290274900
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Japanese1_nobackground-Photoroom (1)_27
+      rect:
+        serializedVersion: 2
+        x: 165
+        y: 18
+        width: 19
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 460c6bf77e0cc1650800000000000000
+      internalID: 6205046487122362468
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Japanese1_nobackground-Photoroom (1)_0: -2070227678613618844
+      Japanese1_nobackground-Photoroom (1)_1: 7077724351226254963
+      Japanese1_nobackground-Photoroom (1)_10: 6545387326992219224
+      Japanese1_nobackground-Photoroom (1)_11: -2126759427719822820
+      Japanese1_nobackground-Photoroom (1)_12: 2088250080290518386
+      Japanese1_nobackground-Photoroom (1)_13: -7758379686033158968
+      Japanese1_nobackground-Photoroom (1)_14: 7557500221297122997
+      Japanese1_nobackground-Photoroom (1)_15: -6854835887273369783
+      Japanese1_nobackground-Photoroom (1)_16: 6233921337477537659
+      Japanese1_nobackground-Photoroom (1)_17: 7932889136420738133
+      Japanese1_nobackground-Photoroom (1)_18: -4474388705854785239
+      Japanese1_nobackground-Photoroom (1)_19: -128731905057178756
+      Japanese1_nobackground-Photoroom (1)_2: 4662871075395017840
+      Japanese1_nobackground-Photoroom (1)_20: -6955238589978261146
+      Japanese1_nobackground-Photoroom (1)_21: -6480782463032157430
+      Japanese1_nobackground-Photoroom (1)_22: -5172714631562052509
+      Japanese1_nobackground-Photoroom (1)_23: 57592530930265851
+      Japanese1_nobackground-Photoroom (1)_24: -8776494936541625191
+      Japanese1_nobackground-Photoroom (1)_25: 8670960350560750153
+      Japanese1_nobackground-Photoroom (1)_26: 5770513410290274900
+      Japanese1_nobackground-Photoroom (1)_27: 6205046487122362468
+      Japanese1_nobackground-Photoroom (1)_3: -353939708305051602
+      Japanese1_nobackground-Photoroom (1)_4: 155113883712566350
+      Japanese1_nobackground-Photoroom (1)_5: -3028043267738058123
+      Japanese1_nobackground-Photoroom (1)_6: -8235366901017249059
+      Japanese1_nobackground-Photoroom (1)_7: 1880005526627589167
+      Japanese1_nobackground-Photoroom (1)_8: 970510434389501434
+      Japanese1_nobackground-Photoroom (1)_9: 7399359094229815995
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

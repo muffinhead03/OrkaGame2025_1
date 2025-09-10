@@ -53,6 +53,9 @@ public class SlidingGameManager2AfterDeath : MonoBehaviour
 
     [Header("Board (UI Panel)")]
     public RectTransform boardPanel;
+    [Header("Panels for Pause Check")]
+    public GameObject settingPanel;
+    public GameObject firstPanel;
 
     [Header("Puzzle Refs (0=빈칸, 1~9 퍼즐)")]
     [Tooltip("퍼즐 10개(0~9). 0은 빈칸 역할 오브젝트(또는 더미)")]
@@ -77,6 +80,40 @@ public class SlidingGameManager2AfterDeath : MonoBehaviour
 
     // 조회 빠른 이웃 맵 (emptyPos -> neighbor set)
     private readonly Dictionary<int, HashSet<int>> moveRulesMap = new();
+// 기존 IsPausedByPanel() 삭제하고 아래로 교체
+    private static bool IsRectZero(Vector2 v, float eps) => v.sqrMagnitude <= eps * eps;
+    private static bool IsVec3Zero(Vector3 v, float eps) => v.sqrMagnitude <= eps * eps;
+
+    private bool IsPanelBlocking(GameObject panel)
+    {
+        if (panel == null) return false;
+
+        // 계층 상에서 실제로 보이는/유효한 활성 상태인지
+        if (!panel.activeInHierarchy) return false;
+
+        var rt = panel.GetComponent<RectTransform>();
+        if (rt == null) return false;
+
+        // 부동소수 오차 허용
+        const float EPS = 0.001f;
+
+        // UI는 anchoredPosition(좌상/좌하 기준 앵커에 상대)로 (0,0)인 경우가 일반적
+        bool anchoredZero = IsRectZero(rt.anchoredPosition, EPS);
+
+        // 혹시 레이아웃/앵커 설정에 따라 localPosition을 0으로 쓰는 경우도 커버
+        bool localZero    = IsVec3Zero(rt.localPosition, EPS);
+
+        // "위치가 (0,0,0)" 조건을 만족하면 true
+        return anchoredZero || localZero;
+    }
+
+    private bool IsPausedByPanel()
+    {
+        // 둘 중 하나라도 "활성 + (0,0,0)" 이면 일시정지
+        if (IsPanelBlocking(settingPanel)) return true;
+        if (IsPanelBlocking(firstPanel))   return true;
+        return false;
+    }
 
     [System.Serializable]
     public class NeighborRule
@@ -148,23 +185,26 @@ public class SlidingGameManager2AfterDeath : MonoBehaviour
         }
     }
 
+
     private void Update()
     {
         if (sceneLoading) return;
 
-        // 타이머 진행
+        // 패널에 의해 일시정지되면 타이머 멈춤
+        if (IsPausedByPanel()) return;
+
         timer -= Time.deltaTime;
         UpdateTimerUI();
 
         if (timer <= 0f)
         {
-            // 시간 만료 시: 클릭 성공 or 퍼즐 3단계 성공 중 하나도 없으면 실패
             if (!SuccessAchieved())
                 LoadFailScene();
             else
-                LoadSuccessScene(); // 혹시 바로 전 프레임에 성공했는데 아직 씬 안넘어갔다면
+                LoadSuccessScene();
         }
     }
+
 
     private bool SuccessAchieved() => clearedByClick || (keyCleared && lock1Cleared && lock2Cleared);
 
@@ -363,12 +403,14 @@ public class SlidingGameManager2AfterDeath : MonoBehaviour
     {
         if (sceneLoading || clicked == null) return;
 
+        // 패널이 켜져있으면 이동 불가
+        if (IsPausedByPanel()) return;
+
         if (!puzzlePositionMap.ContainsKey(0))
         { Debug.LogError("[AfterDeath] 빈칸(퍼즐번호 0) 없음"); return; }
 
         int emptyPos = puzzlePositionMap[0];
         int clickedPos = clicked.currentPositionIndex;
-
         if (!moveRulesMap.TryGetValue(emptyPos, out var neighbors))
         { Debug.LogError($"[AfterDeath] moveRules에 emptyPos {emptyPos} 없음"); return; }
 

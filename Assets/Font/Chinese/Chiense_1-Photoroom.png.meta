@@ -1,0 +1,650 @@
+fileFormatVersion: 2
+guid: 0481b6ab7ca075743a752ba2b4759b58
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6871124489204596243
+    second: Chiense_1-Photoroom_0
+  - first:
+      213: 7775559265397307983
+    second: Chiense_1-Photoroom_1
+  - first:
+      213: -7910874915033374222
+    second: Chiense_1-Photoroom_2
+  - first:
+      213: -8232994749600012602
+    second: Chiense_1-Photoroom_3
+  - first:
+      213: -4285142835126252463
+    second: Chiense_1-Photoroom_4
+  - first:
+      213: 6691334477032473714
+    second: Chiense_1-Photoroom_5
+  - first:
+      213: 1693337293106103043
+    second: Chiense_1-Photoroom_6
+  - first:
+      213: -7024270106986361161
+    second: Chiense_1-Photoroom_7
+  - first:
+      213: -4742331479643399344
+    second: Chiense_1-Photoroom_8
+  - first:
+      213: -2634046852234168619
+    second: Chiense_1-Photoroom_9
+  - first:
+      213: -7069058208912506595
+    second: Chiense_1-Photoroom_10
+  - first:
+      213: -7706826428777606424
+    second: Chiense_1-Photoroom_11
+  - first:
+      213: -7763342592781958698
+    second: Chiense_1-Photoroom_12
+  - first:
+      213: -574063696215803331
+    second: Chiense_1-Photoroom_13
+  - first:
+      213: -2329167180607622683
+    second: Chiense_1-Photoroom_14
+  - first:
+      213: 8721380307209536616
+    second: Chiense_1-Photoroom_15
+  - first:
+      213: 7288010289368044768
+    second: Chiense_1-Photoroom_16
+  - first:
+      213: -5125195578985634061
+    second: Chiense_1-Photoroom_17
+  - first:
+      213: 77876055645521918
+    second: Chiense_1-Photoroom_18
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: tvOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Chiense_1-Photoroom_0
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 87
+        width: 37
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 31ef68271532b5f50800000000000000
+      internalID: 6871124489204596243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chiense_1-Photoroom_1
+      rect:
+        serializedVersion: 2
+        x: 59
+        y: 87
+        width: 37
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4af00884f558eb60800000000000000
+      internalID: 7775559265397307983
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chiense_1-Photoroom_2
+      rect:
+        serializedVersion: 2
+        x: 99
+        y: 87
+        width: 30
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f123eaad2de63290800000000000000
+      internalID: -7910874915033374222
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chiense_1-Photoroom_3
+      rect:
+        serializedVersion: 2
+        x: 133
+        y: 87
+        width: 37
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c66f6045e68ebd80800000000000000
+      internalID: -8232994749600012602
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chiense_1-Photoroom_4
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 87
+        width: 39
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 15c4d7c8b4d1884c0800000000000000
+      internalID: -4285142835126252463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chiense_1-Photoroom_5
+      rect:
+        serializedVersion: 2
+        x: 207
+        y: 87
+        width: 39
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 27448d031456cdc50800000000000000
+      internalID: 6691334477032473714
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chiense_1-Photoroom_6
+      rect:
+        serializedVersion: 2
+        x: 245
+        y: 87
+        width: 37
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 303c280eb41ff7710800000000000000
+      internalID: 1693337293106103043
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chiense_1-Photoroom_7
+      rect:
+        serializedVersion: 2
+        x: 282
+        y: 87
+        width: 38
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7beceaacd87c48e90800000000000000
+      internalID: -7024270106986361161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chiense_1-Photoroom_8
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 86
+        width: 38
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 05bd3bc25aadf2eb0800000000000000
+      internalID: -4742331479643399344
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chiense_1-Photoroom_9
+      rect:
+        serializedVersion: 2
+        x: 357
+        y: 88
+        width: 37
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d6b8daf75cf17bd0800000000000000
+      internalID: -2634046852234168619
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chiense_1-Photoroom_10
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 23
+        width: 38
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1106313309a5ed90800000000000000
+      internalID: -7069058208912506595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chiense_1-Photoroom_11
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 23
+        width: 15
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e25e1f023adb0590800000000000000
+      internalID: -7706826428777606424
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chiense_1-Photoroom_12
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 22
+        width: 74
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d142973b01134490800000000000000
+      internalID: -7763342592781958698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chiense_1-Photoroom_13
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 23
+        width: 38
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d3afb9c1c148808f0800000000000000
+      internalID: -574063696215803331
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chiense_1-Photoroom_14
+      rect:
+        serializedVersion: 2
+        x: 207
+        y: 23
+        width: 38
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e172692ac22dafd0800000000000000
+      internalID: -2329167180607622683
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chiense_1-Photoroom_15
+      rect:
+        serializedVersion: 2
+        x: 245
+        y: 23
+        width: 38
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 864cf4a7e21980970800000000000000
+      internalID: 8721380307209536616
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chiense_1-Photoroom_16
+      rect:
+        serializedVersion: 2
+        x: 284
+        y: 23
+        width: 34
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e49c21aeb6342560800000000000000
+      internalID: 7288010289368044768
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chiense_1-Photoroom_17
+      rect:
+        serializedVersion: 2
+        x: 321
+        y: 23
+        width: 36
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f6a82e76c5afd8b0800000000000000
+      internalID: -5125195578985634061
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Chiense_1-Photoroom_18
+      rect:
+        serializedVersion: 2
+        x: 367
+        y: 25
+        width: 19
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef782492cdba41100800000000000000
+      internalID: 77876055645521918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Chiense_1-Photoroom_0: 6871124489204596243
+      Chiense_1-Photoroom_1: 7775559265397307983
+      Chiense_1-Photoroom_10: -7069058208912506595
+      Chiense_1-Photoroom_11: -7706826428777606424
+      Chiense_1-Photoroom_12: -7763342592781958698
+      Chiense_1-Photoroom_13: -574063696215803331
+      Chiense_1-Photoroom_14: -2329167180607622683
+      Chiense_1-Photoroom_15: 8721380307209536616
+      Chiense_1-Photoroom_16: 7288010289368044768
+      Chiense_1-Photoroom_17: -5125195578985634061
+      Chiense_1-Photoroom_18: 77876055645521918
+      Chiense_1-Photoroom_2: -7910874915033374222
+      Chiense_1-Photoroom_3: -8232994749600012602
+      Chiense_1-Photoroom_4: -4285142835126252463
+      Chiense_1-Photoroom_5: 6691334477032473714
+      Chiense_1-Photoroom_6: 1693337293106103043
+      Chiense_1-Photoroom_7: -7024270106986361161
+      Chiense_1-Photoroom_8: -4742331479643399344
+      Chiense_1-Photoroom_9: -2634046852234168619
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

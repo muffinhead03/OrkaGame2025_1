@@ -35,11 +35,17 @@ public class SlidingGameManager2Script : MonoBehaviour
     public CanvasGroup lock2Icon;    // 2차 자물쇠
     [SerializeField, Range(0f,1f)] private float clearedAlpha = 0.3f;
 
+    [Header("Panels that should pause & block input")]
+    [Tooltip("활성 + localPosition == (0,0,0) 이면 타이머 일시정지 & 카드 비활성")]
+    public RectTransform FirstPanel;
+    public RectTransform SettingPanel;
+
     [Header("Debug")]
     [SerializeField] private bool debugLogs = true;
 
     private float timer;
-    private bool isPaused = false;
+    private bool isPaused = false;      // 수동 일시정지(기존 기능 유지)
+    private bool isUIBlocking = false;  // 패널 상태로 인한 일시정지/입력차단
     private bool sceneLoading = false;
 
     // puzzleNumber(0~9) -> pos(0~9)
@@ -160,9 +166,28 @@ public class SlidingGameManager2Script : MonoBehaviour
         }
     }
 
+    // ====== NEW: 패널 상태 감지 & 일시정지/입력 차단 ======
+    private static readonly Vector3 ZERO = Vector3.zero;
+
+    private bool IsPanelBlocking(RectTransform panel)
+    {
+        if (panel == null) return false;
+        if (!panel.gameObject.activeInHierarchy) return false;
+
+        // "(0,0,0)에 위치"를 localPosition 기준으로 판정 (UI 패널 일반적인 기준)
+        // 부동소수 오차 고려한 근사 비교
+        const float EPS = 0.0001f;
+        return (panel.localPosition - ZERO).sqrMagnitude <= EPS;
+    }
+
+    private bool EffectivePaused => isPaused || isUIBlocking;
+
+    public bool CanInteractPieces() => !EffectivePaused;
+
+    // ====== 이동 ======
     public void TryMovePuzzle(SlidingPuzzle2Script clicked)
     {
-        if (isPaused || sceneLoading || clicked == null) return;
+        if (EffectivePaused || sceneLoading || clicked == null) return;
 
         if (!puzzlePositionMap.ContainsKey(0))
         { Debug.LogError("[SlidingGM2] 빈칸(퍼즐번호 0) 없음"); return; }
@@ -220,7 +245,10 @@ public class SlidingGameManager2Script : MonoBehaviour
 
     void Update()
     {
-        if (isPaused || sceneLoading) return;
+        // 패널 상태 체크 → UI 블로킹 여부 갱신
+        isUIBlocking = IsPanelBlocking(FirstPanel) || IsPanelBlocking(SettingPanel);
+
+        if (EffectivePaused || sceneLoading) return;
 
         timer -= Time.deltaTime;
         UpdateTimerUI();
@@ -246,7 +274,7 @@ public class SlidingGameManager2Script : MonoBehaviour
     // ===== 판정 로직 (모두 '순서 정확 매칭') =====
     private void CheckJudgements()
     {
-        // 1) Key: 4가지 옵션 중 하나라도 '정확 매핑'이면 클리어
+        // 1) Key
         if (!keyCleared && MatchOrderedAny(keyTilesOrdered, keyTargetPositionOptions))
         {
             keyCleared = true;
@@ -254,7 +282,7 @@ public class SlidingGameManager2Script : MonoBehaviour
             if (debugLogs) Debug.Log("[JUDGE] Key CLEARED (ordered options)");
         }
 
-        // 2) Lock1: 열쇠 후 + A/B 중 하나 '정확 매핑'
+        // 2) Lock1
         if (keyCleared && !lock1Cleared &&
             (MatchOrderedSingle(lock1TilesOrdered, lock1TargetPositionsOrderedA) ||
              MatchOrderedSingle(lock1TilesOrdered, lock1TargetPositionsOrderedB)))
@@ -264,7 +292,7 @@ public class SlidingGameManager2Script : MonoBehaviour
             if (debugLogs) Debug.Log("[JUDGE] Lock1 CLEARED (ordered A/B)");
         }
 
-        // 3) Lock2: 열쇠+Lock1 후 + A/B 중 하나 '정확 매핑'
+        // 3) Lock2
         if (keyCleared && lock1Cleared && !lock2Cleared &&
             (MatchOrderedSingle(lock2TilesOrdered, lock2TargetPositionsOrderedA) ||
              MatchOrderedSingle(lock2TilesOrdered, lock2TargetPositionsOrderedB)))

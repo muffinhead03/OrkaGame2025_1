@@ -14,6 +14,10 @@ public class SlidingPuzzle2Script : MonoBehaviour, IPointerClickHandler
 
     public virtual void OnPointerClick(PointerEventData eventData)
     {
+        // 패널로 인해 막혀 있거나, 일시정지면 클릭 무시
+        if (SlidingGameManager2Script.Instance == null) return;
+        if (!SlidingGameManager2Script.Instance.CanInteractPieces()) return;
+
         SlidingGameManager2Script.Instance.TryMovePuzzle(this);
     }
 

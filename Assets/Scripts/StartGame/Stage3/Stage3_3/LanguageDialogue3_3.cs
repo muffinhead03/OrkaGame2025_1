@@ -25,7 +25,7 @@ public class LanguageCollector3_3 : MonoBehaviour
     };
 
     public readonly string[] ChineseLines3_3 = {
-        "太好了！ ","潘： 我们永远在一起，艾可！"
+        "太好了！ ","我们永远在一起，艾可！"
         
     };
 

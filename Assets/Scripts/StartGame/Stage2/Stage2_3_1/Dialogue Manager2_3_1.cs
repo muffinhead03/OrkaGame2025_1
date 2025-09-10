@@ -57,25 +57,8 @@ public class DialogueManager2_3_1 : MonoBehaviour
     private Coroutine typingCoroutine;
     private Coroutine glitchCoroutine;
 
-    // ===== 언어 헬퍼 =====
-    private string CurrentLanguage => NormalizeLang(LanguageManager.GetLanguage());
-
-    private string NormalizeLang(string raw)
-    {
-        string s = (raw ?? "korean").Trim().ToLowerInvariant();
-
-        if (s.StartsWith("en")) return "english";
-        if (s.StartsWith("ko")) return "korean";
-        if (s.StartsWith("ja")) return "japanese";
-        if (s.StartsWith("zh")) return "chinese";
-
-        // ✅ "kazakh" 표준키로 귀결
-        if (s.StartsWith("kk") || s.Contains("kazakh") || s.Contains("kaza") || s.Contains("kazah"))
-            return "kazakh";
-
-        return "korean";
-    }
-
+    // ✅ 표준키 그대로 사용
+    private string CurrentLanguage => LanguageManager.GetLanguage();
 
     private void Awake()
     {
@@ -131,25 +114,23 @@ public class DialogueManager2_3_1 : MonoBehaviour
             return;
         }
 
-        string lang = CurrentLanguage; // ← 위에서 표준화된 값 사용
-        switch (lang)
+        switch (CurrentLanguage)
         {
             case "korean":   lines = languageCollector.KoreanLines2_3_1;  break;
             case "english":  lines = languageCollector.EnglishLines2_3_1; break;
             case "japanese": lines = languageCollector.JapaneseLines2_3_1;break;
             case "chinese":  lines = languageCollector.ChineseLines2_3_1; break;
-            case "kazakh":   lines = languageCollector.KazaLines2_3_1;    break; // ✅
+            case "kazakh":   lines = languageCollector.KazaLines2_3_1;    break;
             default:
-                Debug.LogWarning($"[2_3_1] Unknown lang '{lang}', fallback=Korean");
+                Debug.LogWarning($"[2_3_1] Unknown lang '{CurrentLanguage}', fallback=Korean");
                 lines = languageCollector.KoreanLines2_3_1;
                 break;
         }
 
         if (lines == null || lines.Length == 0) lines = new[] { "" };
 
-        Debug.Log($"[2_3_1] Loaded lines -> lang={lang}, len={lines.Length}");
+        Debug.Log($"[2_3_1] Loaded lines -> lang={CurrentLanguage}, len={lines.Length}");
     }
-
 
     // ===== 한 줄 표시 시퀀스 =====
     private IEnumerator ShowLineSequence()
@@ -275,9 +256,10 @@ public class DialogueManager2_3_1 : MonoBehaviour
             case "english":  above = English_Above;  story = English_Story;  break;
             case "japanese": above = Japanese_Above; story = Japanese_Story; break;
             case "chinese":  above = Chinese_Above;  story = Chinese_Story;  break;
-            case "kazakh":   above = Kaza_Above;     story = Kaza_Story;     break; // ✅
+            case "kazakh":   above = Kaza_Above;     story = Kaza_Story;     break;
+            case "korean":
+            default:         above = Korean_Above;   story = Korean_Story;   break;
         }
-
 
         if (above != null && story != null)
         {
@@ -312,16 +294,14 @@ public class DialogueManager2_3_1 : MonoBehaviour
     // ===== 언어별 선택지 표시 =====
     private void ShowChoicesForCurrentLanguage()
     {
-        string lang = CurrentLanguage;
         GameObject[] targets = null;
-        switch (lang)
+        switch (CurrentLanguage)
         {
             case "korean":  targets = koreanObjects;  break;
             case "english": targets = englishObjects; break;
             case "japanese":targets = japaneseObjects;break;
             case "chinese": targets = chineseObjects; break;
-            case "kazakh": targets = kazaObjects; break; // 또는 target = kazaObjects;
-
+            case "kazakh":  targets = kazaObjects;    break;
         }
         if (targets == null) return;
 
@@ -329,7 +309,7 @@ public class DialogueManager2_3_1 : MonoBehaviour
         {
             if (parent == null) continue;
 
-            // "ss"로 시작하는 루트는 건너뜀(버튼 자체를 찾는 건 아래에서)
+            // "ss"로 시작하는 루트는 건너뜀(버튼 자체는 아래에서 찾음)
             if (!parent.name.ToLower().Trim().StartsWith("ss"))
                 parent.SetActive(true);
 
@@ -354,19 +334,18 @@ public class DialogueManager2_3_1 : MonoBehaviour
     }
 
     // ===== 언어별 추가 오브젝트 갱신(언어 변경 시) =====
-    private void UpdateLanguageSpecificObjects(string langRaw)
+    private void UpdateLanguageSpecificObjects(string lang)
     {
         DisableAllLanguageObjects();
 
         GameObject[] target = null;
-        switch (NormalizeLang(langRaw))
+        switch (lang)
         {
             case "korean":  target = koreanObjects;  break;
             case "english": target = englishObjects; break;
             case "japanese":target = japaneseObjects;break;
             case "chinese": target = chineseObjects; break;
-            case "kazakh": target = kazaObjects; break; // 또는 target = kazaObjects;
-
+            case "kazakh":  target = kazaObjects;    break;
         }
         if (target != null)
             foreach (var obj in target)
@@ -401,11 +380,10 @@ public class DialogueManager2_3_1 : MonoBehaviour
             "english" => SafeName(languageCollector.EnglishAbove2_3_1,  0, "Echo"),
             "japanese"=> SafeName(languageCollector.JapaneseAbove2_3_1, 0, "エコー"),
             "chinese" => SafeName(languageCollector.ChineseAbove2_3_1,  0, "艾可"),
-            "kazakh"  => SafeName(languageCollector.KazaAbove2_3_1,     0, "Эко"), // ✅
+            "kazakh"  => SafeName(languageCollector.KazaAbove2_3_1,     0, "Эко"),
             _         => "Echo"
         };
     }
-
 
     private string GetNameNarke()
     {
@@ -416,7 +394,7 @@ public class DialogueManager2_3_1 : MonoBehaviour
             "english"  => SafeName(languageCollector.EnglishAbove2_3_1,  2, "Narke"),
             "japanese" => SafeName(languageCollector.JapaneseAbove2_3_1, 2, "ナルケ"),
             "chinese"  => SafeName(languageCollector.ChineseAbove2_3_1,  2, "纳尔克"),
-            "kazah"     => SafeName(languageCollector.KazaAbove2_3_1,     2, "Нарыке"),
+            "kazakh"   => SafeName(languageCollector.KazaAbove2_3_1,     2, "Нарыке"), // ✅ 오타 수정
             _          => "Narke"
         };
     }
