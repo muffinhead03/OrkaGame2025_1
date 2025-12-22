@@ -156,18 +156,29 @@ public class SlidingGameManager1BeforeDeathScript : MonoBehaviour
             hairpinCleared = true;
         }
 
-        // 2) 1차 자물쇠: 타일 [1,2,5,6,7,12] 가 후보와 "정확히" 매핑
-        if (!firstLockCleared && MatchAnyExactMapping(
-                new List<int> { 1, 2, 5, 6, 7, 12 },
-                new List<List<int>> {
-                    new() { 5, 3, 2, 4, 6, 7  },
-                    new() { 8, 6, 5, 7, 9, 10 },
-                    new() { 11, 9, 8, 10, 12, 13 }
-                }))
+// 2) 1차 자물쇠: 타일 [1,2,5,6,7,12] 또는 [1,2,10,6,7,12] 가 후보와 "정확히" 매핑
+        if (!firstLockCleared && (
+                MatchAnyExactMapping(
+                    new List<int> { 1, 2, 5, 6, 7, 12 },
+                    new List<List<int>> {
+                        new() { 5, 3, 2, 4, 6, 7  },
+                        new() { 8, 6, 5, 7, 9, 10 },
+                        new() { 11, 9, 8, 10, 12, 13 }
+                    }) 
+                ||
+                MatchAnyExactMapping(
+                    new List<int> { 1, 2, 10, 6, 7, 12 },
+                    new List<List<int>> {
+                        new() { 5, 3, 2, 4, 6, 7  },
+                        new() { 8, 6, 5, 7, 9, 10 },
+                        new() { 11, 9, 8, 10, 12, 13 }
+                    })
+            ))
         {
             SetAlpha(firstLockCanvas, 0.1f);
             firstLockCleared = true;
         }
+
 
         // 3) 최종: 타일 [3,6,7,8,10,11,12] 가 후보와 "정확히" 매핑
         if (hairpinCleared && firstLockCleared && !finalCleared &&
