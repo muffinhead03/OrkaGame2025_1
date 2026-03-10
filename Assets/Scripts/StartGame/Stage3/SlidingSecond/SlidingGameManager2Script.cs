@@ -91,7 +91,7 @@ public class SlidingGameManager2Script : MonoBehaviour
 
     // ---- Lock2(순서 매핑, 두 가지 패턴 허용: A/B) ----
     [Header("Ordered Match — Lock2 (열쇠+Lock1 후)")]
-    [SerializeField] private int[] lock2TilesOrdered = { 1, 3, 5, 6 };
+    [SerializeField] private int[] lock2TilesOrdered = { 1, 3, 5, 7 };
     [SerializeField] private int[] lock2TargetPositionsOrderedA = { 7, 1, 4, 5 }; // A: 1→7,3→1,5→4,6→5
     [SerializeField] private int[] lock2TargetPositionsOrderedB = { 8, 2, 5, 6 }; // B: 1→8,3→2,5→5,6→6
 

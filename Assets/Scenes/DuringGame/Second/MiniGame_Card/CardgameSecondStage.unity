@@ -357,16 +357,66 @@ MonoBehaviour:
   - {fileID: 737306066}
   - {fileID: 425656348}
   correctCardNames:
-  - AnswerCard2_ (1)
-  - AnswerCard2_ (2)
-  - AnswerCard2_ (3)
-  - AnswerCard2_ (4)
-  - AnswerCard2_ (5)
-  - AnswerCard2_ (6)
-  - AnswerCard2_ (7)
-  - AnswerCard2_ (8)
-  - AnswerCard2_ (9)
-  - AnswerCard2_ (10)
+  - acceptableNames:
+    - AnswerCard2_ (1)
+    - AnswerCard2_ (2)
+    - AnswerCard2_ (3)
+    - AnswerCard2_ (4)
+    - AnswerCard2_ (5)
+    - AnswerCard2_ (6)
+  - acceptableNames:
+    - AnswerCard2_ (2)
+    - AnswerCard2_ (1)
+    - AnswerCard2_ (3)
+    - AnswerCard2_ (4)
+    - AnswerCard2_ (5)
+    - AnswerCard2_ (6)
+  - acceptableNames:
+    - AnswerCard2_ (3)
+    - AnswerCard2_ (1)
+    - AnswerCard2_ (2)
+    - AnswerCard2_ (4)
+    - AnswerCard2_ (5)
+  - acceptableNames:
+    - AnswerCard2_ (4)
+    - AnswerCard2_ (1)
+    - AnswerCard2_ (2)
+    - AnswerCard2_ (3)
+    - AnswerCard2_ (5)
+  - acceptableNames:
+    - AnswerCard2_ (5)
+    - AnswerCard2_ (1)
+    - AnswerCard2_ (2)
+    - AnswerCard2_ (3)
+    - AnswerCard2_ (4)
+    - AnswerCard2_ (6)
+  - acceptableNames:
+    - AnswerCard2_ (6)
+    - AnswerCard2_ (1)
+    - AnswerCard2_ (2)
+    - AnswerCard2_ (3)
+    - AnswerCard2_ (4)
+    - AnswerCard2_ (5)
+    - AnswerCard2_ (7)
+  - acceptableNames:
+    - AnswerCard2_ (7)
+    - AnswerCard2_ (6)
+    - AnswerCard2_ (5)
+    - AnswerCard2_ (4)
+    - AnswerCard2_ (8)
+    - AnswerCard2_ (9)
+  - acceptableNames:
+    - AnswerCard2_ (8)
+    - AnswerCard2_ (7)
+    - AnswerCard2_ (6)
+    - AnswerCard2_ (9)
+  - acceptableNames:
+    - AnswerCard2_ (9)
+    - AnswerCard2_ (8)
+    - AnswerCard2_ (7)
+    - AnswerCard2_ (6)
+  - acceptableNames:
+    - AnswerCard2_ (10)
   timerText: {fileID: 1570777120}
   blackPanel: {fileID: 1693818848}
   carrotObject: {fileID: 1354893588}

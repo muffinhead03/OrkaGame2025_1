@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 
@@ -8,22 +7,28 @@ public class CardGameSecondManager : MonoBehaviour
 {
     [Header("카드 슬롯 및 정답 이름")]
     public CardGame2PanelManager[] slots = new CardGame2PanelManager[10];
-    public string[] correctCardNames = new string[10];
+
+    [System.Serializable]
+    public class SlotAnswer
+    {
+        public string[] acceptableNames;
+    }
+
+    public SlotAnswer[] correctCardNames = new SlotAnswer[10];
 
     [Header("UI 및 화면 효과")]
     public TextMeshProUGUI timerText;
     public CanvasGroup blackPanel;
     public GameObject carrotObject;
 
-    // ✅ 일시정지 기준 패널들
     [Header("일시정지 트리거 패널들")]
-    public RectTransform firstPanel;     // 인스펙터에 할당
-    public RectTransform settingPanel;   // 인스펙터에 할당
+    public RectTransform firstPanel;
+    public RectTransform settingPanel;
+
     [Tooltip("패널이 (0,0,0)에 있는 것으로 간주할 허용 오차(픽셀)")]
     public float centerTolerance = 1f;
 
-    // ✅ 25 → 120초
-    private float timeRemaining = 120f; 
+    private float timeRemaining = 120f;
     private bool isGameOver = false;
     private bool isClearing = false;
     private bool isClearConditionMet = false;
@@ -44,7 +49,7 @@ public class CardGameSecondManager : MonoBehaviour
         }
 
         if (carrotObject != null)
-            carrotObject.SetActive(true);
+            carrotObject.SetActive(false);
 
         UpdateTimerDisplay();
     }
@@ -53,18 +58,15 @@ public class CardGameSecondManager : MonoBehaviour
     {
         if (isGameOver || isClearing) return;
 
-        // 🔴 여기서 패널 상태를 보고 타이머/클리어 체크를 멈춤
         if (IsPausedByPanel())
         {
-            // 멈춘 상태에서도 표시만 업데이트하고 종료
             UpdateTimerDisplay();
             return;
         }
 
         timeRemaining -= Time.deltaTime;
-
-        // ✅ 최대값도 25 → 120으로 변경
         timeRemaining = Mathf.Clamp(timeRemaining, 0f, 120f);
+
         UpdateTimerDisplay();
 
         if (timeRemaining <= 0)
@@ -90,7 +92,6 @@ public class CardGameSecondManager : MonoBehaviour
         }
     }
 
-    // ✅ 패널이 활성 & 중앙이면 true
     bool IsPausedByPanel()
     {
         return IsPanelBlocking(firstPanel) || IsPanelBlocking(settingPanel);
@@ -101,14 +102,12 @@ public class CardGameSecondManager : MonoBehaviour
         if (rt == null) return false;
         if (!rt.gameObject.activeInHierarchy) return false;
 
-        // UI 기준 중앙 여부 체크(허용 오차 포함)
         Vector3 p = rt.anchoredPosition3D;
         return p.sqrMagnitude <= centerTolerance * centerTolerance;
     }
 
     public void OnCarrotClicked()
     {
-        // 일시정지 중에는 클릭 무시
         if (!isClearConditionMet || isClearing || IsPausedByPanel()) return;
 
         Debug.Log("🥕 당근 클릭됨 → 연출 및 씬 전환 시작");
@@ -129,6 +128,7 @@ public class CardGameSecondManager : MonoBehaviour
         carrotObject.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
 
         yield return new WaitForSeconds(0.5f);
+
         if (blackPanel != null)
             yield return StartCoroutine(FlashBlack());
 
@@ -179,7 +179,6 @@ public class CardGameSecondManager : MonoBehaviour
         int minutes = totalSeconds / 60;
         int seconds = totalSeconds % 60;
 
-        // ✅ 색상 변화 비율도 120초 기준
         float t = 1f - (timeRemaining / 120f);
         Color newColor = Color.Lerp(Color.white, Color.red, t);
 
@@ -192,14 +191,63 @@ public class CardGameSecondManager : MonoBehaviour
 
     bool CheckClearCondition()
     {
+        Debug.Log("===== 카드 정답 검사 시작 =====");
+
         for (int i = 0; i < slots.Length; i++)
         {
-            var card = slots[i].GetCurrentCard();
-            if (card == null || card.name.Replace("(Clone)", "").Trim() != correctCardNames[i])
+            if (slots[i] == null)
             {
+                Debug.Log($"[슬롯 {i}] 슬롯 자체가 NULL");
+                return false;
+            }
+
+            var card = slots[i].GetCurrentCard();
+
+            if (card == null)
+            {
+                Debug.Log($"[슬롯 {i}] 카드 없음");
+                return false;
+            }
+
+            string cardName = card.name.Replace("(Clone)", "").Trim();
+            Debug.Log($"[슬롯 {i}] 현재 카드 이름: {cardName}");
+
+            if (correctCardNames[i] == null)
+            {
+                Debug.Log($"[슬롯 {i}] correctCardNames NULL");
+                return false;
+            }
+
+            if (correctCardNames[i].acceptableNames == null || correctCardNames[i].acceptableNames.Length == 0)
+            {
+                Debug.Log($"[슬롯 {i}] acceptableNames 비어 있음");
+                return false;
+            }
+
+            Debug.Log($"[슬롯 {i}] 허용된 정답 목록:");
+
+            bool matchFound = false;
+
+            foreach (string acceptable in correctCardNames[i].acceptableNames)
+            {
+                Debug.Log($"   → {acceptable}");
+
+                if (cardName == acceptable)
+                {
+                    Debug.Log($"[슬롯 {i}] 정답 매칭 성공!");
+                    matchFound = true;
+                    break;
+                }
+            }
+
+            if (!matchFound)
+            {
+                Debug.Log($"[슬롯 {i}] ❌ 정답 불일치");
                 return false;
             }
         }
+
+        Debug.Log("🎉 모든 슬롯 정답! 클리어 조건 만족");
         return true;
     }
 }
